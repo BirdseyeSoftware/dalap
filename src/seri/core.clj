@@ -29,7 +29,6 @@
 
   (gen-string-builder #(. %1 (toString))) yields the equivalent of
   `clojure.core.str`"
-
   [normalize-single-string]
   (fn ^String str**
     (^String [] "")
@@ -43,7 +42,6 @@
 
 (def escape-html (gen-string-builder toHtmlEscapedStr))
 
-
 ;;; ;;;;;;;;
 (defprotocol Serializable
   "The default implementation of Seri's serialization interface."
@@ -55,8 +53,8 @@
   nil (ser [_ _] "")
   String (ser [s _] s)
   Character (ser [c _] (str c)) 
-  Number (ser [n w] (safe n))           ; optimization
-  Named (ser [o w] (str o)))
+  Number (ser [n _] (safe n))           ; optimization
+  Named (ser [o _] (str o)))
 
 (defn extend-seri [typ fn]
   (extend typ Serializable {:ser fn}))
