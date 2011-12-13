@@ -22,12 +22,13 @@
   "Walks, flattens and serializes an object (or graph of objects) into
   a String.  The default implementation does no escaping of the output."
 
-  ([x] (serialize x seri.defaults/visit str))
+  ([x] (serialize x visit str))
   ([x visitor] (serialize x visitor str))
+
   ([x visitor output-escaper]
      (apply output-escaper (flatten (walk x visitor)))))
 
-#_(serialize [
+(serialize [
             " numbers: " 1 2 3.0 
             " vec: " ["->-"]
             " list: " '(1 2 3)

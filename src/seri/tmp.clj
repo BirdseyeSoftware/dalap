@@ -33,3 +33,30 @@
 ;;  clojure.lang.IPersistentMap
 ;;  (fn [m w] (for [[k v] m] [k ": " v]) ))
 
+
+
+;; (visit [x walker] ....)
+
+;; (defmethod extended-visit :default [x w] (std-visit x w))
+;; (deftype NewVisitorWrapper [contents]
+;;   Serializable
+;;   (visit [nvw w] (walk contents extended-visit)))
+
+;; [:div 123 "asdfl & " (NewVisitorWrapper. ["asdfasdf"])]
+
+
+
+;; ;;; fixed visitor func
+;; (visit [N] (str N))
+;; (visit [s] (map visit s))
+
+
+;; (defprotocol RomansSeri
+;;   (roman-visit [o w]))
+
+;; (extend-protocol RomansSeri
+;;   Object (roman-visit [o w] (visit o w))
+;;   nil (roman-visit [_ _] "")
+;;   TagAttrs (roman-visit [ta w]
+;;              (visit (TagAttrs. (.tag ta) (assoc (.attrs-map ta) :new 'foo))
+;;                     w)))
