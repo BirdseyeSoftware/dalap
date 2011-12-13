@@ -63,10 +63,11 @@
      (apply escape-html (flatten (seri.walk/walk x visitor-fn)))))
 
 ;;; test
-
+ 
 #_(to-html
    [" match tag: " [:p "Paragraph&" [1 2 "34" 'bar] " Foo"]
     " match tag: " [:p {:id "bar" :ti&tle "fo\"o"} "Paragraph" " Foo"]
+    " nesting: " [:div [:div [:div [:div]]]]
     " match tag: " [:input]
     " match tag: " [:input {:type "text"}]
     " match tag: " [:form#contact {:action "GET"}
@@ -77,5 +78,4 @@
     " safe: " (apply safe (keys html-esc-map))
     " chars to esc: " (keys html-esc-map)
     (apply str (keys html-esc-map))
-    ]
-   )
+    ])
