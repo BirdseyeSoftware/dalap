@@ -27,19 +27,6 @@
   (visit [_ w] (w (for [[k v] attrs-map]
                     [" " (name k) (safe \= \") v (safe \")]))))
 
-(defn- dom-node [tag attrs content]
-  (let [[_ tag id class] (re-matches re-tag (name tag))
-        tag-name (name tag)
-        attrs (TagAttrs.
-               tag
-               (merge (into {} (filter (fn [[k v]] (not (nil? v)))
-                                       {:id id :class class}))
-                      attrs))
-        is-empty (and (maybe-empty-tags tag) (empty? content))
-        sf safe] 
-    [(sf \<) tag-name attrs (if is-empty (sf " />") (sf \>))
-     (if-not is-empty [content (sf "</") tag-name (sf \>)])]))
-
 (deftype DomNode [tag attrs content]
   HtmlSerializable
   (visit [_ w]
@@ -49,20 +36,20 @@
                  tag
                  (merge (into {} (filter (fn [[k v]] (not (nil? v)))
                                          {:id id :class class}))
-                        attrs)) 
+                        attrs))
           is-empty (and (maybe-empty-tags tag) (empty? content))
           open-tag [(safe \<) tag-name attrs
                     (if is-empty (safe " />") (safe \>))]
-          close-tag [(safe "</") tag-name (safe \>)]] 
+          close-tag [(safe "</") tag-name (safe \>)]]
       (w [open-tag (if-not is-empty [content close-tag])]) )))
 
 (defn visit-vector [v w]
   (let [named? (fn [x] (instance? clojure.lang.Named x))]
     (match/match
-     [v] 
+     [v]
      [([(tag :when named?) (attrs :when map?) & content] :seq)]
      (w (DomNode. tag attrs content))
- 
+
      [([(tag :when named?) & content] :seq)]
      (w (DomNode. tag {} content))
 
@@ -77,21 +64,18 @@
 
 ;;; test
 
-;; (to-html [" match tag: " [:p#asdf "Paragraph&" [1 2 "34" 'bar] " Foo"]
-;;           " match tag: " [:p#fdsf.oiu {:id "bar"} "Paragraph" " Foo"]
-;;           " empty :" [:hr.clear {:asdf 1234}]
-
-;;           "safe: " (apply safe (keys html-esc-map))
-;;           " chars to esc: " (keys html-esc-map)
-;;           (apply str (keys html-esc-map))            
-;;           ])
-
-(to-html
-  [" match tag: " [:p "Paragraph&" [1 2 "34" 'bar] " Foo"]
-   " match tag: " [:p {:id "bar" :ti&tle "fo\"o"} "Paragraph" " Foo"]
-   " match tag: " [:input]
-   " match tag: " [:input {:type "text"}]
-   " match tag: " [:form#contact {:action "GET"}
+#_(to-html
+   [" match tag: " [:p "Paragraph&" [1 2 "34" 'bar] " Foo"]
+    " match tag: " [:p {:id "bar" :ti&tle "fo\"o"} "Paragraph" " Foo"]
+    " match tag: " [:input]
+    " match tag: " [:input {:type "text"}]
+    " match tag: " [:form#contact {:action "GET"}
                     [:input {:type "text"
                              :name "first-name"
-                             :value "Tavis & Company"}]]])
+                             :value "Tavis & Company"}]]
+    " empty :" [:hr.clear {:asdf 1234}]
+    " safe: " (apply safe (keys html-esc-map))
+    " chars to esc: " (keys html-esc-map)
+    (apply str (keys html-esc-map))
+    ]
+   )
