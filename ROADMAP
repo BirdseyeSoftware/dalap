@@ -1,0 +1,2 @@
+* Add unit tests for html escaping and default serialization
+* Improve documentation of modules
