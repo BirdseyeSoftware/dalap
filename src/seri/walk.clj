@@ -1,4 +1,6 @@
-(ns seri.walk)
+(ns seri.walk
+  (:import [clojure.lang IFn ILookup]))
+
 (defprotocol IWalker
   (update-in-state [this keys fn])
   (get-state [this]))
@@ -11,9 +13,9 @@
    both single and dual arity versions of `serialize` for each
    visitable type."
 
-    [visitor state-map]  
-  
-    clojure.lang.IFn
+    [visitor state-map]
+
+    IFn
     (invoke [this x] (visitor x this))
     (applyTo [this args] (clojure.lang.AFn/applyToHelper this args))
 
@@ -23,7 +25,7 @@
         (Walker. visitor (update-in state-map keys fn))))
     (get-state [this] state-map)
 
-    clojure.lang.ILookup
+    ILookup
     (valAt [this key] (state-map key))
     (valAt [this key not-found] (state-map key not-found)))
 
@@ -37,6 +39,3 @@
   [w]
   (update-in-state w ::indent #(inc (or % 0))))
 
-;; (defn walk
-;;   [x visitor]  
-;;   ((fn walker [i] (visitor i walker)) x))
