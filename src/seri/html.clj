@@ -20,7 +20,7 @@
 
 (def ^:private maybe-empty-tags
   (set (map name
-    '(area base br col frame hr img input link meta p param script))))
+    '(area base br col frame hr img input link meta p param))))
 
 (deftype TagAttrs [tag attrs-map]
   HtmlSerializable
