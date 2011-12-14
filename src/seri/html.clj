@@ -1,9 +1,19 @@
 (ns seri.html
-  (:use [seri.escape :only [safe escape-html html-esc-map]])
+
+;; Third Party ;;;;;
+
+  (:require [clojure.core.match :as match])
+  (:import [clojure.lang IPersistentVector])
+
+;; Local Library ;;;
+
+  (:use [seri.escape :only [safe]]
+        [seri.escape.html :only [escape-html]])
   (:require [seri.defaults]
-            [seri.walk]
-            [clojure.core.match :as match])
+            [seri.walk])
   (:import [seri.escape PreEscaped]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defprotocol HtmlSerializable
   (visit [x w]))
@@ -55,7 +65,7 @@
 
      [_] (seri.defaults/visit-seq v w))))
 
-(extend clojure.lang.IPersistentVector HtmlSerializable {:visit visit-vector})
+(extend IPersistentVector HtmlSerializable {:visit visit-vector})
 
 (defn to-html
   ([x] (to-html x visit))
@@ -75,7 +85,7 @@
                              :name "first-name"
                              :value "Tavis & Company"}]]
     " empty :" [:hr.clear {:asdf 1234}]
-    " safe: " (apply safe (keys html-esc-map))
-    " chars to esc: " (keys html-esc-map)
-    (apply str (keys html-esc-map))
+    ;" safe: " (apply safe (keys html-esc-map))
+    ;" chars to esc: " (keys html-esc-map)
+    ;(apply str (keys html-esc-map))
     ])
