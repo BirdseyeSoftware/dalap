@@ -72,6 +72,25 @@
   ([x visitor-fn]
      (apply escape-html (flatten (seri.walk/walk x visitor-fn)))))
 
+;;; helpers
+(def doctype
+  {:html4
+   (safe "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
+        "\"http://www.w3.org/TR/html4/safeict.dtd\">\n")
+   :xhtml-safeict
+   (safe "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Safeict//EN\" "
+        "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-safeict.dtd\">\n")
+   :xhtml-transitional
+   (safe "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" "
+        "\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n")
+   :html5
+   (safe "<!DOCTYPE html>\n")})
+
+(defn html5 [& contents]
+  [(doctype :html5)
+   [:html ;{:lang (options# :lang)}
+    contents]])
+
 ;;; test
  
 #_(to-html
