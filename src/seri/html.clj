@@ -1,11 +1,7 @@
 (ns seri.html
-
-;; Third Party ;;;;;
-
-  (:require [clojure.core.match :as match])
   (:import [clojure.lang IPersistentVector])
 
-;; Local Library ;;;
+  (:require [clojure.core.match :as match])
 
   (:use [seri.escape :only [safe]]
         [seri.escape.html :only [escape-html]])
@@ -55,15 +51,14 @@
 
 (defn visit-vector [v w]
   (let [named? (fn [x] (instance? clojure.lang.Named x))]
-    (match/match
-     [v]
-     [([(tag :when named?) (attrs :when map?) & content] :seq)]
-     (w (DomNode. tag attrs content))
+    (match/match [v]
+      [([(tag :when named?) (attrs :when map?) & content] :seq)]
+      (w (DomNode. tag attrs content))
 
-     [([(tag :when named?) & content] :seq)]
-     (w (DomNode. tag {} content))
+      [([(tag :when named?) & content] :seq)]
+      (w (DomNode. tag {} content))
 
-     [_] (seri.defaults/visit-seq v w))))
+      [_] (seri.defaults/visit-seq v w))))
 
 (extend IPersistentVector HtmlSerializable {:visit visit-vector})
 
@@ -92,7 +87,7 @@
     contents]])
 
 ;;; test
- 
+
 #_(to-html
    [" match tag: " [:p "Paragraph&" [1 2 "34" 'bar] " Foo"]
     " match tag: " [:p {:id "bar" :ti&tle "fo\"o"} "Paragraph" " Foo"]
