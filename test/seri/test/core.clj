@@ -1,5 +1,5 @@
-(ns seri.test.core
-  (:use [seri.core])
+(ns dalap.test.core
+  (:use [dalap.core])
   (:use [clojure.test]))
 
 (deftest replace-me ;; FIXME: write

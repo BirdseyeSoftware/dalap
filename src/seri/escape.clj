@@ -1,4 +1,4 @@
-(ns seri.escape)
+(ns dalap.escape)
 
 (deftype PreEscaped [val]
   Object
@@ -22,4 +22,3 @@
                   (recur (. sb (append (str** (first more)))) (next more))
                   (str sb)))
               (new StringBuilder (str** x)) ys))))
-

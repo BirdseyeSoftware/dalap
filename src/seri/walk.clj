@@ -1,4 +1,4 @@
-(ns seri.walk
+(ns dalap.walk
   (:import [clojure.lang IFn ILookup]))
 
 (defprotocol IWalker
@@ -38,4 +38,3 @@
 
   [w]
   (update-in-state w ::indent #(inc (or % 0))))
-

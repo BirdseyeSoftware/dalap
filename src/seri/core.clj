@@ -1,1 +1,1 @@
-(ns seri.core)
+(ns dalap.core)

@@ -5,31 +5,31 @@
   ;;                          (w [(namespace kw) "/" (name kw)])))
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; (def serim nil)
-;; (defmulti serim (fn [o w] (type o)))
-;; (defmethod serim Number [n w] (str (* 2 n)))
-;; (defmethod serim :default [s w] (ser s w))
+;; (def dalapm nil)
+;; (defmulti dalapm (fn [o w] (type o)))
+;; (defmethod dalapm Number [n w] (str (* 2 n)))
+;; (defmethod dalapm :default [s w] (ser s w))
 
-;; (defmulti seri2 class)
+;; (defmulti dalap2 class)
 ;; (defmacro defmethod*
 ;;   [multifn & dispatch-pairs]
 ;;   ;; `(do
-;;   ;;    (defmethod seri2 Number [n#] (fn [n# w#] (str n#)))
-;;   ;;    (defmethod seri2 String [s#] (fn [s# w#] s#))
+;;   ;;    (defmethod dalap2 Number [n#] (fn [n# w#] (str n#)))
+;;   ;;    (defmethod dalap2 String [s#] (fn [s# w#] s#))
 ;;   ;;    )
 ;;   `(do
 ;;      ~@(for [[dispatch-val fn-tail] (partition 2 dispatch-pairs)]
 ;;          `(defmethod ~(with-meta multifn {:tag 'clojure.lang.MultiFn})
 ;;             ~dispatch-val [o#] ~@fn-tail)))
 ;;   )
-;; (defmethod* seri2
+;; (defmethod* dalap2
 ;;   Number (fn [n w] (str n))
 ;;   String (fn [s w] s)
 ;;   :default (fn [o w] "NOT FOUND")
 ;;   )
 
 
-;; (extend-seri
+;; (extend-dalap
 ;;  clojure.lang.IPersistentMap
 ;;  (fn [m w] (for [[k v] m] [k ": " v]) ))
 

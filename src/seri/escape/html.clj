@@ -1,4 +1,4 @@
-(ns seri.escape.html
+(ns dalap.escape.html
 
 ;; Third Party ;;;;;
 
@@ -6,8 +6,8 @@
 
 ;; Local Library ;;;
 
-  (:use seri.escape)
-  (:import [seri.escape PreEscaped]))
+  (:use dalap.escape)
+  (:import [dalap.escape PreEscaped]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -26,4 +26,3 @@
   Character (toHtmlEscapedStr [c] (escape-html-char-entities c)))
 
 (def escape-html (gen-str-escaper toHtmlEscapedStr))
-

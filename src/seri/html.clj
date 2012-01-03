@@ -1,13 +1,13 @@
-(ns seri.html
+(ns dalap.html
   (:import [clojure.lang IPersistentVector])
 
   (:require [clojure.core.match :as match])
 
-  (:use [seri.escape :only [safe]]
-        [seri.escape.html :only [escape-html]])
-  (:require [seri.defaults]
-            [seri.walk])
-  (:import [seri.escape PreEscaped]))
+  (:use [dalap.escape :only [safe]]
+        [dalap.escape.html :only [escape-html]])
+  (:require [dalap.defaults]
+            [dalap.walk])
+  (:import [dalap.escape PreEscaped]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -15,7 +15,7 @@
   (visit [x w]))
 
 (extend-protocol HtmlSerializable
-  Object (visit [n w] (seri.defaults/visit n w))
+  Object (visit [n w] (dalap.defaults/visit n w))
   nil (visit [_ _] "")
   Number (visit [n w] (safe (str n)))
   PreEscaped (visit [x _] x))
@@ -58,14 +58,14 @@
       [([(tag :when named?) & content] :seq)]
       (w (DomNode. tag {} content))
 
-      [_] (seri.defaults/visit-seq v w))))
+      [_] (dalap.defaults/visit-seq v w))))
 
 (extend IPersistentVector HtmlSerializable {:visit visit-vector})
 
 (defn to-html
   ([x] (to-html x visit))
   ([x visitor-fn]
-     (apply escape-html (flatten (seri.walk/walk x visitor-fn)))))
+     (apply escape-html (flatten (dalap.walk/walk x visitor-fn)))))
 
 ;;; helpers
 (def doctype
