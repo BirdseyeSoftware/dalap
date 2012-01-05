@@ -1,10 +1,5 @@
 (ns dalap.escape.html
-
-;; Third Party ;;;;;
-
   (:require [clojure.string :as string])
-
-;; Local Library ;;;
 
   (:use dalap.escape)
   (:import [dalap.escape PreEscaped]))
