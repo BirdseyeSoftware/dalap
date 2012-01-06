@@ -26,15 +26,4 @@
   ([x visitor] (serialize x visitor str))
 
   ([x visitor output-escaper]
-     (apply output-escaper (flatten (walk x visitor)))))
-
-(serialize [
-            " numbers: " 1 2 3.0
-            " vec: " ["->-"]
-            " list: " '(1 2 3)
-            " seq: " (seq [1 2 3])
-            " nil: " nil
-            " symbol: " 'Foo
-            " maps: " {:a 1}
-            " keywords: " :a " " :foo/b
-            ])
+     (apply output-escaper (flatten (walk [x] visitor)))))

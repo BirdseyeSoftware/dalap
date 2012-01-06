@@ -65,7 +65,7 @@
 (defn to-html
   ([x] (to-html x visit))
   ([x visitor-fn]
-     (apply escape-html (flatten (dalap.walk/walk x visitor-fn)))))
+     (apply escape-html (flatten (dalap.walk/walk [x] visitor-fn)))))
 
 ;;; helpers
 (def doctype
