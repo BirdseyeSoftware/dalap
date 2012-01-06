@@ -16,7 +16,14 @@
   ([in out msg] `(is (= (to-html ~in) ~out) ~msg)))
 
 (deftest test-basic-types
+  (assert-html 1 "1" "to-html should work on non-container types")
+  (assert-html [1] "1" "should be the same as the non-container version")
+
   (assert-html basic-sample-data basic-sample-data-str)
+  (assert-html [[[basic-sample-data]]] basic-sample-data-str)
+  (assert-html (seq [[[basic-sample-data]]]) basic-sample-data-str)
+  (assert-html (list (list basic-sample-data)) basic-sample-data-str)
+  (assert-html (for [el basic-sample-data] el) basic-sample-data-str)
 
   (assert-html ["" :ti&tle "fo\"o"] ":ti&amp;tlefo&quot;o"
                "the keyword above should be HTML escaped"))
