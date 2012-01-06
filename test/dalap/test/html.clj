@@ -11,9 +11,9 @@
 
 (def basic-sample-data-str "123abcx 1.2 foo:bar")
 
-(defn- assert-html
-  ([in out] (assert-html in out nil))
-  ([in out msg] (is (= (to-html in) out) msg)))
+(defmacro assert-html
+  ([in out] `(assert-html ~in ~out nil))
+  ([in out msg] `(is (= (to-html ~in) ~out) ~msg)))
 
 (deftest test-basic-types
   (assert-html basic-sample-data basic-sample-data-str)
