@@ -10,19 +10,27 @@
       "This should behave the same as `clojure.core/str`")
   (is (= ((core/gen-str-escaper #(.toUpperCase (.toString %))) "abc" 123)
          "ABC123")
-      "This should behave the same as `clojure.core/str`"))
+      "uppercase version of str"))
 
-(deftest test-html-char-escaping
+(deftest test-low-level-char-escaping
   (doseq [[k v] html/html-esc-map]
-    [(is (= (html/escape-html-char-entities k) v))
-     (is (= (html/escape-html (str k)) v))]))
+    [(is (= (html/escape-html-char-entities k) v)
+         "test lower-level escaper")
+     (is (= (html/escape-html (str k)) v)
+         "test via HtmlEscapable protocol")]))
 
-(deftest test-html-string-escaping
-  (is (= (html/escape-html "&-<->-\"")
-         "&amp;-&lt;-&gt;-&quot;")))
+(deftest test-HtmlEscapable
+  (doseq [[inp outp] {
+                      nil ""
+                      (core/safe "&") "&"
+                      (core/safe \&) "&"
+                      (core/safe "&-<->-\"") "&-<->-\""
+                      \& "&amp;"
+                      "abcd&e" "abcd&amp;e"
+                      "&-<->-\"" "&amp;-&lt;-&gt;-&quot;"
+                      }]
+    (is (= (html/toHtmlEscapedStr inp) (html/escape-html inp) outp))))
 
-(deftest test-html-pre-escaped
-  (is (= (html/escape-html (core/safe "&-<->-\""))
-         "&-<->-\""))
+(deftest test-mixed-pre-escaped-and-not
   (is (= (html/escape-html (core/safe "&-<->-\"") "-&->")
          "&-<->-\"-&amp;-&gt;")))
