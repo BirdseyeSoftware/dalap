@@ -1,18 +1,19 @@
 (ns dalap.walk
+  "A `Walker` is a wrapper around a visitor function (a multimethod or
+  a single function from a Protocol). It simplifies the recursive
+  invocation of the visitor over a tree of objects and makes it
+  possible to decorate or replace the visitor for sub-regions of the
+  tree.
+  "
+
   (:import [clojure.lang IFn ILookup]))
 
 (defprotocol IWalker
+  (get-visitor-fn [this])
   (update-in-state [this keys fn])
   (get-state [this]))
 
 (deftype Walker
-    #_"A wrapper around a visitor multimethod/Protocol function. It
-   facilitates the recursive invocation of `visitor-fn` by providing
-   a single arity interface around it. The use of Walker also keeps
-   the signature of `visitor` simple as it removes the need to define
-   both single and dual arity versions of `serialize` for each
-   visitable type."
-
     [visitor state-map]
 
     IFn
@@ -20,6 +21,7 @@
     (applyTo [this args] (clojure.lang.AFn/applyToHelper this args))
 
     IWalker
+    (get-visitor-fn [this] visitor)
     (update-in-state [this ks fn]
       (let [keys (if (sequential? ks) ks [ks])]
         (Walker. visitor (update-in state-map keys fn))))
@@ -29,7 +31,14 @@
     (valAt [this key] (state-map key))
     (valAt [this key not-found] (state-map key not-found)))
 
-(defn walk [x visitor] ((Walker. visitor {}) x))
+(defn gen-walker
+  "A constructor wrapper around the Walker type."
+  ([visitor] (gen-walker visitor {}))
+  ([visitor state-map] (Walker. visitor state-map)))
+
+(defn walk
+  ([x visitor] (walk x visitor {}))
+  ([x visitor state-map] ((gen-walker visitor state-map) x)))
 
 (defn indent
   "This is an example of state manip functions that can used with the
