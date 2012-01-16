@@ -68,6 +68,7 @@
      (apply escape-html (flatten (dalap.walk/walk [x] visitor-fn)))))
 
 ;;; helpers
+;;; maybe these should be in a different module
 (def doctype
   {:html4
    (safe "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
