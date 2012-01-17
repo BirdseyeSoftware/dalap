@@ -1,6 +1,7 @@
 (ns dalap.html
   (:import [clojure.lang IPersistentVector])
 
+  (:use [clojure.set :only [union]])
   (:require [clojure.core.match :as match])
 
   (:use [dalap.escape :only [safe]]
@@ -28,35 +29,59 @@
   (set (map name
     '(area base br col frame hr img input link meta p param))))
 
-(deftype TagAttrs [tag attrs-map]
+(defrecord TagAttrs [tag attrs-map]
   HtmlSerializable
   (visit [_ w] (w (for [[k v] attrs-map]
                     [" " (name k) (safe \= \") v (safe \")]))))
 
-(deftype DomNode [tag attrs content]
+(defrecord DomNode [tag attrs content]
   HtmlSerializable
   (visit [_ w]
-    (let [[_ tag id class] (re-matches re-tag (name tag))
-          tag-name (name tag)
-          attrs (TagAttrs.
-                 tag
-                 (merge (into {} (filter (fn [[k v]] (not (nil? v)))
-                                         {:id id :class class}))
-                        attrs))
-          is-empty (and (maybe-empty-tags tag) (empty? content))
+    (let [tag-name (name tag)
+          is-empty (and (maybe-empty-tags tag-name) (empty? content))
           open-tag [(safe \<) tag-name attrs
                     (if is-empty (safe " />") (safe \>))]
           close-tag [(safe "</") tag-name (safe \>)]]
       (w [open-tag (if-not is-empty [content close-tag])]) )))
 
+(defn- make-set [x]
+  (cond 
+    (nil? x) (sorted-set)
+    (seq? x) (sorted-set x)
+    :else (sorted-set (vector x))))
+
+(defn- nil-or-empty? [x]
+  (or (nil? x)
+      (empty? x)))
+
+(defn- merge-tag-attrs [tag-attrs id clazz]
+  (let [
+    base-attrs (->> {:id id :class clazz}
+                    (filter #(not (nil-or-empty? (nth % 1))))
+                    (into {}))
+    attr-merge (fn [result [k v]]
+                 (cond
+                   (= k :class) (union (:class result #{}) (make-set v))
+                   :else (assoc result k v)))
+  ]
+  (reduce attr-merge base-attrs tag-attrs)))
+
+(defn- build-dom-node [tag attrs content]
+  (let [[_ tag id class] (re-matches re-tag (name tag))
+        tag-name (name tag)
+        tag-attrs (TagAttrs.
+                   tag-name
+                   (merge-tag-attrs attrs id (make-set class)))]
+    (DomNode. tag-name tag-attrs content)))
+
 (defn visit-vector [v w]
   (let [named? (fn [x] (instance? clojure.lang.Named x))]
     (match/match [v]
       [([(tag :when named?) (attrs :when map?) & content] :seq)]
-      (w (DomNode. tag attrs content))
+      (w (build-dom-node tag attrs content))
 
       [([(tag :when named?) & content] :seq)]
-      (w (DomNode. tag {} content))
+      (w (build-dom-node tag {} content))
 
       [_] (dalap.defaults/visit-seq v w))))
 
