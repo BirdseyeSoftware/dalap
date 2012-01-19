@@ -11,6 +11,41 @@
   (:import [dalap.escape PreEscaped]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; General purpose utility functions
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn- make-set [x]
+  (cond
+    (set? x) x
+    (nil? x) (sorted-set)
+    :else (sorted-set x)))
+
+(defn- nil-or-empty? [x]
+  (or (nil? x)
+      (empty? x)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Tag parsing utility functions
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(def ^{:doc "Regexp for CSS-style id or class in a tag name."
+       :private true}
+  re-tag  #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
+
+(def ^:private maybe-empty-tags
+  (set (map name
+    '(area base br col frame hr img input link meta p param))))
+
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Protocols & Types for HTML serialization
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defprotocol HtmlSerializable
   (visit [x w]))
@@ -20,14 +55,6 @@
   nil (visit [_ _] "")
   Number (visit [n w] (safe (str n)))
   PreEscaped (visit [x _] x))
-
-(def ^{:doc "Regexp for CSS-style id or class in a tag name."
-       :private true}
-  re-tag  #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
-
-(def ^:private maybe-empty-tags
-  (set (map name
-    '(area base br col frame hr img input link meta p param))))
 
 (defrecord TagAttrs [tag attrs-map]
   HtmlSerializable
@@ -50,15 +77,10 @@
           close-tag [(safe "</") tag-name (safe \>)]]
       (w [open-tag (if-not is-empty [content close-tag])]) )))
 
-(defn- make-set [x]
-  (cond 
-    (nil? x) (sorted-set)
-    (seq? x) (sorted-set x)
-    :else (sorted-set (vector x))))
 
-(defn- nil-or-empty? [x]
-  (or (nil? x)
-      (empty? x)))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; DomNode builder helpers
 
 (defn- merge-tag-attrs [tag-attrs id clazz]
   (let [
@@ -123,8 +145,12 @@
   ([x visitor-fn]
      (apply escape-html (flatten (dalap.walk/walk [x] visitor-fn)))))
 
-;;; helpers
-;;; maybe these should be in a different module
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; HTML Builder helpers
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (def doctype
   {:html4
    (safe "<!DOCTYPE html PUBLIC \"-//W3C//DTD HTML 4.01//EN\" "
@@ -140,5 +166,5 @@
 
 (defn html5 [& contents]
   [(doctype :html5)
-   [:html ;{:lang (options# :lang)}
+   [:html
     contents]])
