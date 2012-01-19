@@ -83,6 +83,28 @@
                    (merge-tag-attrs attrs id (make-set class)))]
     (DomNode. tag-name tag-attrs content)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Utility functions for adding/removing HTML classes on
+;; DomNode types
+
+(defn alter-class [node f]
+  (update-in node [:attrs :attrs-map :class] f))
+
+(defn add-class [node clazz]
+  (alter-class node #(union % (make-set clazz))))
+
+(defn remove-class [node clazz]
+  (alter-class node #(disj % clazz)))
+
+(defn has-class? [node clazz]
+  ((get-in node [:attrs :attrs-map :class] (sorted-set)) clazz))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; HTML serialization for vectors
+
+
 (defn visit-vector [v w]
   (let [named? (fn [x] (instance? clojure.lang.Named x))]
     (match/match [v]

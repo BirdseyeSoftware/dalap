@@ -3,6 +3,10 @@
   (:use [dalap.html :only [to-html]])
   (:require [dalap.html :as html]))
 
+(def build-dom-node
+  (ns-resolve 'dalap.html
+              'build-dom-node))
+
 (def basic-sample-data
   [1 2 3 "abc"
    \x \space 1.2
@@ -14,6 +18,24 @@
 (defmacro assert-html
   ([in out] `(assert-html ~in ~out nil))
   ([in out msg] `(is (= (to-html ~in) ~out) ~msg)))
+
+(deftest test-add-class
+  (assert-html (-> (build-dom-node :p.what
+                                        { :class "other" }
+                                        "hello")
+                   (html/add-class "bold"))
+               "<p class=\"bold other what\">hello</p>"))
+
+(deftest test-remove-class
+  (assert-html (-> (build-dom-node :p.bold { :class "what" } "hello")
+                   (html/remove-class "bold"))
+               "<p class=\"what\">hello</p>"))
+
+(deftest test-has-class
+  (let [node (build-dom-node :p.bold { :class "what" } "hello")]
+    (is (and (html/has-class? node "bold")
+             (html/has-class? node "what")))
+    (is (not (html/has-class? node "other")))))
 
 (deftest test-basic-types
   (assert-html 1 "1" "to-html should work on non-container types")
