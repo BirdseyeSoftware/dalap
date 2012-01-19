@@ -32,7 +32,13 @@
 (defrecord TagAttrs [tag attrs-map]
   HtmlSerializable
   (visit [_ w] (w (for [[k v] attrs-map]
-                    [" " (name k) (safe \= \") v (safe \")]))))
+                    (cond
+                      (= :class k)
+                      [" " (name k) (safe \= \")
+                       (interpose " " v)
+                       (safe \")]
+                      :else
+                      [" " (name k) (safe \= \") v (safe \")])))))
 
 (defrecord DomNode [tag attrs content]
   HtmlSerializable
