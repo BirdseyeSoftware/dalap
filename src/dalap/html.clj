@@ -67,7 +67,10 @@
                     (into {}))
     attr-merge (fn [result [k v]]
                  (cond
-                   (= k :class) (union (:class result #{}) (make-set v))
+                   (= k :class) (assoc result
+                                       k
+                                       (union (:class result #{})
+                                              (make-set v)))
                    :else (assoc result k v)))
   ]
   (reduce attr-merge base-attrs tag-attrs)))
