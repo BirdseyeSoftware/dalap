@@ -32,8 +32,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def ^{:doc "Regexp for CSS-style id or class in a tag name."
-       :private true}
+(def ^{:doc "Regexp for CSS-style id or class in a tag name."}
   re-tag  #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
 
 (def ^:private maybe-empty-tags
