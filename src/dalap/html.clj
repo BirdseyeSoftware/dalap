@@ -116,6 +116,9 @@
 ;; Utility functions for adding/removing HTML classes on
 ;; DomNode types
 
+(defn dom-node? [node]
+  (instance? DomNode node))
+
 (defn alter-class [node f]
   (update-in node [:attrs :attrs-map :class] f))
 
