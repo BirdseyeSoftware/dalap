@@ -101,13 +101,16 @@
   ]
   (reduce attr-merge base-attrs tag-attrs)))
 
-(defn- build-dom-node [tag attrs content]
-  (let [[_ tag id class] (re-matches re-tag (name tag))
-        tag-name (name tag)
-        tag-attrs (TagAttrs.
-                   tag-name
-                   (merge-tag-attrs attrs id (make-set class)))]
-    (DomNode. tag-name tag-attrs content)))
+(defn- build-dom-node
+  ([tag] (build-dom-node tag {} []))
+  ([tag attrs] (build-dom-node tag attrs []))
+  ([tag attrs content]
+    (let [[_ tag id class] (re-matches re-tag (name tag))
+          tag-name (name tag)
+          tag-attrs (TagAttrs.
+                     tag-name
+                     (merge-tag-attrs attrs id (make-set class)))]
+      (DomNode. tag-name tag-attrs content))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -125,6 +128,12 @@
 
 (defn has-class? [node clazz]
   ((get-in node [:attrs :attrs-map :class] (sorted-set)) clazz))
+
+(defn has-id? [node id]
+  (= (get-in node [:attrs :attrs-map :id]) id))
+
+(defn has-tag-name? [node tag-name]
+  (= (name (:tag node)) (name tag-name)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
