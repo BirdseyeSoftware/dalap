@@ -7,6 +7,9 @@
   serialization visitor interface."
   (visit [x walker]))
 
+(defprotocol Trackable
+  (track [x]))
+
 (extend-protocol Serializable
   ;; Object impl not provided to avoid subtle/silent bugs
   nil (visit [_ _] "")
