@@ -32,8 +32,7 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(def ^{:doc "Regexp for CSS-style id or class in a tag name."
-       :private true}
+(def ^{:doc "Regexp for CSS-style id or class in a tag name."}
   re-tag  #"([^\s\.#]+)(?:#([^\s\.#]+))?(?:\.([^\s#]+))?")
 
 (def ^:private maybe-empty-tags
@@ -68,6 +67,10 @@
                       [" " (name k) (safe \= \") v (safe \")])))))
 
 (defrecord DomNode [tag attrs content]
+
+  dalap.defaults/Trackable
+  (track [_] true)
+
   HtmlSerializable
   (visit [_ w]
     (let [tag-name (name tag)
@@ -97,18 +100,24 @@
   ]
   (reduce attr-merge base-attrs tag-attrs)))
 
-(defn- build-dom-node [tag attrs content]
-  (let [[_ tag id class] (re-matches re-tag (name tag))
-        tag-name (name tag)
-        tag-attrs (TagAttrs.
-                   tag-name
-                   (merge-tag-attrs attrs id (make-set class)))]
-    (DomNode. tag-name tag-attrs content)))
+(defn- build-dom-node
+  ([tag] (build-dom-node tag {} []))
+  ([tag attrs] (build-dom-node tag attrs []))
+  ([tag attrs content]
+    (let [[_ tag id class] (re-matches re-tag (name tag))
+          tag-name (name tag)
+          tag-attrs (TagAttrs.
+                     tag-name
+                     (merge-tag-attrs attrs id (make-set class)))]
+      (DomNode. tag-name tag-attrs content))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
 ;; Utility functions for adding/removing HTML classes on
 ;; DomNode types
+
+(defn dom-node? [node]
+  (instance? DomNode node))
 
 (defn alter-class [node f]
   (update-in node [:attrs :attrs-map :class] f))
@@ -121,6 +130,12 @@
 
 (defn has-class? [node clazz]
   ((get-in node [:attrs :attrs-map :class] (sorted-set)) clazz))
+
+(defn has-id? [node id]
+  (= (get-in node [:attrs :attrs-map :id]) id))
+
+(defn has-tag-name? [node tag-name]
+  (= (name (:tag node)) (name tag-name)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
