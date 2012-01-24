@@ -16,69 +16,73 @@
   (is (not (dom-matches-selector? (build-dom-node :p)
                                   :p.hello))))
 
-(deftest test-track-selector
+(deftest test-match-selector
   (let [history [(build-dom-node :p)
                  (build-dom-node :div.hello)
                  (build-dom-node :body)
                  (build-dom-node :html)]]
   (is (= [nil history]
-         (track-selector :p.hello history)))
+         (match-selector :p.hello history)))
   (is (= [(->> history (drop 1) first) (take 1 history)]
-         (track-selector :div.hello history)))))
+         (match-selector :div.hello history)))))
 
 
-(deftest test-select-element
+(deftest test-match-selector*
   (let [history [(build-dom-node :p)
                  (build-dom-node :div.hello)
                  (build-dom-node :body)
                  (build-dom-node :html)]]
 
-  (is (= [(build-dom-node :p) history]
-         (select-element [:div.hello :p] history)))
+    (is (= [(build-dom-node :p) history]
+           (match-selector* [:p] history)))
 
-  (is (= [nil history]
-         (select-element [:div.hello :p.world] history)))
+    (is (= [(build-dom-node :p) history]
+           (match-selector* [:div.hello :p] history)))
 
-  ; :div.hello is not in the start of the history
-  ; so it doesn't match
-  (is (= [nil history]
-         (select-element [:div.hello] history)))
+    (is (= [nil history]
+           (match-selector* [:div.hello :p.world] history)))
 
-  (is (= [nil history]
-         (select-element [:body :div.not-there] history)))))
+    ;; :div.hello is not in the start of the history
+    ;; so it doesn't match
+    (is (= [nil history]
+           (match-selector* [:div.hello] history)))
+
+    (is (= [nil history]
+           (match-selector* [:body :div.not-there] history)))))
 
 (defrecord CustomType [a b])
 
-(deftest test-select-element-custom-types
+(deftest test-match-selector*-custom-types
   (let [item    (CustomType. "hello" "world")
         history [item
                  (build-dom-node :div#custom)
                  (build-dom-node :body)
                  (build-dom-node :html)]]
   (is (= [item history]
-         (select-element [:div `CustomType] history)))))
+         (match-selector* [:div `CustomType] history)))))
 
 
 (def bold-class #(html/add-class % "bold"))
-(defselector bold-p
-  ([:div]
-     [[:p] `bold-class]
-       #(dalap.html/add-class % "happy")))
+(defdecorator decorator1
+  [[:div]
+   [[:p] `bold-class]
+   #(dalap.html/add-class % "happy")])
 
-#_(def bold-p2
-  (let [selectors [[:div]
-                    ;;[[:p] bold-class]
-                    #(html/add-class % "happy")]]
-    (track-visitor
-     trackable?
-     (selector-visitor
-      (mapcat flatten-selectors selectors)
-      trackable? html/visit))))
+(def decorator2
+  (let [selectors [[:div :p] bold-class
+                   [:div] #(html/add-class % "happy")]]
+    (gen-decorator selectors)))
 
-(deftest test-defselector
-  (let [result (html/to-html [:div [:p "hello"]]
-                             ;;bold-p2
-                             (bold-p html/visit)
-                             )]
-    (is (= (html/to-html [:div.happy [:p.bold "hello"]])
+(deftest test-defdecorator
+  (let [result (html/to-html [:div.happy [:p.bold "hello"]])
+        ]
+    (is (= (html/to-html [:div [:p "hello"]]
+                         (decorator1 html/visit)
+                         )
+           result))
+    (is (= (html/to-html [:div] (decorator2 html/visit))
+           (html/to-html [:div.happy])))
+    (is (= (html/to-html [:div [:p "hello"]]
+                         (decorator2 html/visit)
+                         )
            result))))
