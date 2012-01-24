@@ -67,10 +67,6 @@
                       [" " (name k) (safe \= \") v (safe \")])))))
 
 (defrecord DomNode [tag attrs content]
-
-  dalap.defaults/Trackable
-  (track [_] true)
-
   HtmlSerializable
   (visit [_ w]
     (let [tag-name (name tag)

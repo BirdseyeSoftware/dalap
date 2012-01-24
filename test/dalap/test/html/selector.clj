@@ -3,7 +3,8 @@
   (:use [clojure.pprint :only (pprint)])
 
   (:require [dalap.html :as html])
-  (:use dalap.html.selector))
+  (:use dalap.html.selector)
+  (:use [dalap.html :only [add-class]]))
 
 (def build-dom-node
   (ns-resolve 'dalap.html
@@ -61,12 +62,23 @@
 (def bold-class #(html/add-class % "bold"))
 (defselector bold-p
   ([:div]
-    ([:p] `bold-class)
-    #(dalap.html/add-class % "happy")))
+     [[:p] `bold-class]
+       #(dalap.html/add-class % "happy")))
+
+#_(def bold-p2
+  (let [selectors [[:div]
+                    ;;[[:p] bold-class]
+                    #(html/add-class % "happy")]]
+    (track-visitor
+     trackable?
+     (selector-visitor
+      (mapcat flatten-selectors selectors)
+      trackable? html/visit))))
 
 (deftest test-defselector
   (let [result (html/to-html [:div [:p "hello"]]
-                             (bold-p html/visit))]
+                             ;;bold-p2
+                             (bold-p html/visit)
+                             )]
     (is (= (html/to-html [:div.happy [:p.bold "hello"]])
            result))))
-
