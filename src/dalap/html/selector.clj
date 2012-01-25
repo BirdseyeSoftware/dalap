@@ -148,7 +148,7 @@
    (dalap.html/to-html html-content (add-class-to-p dalap.html/visit))"
   [selectors+visitors & [paired?]]
 
-  (let [inspect-node? identity ;; track everything except nil/false
+  (let [inspect-node? identity ;; track/match-on everything except nil/false
         pairs (if paired? selectors+visitors (partition 2 selectors+visitors))
         inner-visitor (gen-visitor-from-pred-visitor-pairs
                        (compile-selector-visitor-pairs pairs)
