@@ -11,41 +11,11 @@
   ((juxt (partial take-while p)
          (partial drop-while p)) xs))
 
-(defn dom-matches-selector?
-  "Tells if a DomNode instance matches a given selector."
-  [dom-node selector]
-  (let [[_ tag id class] (re-matches html/re-tag (name selector))]
-    (and (html/has-tag-name? dom-node tag)
-         (if (nil? id)
-           true
-           (html/has-id? dom-node id))
-         (if (nil? class)
-           true
-           (html/has-class? dom-node class)))))
-
-(defn- gen-matcher-pred
-  "Creates a node matching predicate from a single selector.
-
-  Does a span using dom-matches-selector? on nodes
-  that are DomNode type, and compares types otherwise."
-  [single-selector]
-  (cond
-    (keyword? single-selector)
-    (fn [node]
-      (if (html/dom-node? node)
-        (dom-matches-selector? node single-selector)))
-    (fn? single-selector)
-    single-selector
-    :else
-    (fn [node]
-      (= (type node) single-selector))))
-
 (defn match-selector
   "Grabs a node from history that matches the given
   selector."
-  [selector history]
-  (let [match-node? (gen-matcher-pred selector)
-        [new-history [node & _]] (span (complement  #(match-node? %)) history)]
+  [select? history]
+  (let [[new-history [node & _]] (span (complement select?) history)]
     (if (nil? node)
       [nil history]
       [node new-history])))
@@ -80,46 +50,92 @@
 (defn- matching-node [selector history]
   (first (match-selector* selector history)))
 
-(defn- selector-to-predicate [selector]
+(defn- dom-matches-tag-selector?
+  "Tells if a DomNode instance matches a given selector."
+  [dom-node tag-selector]
+  (let [[_ tag id class] (re-matches html/re-tag (name tag-selector))]
+    (and (html/has-tag-name? dom-node tag)
+         (if (nil? id)
+           true
+           (html/has-id? dom-node id))
+         (if (nil? class)
+           true
+           (html/has-class? dom-node class)))))
+
+(defn- compile-selector
+  "Creates a node matching predicate from a single selector."
+  [single-selector]
   (cond
+    (keyword? single-selector)
+    (fn [node]
+      (if (html/dom-node? node)
+        (dom-matches-tag-selector? node single-selector)))
+
+    (fn? single-selector)
+    single-selector
+
+    :else
+    (fn [node]
+      (= (type node) single-selector))))
+
+(defn- compile-selector* [selector]
+  (cond
+    (vector? selector)
+    (let [selector (map compile-selector selector)]
+      (fn [history-stack]
+        (matching-node selector history-stack)))
+
     (fn? selector)
     selector
 
-    :else
-    (fn [history-stack]
-    (matching-node selector history-stack))))
+    ;;:else
+    ))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn arg-count [f]
+  (let [m (first (.getDeclaredMethods (class f)))
+        p (.getParameterTypes m)]
+    (alength p)))
 
-(defn- gen-visitor-from-pred-trans-pairs
-  [predicates+transformers inspect-node?]
+(defn- gen-visitor-from-pred-visitor-pairs
+  [predicates+visitors inspect-node?]
   (fn [node walker]
     (or (and (inspect-node? node)
              (let [history-stack (:history walker)]
-               (some (fn [[pred? transformer]]
+               (some (fn [[pred? visitor]]
                      (if (pred? history-stack)
-                       (transformer node)))
-                   predicates+transformers)))
+                       (visitor node walker)))
+                   predicates+visitors)))
         node)))
+
+(defn normalize-visitor [visitor]
+  (if (fn? visitor)
+    (case (arg-count visitor)
+      0 (fn [_node _w] (visitor))
+      1 (fn [node _w] (visitor node))
+      2 visitor)
+    ;; else it's straigh-up replacement value rather than a func
+    (fn [_node _w] visitor)))
+
+(defn compile-selector-visitor-pairs [selectors+visitors]
+  (for [[sel vis] selectors+visitors]
+    [(compile-selector* sel) (normalize-visitor vis)]))
 
 (defn gen-decorator
   "Creates a visitor function decorator that will apply the provided
-  transformers to any node that matches its corresponding selector.
+  visitor to any node that matches its corresponding selector.
 
   Example:
    (def add-class-to-p (gen-decorator
     [[:div.interesting :p] #(dalap.html/add-class % \"bold\")])
    (dalap.html/to-html html-content (add-class-to-p dalap.html/visit))"
-  [selectors+transformers & [paired?]]
+  [selectors+visitors & [paired?]]
 
   (let [inspect-node? identity ;; track everything except nil/false
-        preds+transformers
-        (for [[sel trn] (if paired?
-                          selectors+transformers
-                          (partition 2 selectors+transformers))]
-          [(selector-to-predicate sel) trn])
-        inner-visitor (gen-visitor-from-pred-trans-pairs
-                       preds+transformers inspect-node?)
+        pairs (if paired? selectors+visitors (partition 2 selectors+visitors))
+        inner-visitor (gen-visitor-from-pred-visitor-pairs
+                       (compile-selector-visitor-pairs pairs)
+                       inspect-node?)
         add-history-to-walker (fn [node w]
                                 (if (inspect-node? node)
                                   (update-in-state w :history #(conj % node))
