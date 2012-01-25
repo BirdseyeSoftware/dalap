@@ -88,7 +88,8 @@
          [:pre.bar] [1 2 3 4]
 
          ;; using sets/maps as predicates and visitors
-         [#{89 88}] {88 98, 89 99}
+         [:span.hundred #{89 88}] {88 198, 89 199}
+         [:p #{89 88}] {88 98, 89 99}
          ]]
     (doseq [decorator [(gen-decorator selectors+transformers)
                        (gen-decorator
@@ -123,6 +124,8 @@
         ;; using sets/maps
         (is (= (vis [:div [:p [88 89]]])
                (html/to-html [:div.happy [:p.bold "9899"]])))
+        (is (= (vis [:div [:span.hundred [88 89]]])
+               (html/to-html [:div.happy [:span.hundred "198199"]])))
 
         ;; test value replacements
         (is (= (vis [:pre.foo])
