@@ -29,13 +29,16 @@
   Does a span using dom-matches-selector? on nodes
   that are DomNode type, and compares types otherwise."
   [single-selector]
-  (fn [node]
-    (cond
-      (html/dom-node? node)
-      (dom-matches-selector? node single-selector)
-      :else
-      (= (type node) single-selector)
-      )))
+  (cond
+    (keyword? single-selector)
+    (fn [node]
+      (if (html/dom-node? node)
+        (dom-matches-selector? node single-selector)))
+    (fn? single-selector)
+    single-selector
+    :else
+    (fn [node]
+      (= (type node) single-selector))))
 
 (defn match-selector
   "Grabs a node from history that matches the given

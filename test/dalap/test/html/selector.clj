@@ -65,8 +65,10 @@
 (def bold-class #(html/add-class % "bold"))
 
 (deftest test-defdecorator
-  (let [selectors+transformers [[:div :p] bold-class
-                           [:div] #(html/add-class % "happy")]]
+  (let [selectors+transformers
+        [[:div :p] bold-class
+         [CustomType] #(do ["*" (:a %) "*"])
+         [:div] #(html/add-class % "happy")]]
     (doseq [decorator [(gen-decorator selectors+transformers)
                        (gen-decorator
                         (partition 2 selectors+transformers) true)
@@ -82,4 +84,7 @@
              (html/to-html [:div.happy])))
       (is (= (html/to-html [:div [:p "hello"]]
                            (decorator html/visit))
-             (html/to-html [:div.happy [:p.bold "hello"]]))))))
+             (html/to-html [:div.happy [:p.bold "hello"]])))
+      (is (= (html/to-html [:div [:p [(CustomType. 1 2)]]]
+                           (decorator html/visit))
+             (html/to-html [:div.happy [:p.bold "*1*"]]))))))
