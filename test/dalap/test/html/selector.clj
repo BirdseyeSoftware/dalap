@@ -63,26 +63,24 @@
 
 
 (def bold-class #(html/add-class % "bold"))
-(defdecorator decorator1
-  [[:div]
-   [[:p] `bold-class]
-   #(dalap.html/add-class % "happy")])
-
-(def decorator2
-  (let [selectors [[:div :p] bold-class
-                   [:div] #(html/add-class % "happy")]]
-    (gen-decorator selectors)))
 
 (deftest test-defdecorator
-  (let [result (html/to-html [:div.happy [:p.bold "hello"]])
-        ]
-    (is (= (html/to-html [:div [:p "hello"]]
-                         (decorator1 html/visit)
-                         )
-           result))
-    (is (= (html/to-html [:div] (decorator2 html/visit))
-           (html/to-html [:div.happy])))
-    (is (= (html/to-html [:div [:p "hello"]]
-                         (decorator2 html/visit)
-                         )
-           result))))
+  (let [selectors+actions [[:div :p] bold-class
+                           [:div] #(html/add-class % "happy")]]
+    (doseq [decorator [(gen-decorator selectors+actions)
+                       (gen-decorator (partition 2 selectors+actions)
+                                      true)
+                       (gen-decorator (reverse
+                                       (partition 2 selectors+actions))
+                                      true)]]
+      (is (= (html/to-html [:div [:p "hello"]]
+                           (decorator html/visit)
+                           )
+             (html/to-html [:div.happy [:p.bold "hello"]])))
+      (is (= (html/to-html [:div [:span]] (decorator html/visit))
+             (html/to-html [:div.happy [:span]])))
+      (is (= (html/to-html [:div] (decorator html/visit))
+             (html/to-html [:div.happy])))
+      (is (= (html/to-html [:div [:p "hello"]]
+                           (decorator html/visit))
+             (html/to-html [:div.happy [:p.bold "hello"]]))))))
