@@ -78,7 +78,8 @@
 
          ;; the following anon function doesn't get wrapped in 32 bit
          ;; jvms for some reason
-         [CustomType] :a
+         ;;[CustomType] :a   ; this also fails sometimes
+         [#(= CustomType (type %))] :a
          [CustomType2] (fn [o w] ["*" (:a o) "*"])
          [#(= CustomType3 (type %))] #(do ["*" (:a %) "*"])
 
