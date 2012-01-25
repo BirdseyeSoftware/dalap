@@ -7,7 +7,7 @@
   (:use [dalap.html :only [add-class]]))
 
 (def build-dom-node (ns-resolve 'dalap.html 'build-dom-node))
-(def compile-selector (ns-resolve 'dalap.html.selector 'compile-selector))
+
 (def dom-matches-tag-selector?
   (ns-resolve 'dalap.html.selector 'dom-matches-tag-selector?))
 
@@ -25,7 +25,7 @@
     (is (= [nil history]
            (match-selector :p.hello history)))
     (is (= [(->> history (drop 1) first) (take 1 history)]
-           (-> :div.hello compile-selector (match-selector history))))))
+           (-> :div.hello adapt-to-node-selector (match-selector history))))))
 
 
 (deftest test-match-selector*
@@ -34,7 +34,7 @@
                  (build-dom-node :body)
                  (build-dom-node :html)]
         test-match (fn [selector]
-                     (match-selector* (map compile-selector selector) history))]
+                     (match-selector* (map adapt-to-node-selector selector) history))]
 
     (is (= [(build-dom-node :p) history]
            (test-match [:p])))
@@ -64,7 +64,7 @@
                  (build-dom-node :body)
                  (build-dom-node :html)]
         test-match (fn [selector]
-                     (match-selector* (map compile-selector selector) history))]
+                     (match-selector* (map adapt-to-node-selector selector) history))]
     (is (= [item history]
            (test-match [:div CustomType])))))
 

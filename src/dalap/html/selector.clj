@@ -65,43 +65,80 @@
            true
            (html/has-class? dom-node class)))))
 
-;;; TODO make this a protocol function
-(defn- compile-selector
-  "Creates a node matching predicate from a single selector."
-  [single-selector]
-  (cond
-    (keyword? single-selector)
+;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;; Node/Location selectors
+
+(defprotocol NodeSelectorSpec
+  (adapt-to-node-selector [spec]))
+
+(extend-protocol NodeSelectorSpec
+  clojure.lang.Keyword
+  (adapt-to-node-selector [dom-node-kw]
     (fn dom-node-matcher [node]
       (if (html/dom-node? node)
-        (dom-matches-tag-selector? node single-selector)))
+        (dom-matches-tag-selector? node dom-node-kw))))
 
-    (ifn? single-selector)
-    single-selector
+  clojure.lang.IFn
+  (adapt-to-node-selector [sfn] sfn)
 
-    :else
+  Object
+  (adapt-to-node-selector [type_]
     (fn type-matcher [node]
-      (= (type node) single-selector))))
+      (= (type node) type_))))
 
-;;; TODO make this a protocol function
-(defn- compile-selector* [selector]
-  (cond
-    (vector? selector)
-    (let [selector (map compile-selector selector)]
-      (fn history-matcher [history-stack]
-        (matching-node selector history-stack)))
+(defprotocol LocationSelectorSpec
+  (adapt-to-location-selector [spec]))
 
-    (ifn? selector)
-    selector
+(extend-protocol LocationSelectorSpec
+  clojure.lang.PersistentVector
+  (adapt-to-location-selector [selector-vec]
+    (let [selector (map adapt-to-node-selector selector-vec)]
+      (fn location-matcher [history-stack]
+        (matching-node selector history-stack))))
 
-    ;;:else
-    ))
+  clojure.lang.IFn
+  (adapt-to-location-selector [sfn] sfn))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defn arg-count [f]
+  ;; for cljs see js' function.length
   (let [m (first (.getDeclaredMethods (class f)))
         p (.getParameterTypes m)]
     (alength p)))
 
+(defprotocol VisitorSpec
+  (adapt-to-visitor [spec]))
+
+(extend clojure.lang.IPersistentMap VisitorSpec
+        ;; for some reason interfaces have to be extended like this
+        ;; rather than via extend-protocol
+        {:adapt-to-visitor
+         (fn [m] (fn map-visitor [node _w] (m node)))})
+
+(defn- adapt-fn-to-visitor [vfn]
+    (case (arg-count vfn)
+    0 (fn zero-arg-fn-visitor [_node _w] (vfn))
+    1 (fn single-arg-fn-visitor [node _w] (vfn node))
+    ;; else
+    vfn))
+(extend clojure.lang.IFn VisitorSpec
+        {:adapt-to-visitor adapt-fn-to-visitor})
+
+(extend-protocol VisitorSpec
+  clojure.lang.Keyword
+  (adapt-to-visitor [k]
+    (fn map-visitor [node _w] (k node)))
+
+  ;; make sure vectors don't get treated as functions
+  clojure.lang.PersistentVector
+  (adapt-to-visitor [v]
+    (fn replacement-value-visitor [_node _w] v))
+
+  Object
+  (adapt-to-visitor [obj]
+    (fn replacement-value-visitor [_node _w] obj)))
+
+;;;
 (defn- gen-visitor-from-pred-visitor-pairs
   [predicates+visitors inspect-node?]
   (fn predicate-table-visitor [node walker]
@@ -113,33 +150,10 @@
                    predicates+visitors)))
         node)))
 
-;;; TODO make this a protocol function
-(defn normalize-visitor [visitor]
-  (cond
-    (vector? visitor)
-    (fn replacement-value-visitor [_node _w] visitor)
-
-    (or (keyword? visitor)
-        (map? visitor))
-    ;; these have to be handled here rather than in the ifn? clause
-    ;; because older jvms cause them to fail with wrong arity
-    ;; exceptions. Java 7 seems to work fine both ways.
-    (fn map-or-kw-visitor [node _w] (visitor node))
-
-    (ifn? visitor)
-    (case (arg-count visitor)
-      0 (fn zero-arg-fn-visitor [_node _w] (visitor))
-      1 (fn single-arg-fn-visitor [node _w] (visitor node))
-      ;; else
-      visitor)
-
-    :else
-    ;; else it's straight-up replacement value rather than a func
-    (fn replacement-value-visitor [_node _w] visitor)))
-
 (defn compile-selector-visitor-pairs [selectors+visitors]
   (for [[sel vis] selectors+visitors]
-    [(compile-selector* sel) (normalize-visitor vis)]))
+    [(adapt-to-location-selector sel)
+     (adapt-to-visitor vis)]))
 
 (defn gen-decorator
   "Creates a visitor function decorator that will apply the provided
