@@ -7,6 +7,9 @@
   (:require [dalap.html :as html])
   (:import [dalap.html DomNode]))
 
+;;; NOTE: all the dynamically created functions (from `fn`) in this
+;;; module are given names to aid in debugging
+
 (defn- span [p xs]
   ((juxt (partial take-while p)
          (partial drop-while p)) xs))
@@ -67,25 +70,25 @@
   [single-selector]
   (cond
     (keyword? single-selector)
-    (fn [node]
+    (fn dom-node-matcher [node]
       (if (html/dom-node? node)
         (dom-matches-tag-selector? node single-selector)))
 
-    (fn? single-selector)
+    (ifn? single-selector)
     single-selector
 
     :else
-    (fn [node]
+    (fn type-matcher [node]
       (= (type node) single-selector))))
 
 (defn- compile-selector* [selector]
   (cond
     (vector? selector)
     (let [selector (map compile-selector selector)]
-      (fn [history-stack]
+      (fn history-matcher [history-stack]
         (matching-node selector history-stack)))
 
-    (fn? selector)
+    (ifn? selector)
     selector
 
     ;;:else
@@ -99,23 +102,24 @@
 
 (defn- gen-visitor-from-pred-visitor-pairs
   [predicates+visitors inspect-node?]
-  (fn [node walker]
+  (fn predicate-table-visitor [node walker]
     (or (and (inspect-node? node)
              (let [history-stack (:history walker)]
-               (some (fn [[pred? visitor]]
-                     (if (pred? history-stack)
-                       (visitor node walker)))
+               (some (fn sequential-pred-checker [[pred? visitor]]
+                       (if (pred? history-stack)
+                         (visitor node walker)))
                    predicates+visitors)))
         node)))
 
 (defn normalize-visitor [visitor]
-  (if (fn? visitor)
+  (if (and (ifn? visitor) (not (vector? visitor)))
     (case (arg-count visitor)
-      0 (fn [_node _w] (visitor))
-      1 (fn [node _w] (visitor node))
-      2 visitor)
+      0 (fn zero-arg-visitor [_node _w] (visitor))
+      1 (fn single-arg-visitor [node _w] (visitor node))
+      ;; else
+      visitor)
     ;; else it's straigh-up replacement value rather than a func
-    (fn [_node _w] visitor)))
+    (fn replacement-value-visitor [_node _w] visitor)))
 
 (defn compile-selector-visitor-pairs [selectors+visitors]
   (for [[sel vis] selectors+visitors]
@@ -136,10 +140,10 @@
         inner-visitor (gen-visitor-from-pred-visitor-pairs
                        (compile-selector-visitor-pairs pairs)
                        inspect-node?)
-        add-history-to-walker (fn [node w]
+        add-history-to-walker (fn add-hist [node w]
                                 (if (inspect-node? node)
                                   (update-in-state w :history #(conj % node))
                                   w))]
-    (fn [visit-fn]
+    (fn decorator [visit-fn]
       (wrap-walker (compose-visitors inner-visitor visit-fn)
                    add-history-to-walker))))

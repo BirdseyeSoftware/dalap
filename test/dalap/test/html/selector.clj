@@ -54,6 +54,8 @@
            (test-match [:body :div.not-there])))))
 
 (defrecord CustomType [a b])
+(defrecord CustomType2 [a b])
+(defrecord CustomType3 [a b])
 
 (deftest test-match-selector*-custom-types
   (let [item    (CustomType. "hello" "world")
@@ -72,42 +74,56 @@
 (deftest test-defdecorator
   (let [selectors+transformers
         [[:div :p] bold-class
-         [CustomType] #(do ["*" (:a %) "*"])
          [:div] #(html/add-class % "happy")
 
+         ;; the following anon function doesn't get wrapped in 32 bit
+         ;; jvms for some reason
+         [CustomType] :a
+         [CustomType2] (fn [o w] ["*" (:a o) "*"])
+         [#(= CustomType3 (type %))] #(do ["*" (:a %) "*"])
+
          ;; simple replacements
-         [:pre.foo] (fn [el w] (w [1 2 3 4]))
-         [:pre.bar] [1 2 3 4]]]
+         [:pre.foo] (fn anon-vis [el w] (w [1 2 3 4]))
+         [:pre.bar] [1 2 3 4]
+
+         ;; using sets/maps as predicates and visitors
+         [#{89 88}] {88 98, 89 99}
+         ]]
     (doseq [decorator [(gen-decorator selectors+transformers)
                        (gen-decorator
                         (partition 2 selectors+transformers) true)
                        (gen-decorator
-                        (reverse (partition 2 selectors+transformers)) true)]]
-      (is (= (html/to-html [:div [:p "hello"]]
-                           (decorator html/visit)
-                           )
-             (html/to-html [:div.happy [:p.bold "hello"]])))
-      (is (= (html/to-html [:div [:span]] (decorator html/visit))
-             (html/to-html [:div.happy [:span]])))
-      (is (= (html/to-html [:div] (decorator html/visit))
-             (html/to-html [:div.happy])))
-      (is (= (html/to-html [:div [:p "hello"]]
-                           (decorator html/visit))
-             (html/to-html [:div.happy [:p.bold "hello"]])))
+                        (reverse (partition 2 selectors+transformers))
+                        true)]]
+      (let [visitor (decorator html/visit)
+            vis     #(html/to-html % visitor)]
+        (is (= (vis [:div [:p "hello"]])
+               (html/to-html [:div.happy [:p.bold "hello"]])))
+        (is (= (vis [:div [:span]])
+               (html/to-html [:div.happy [:span]])))
+        (is (= (vis [:div])
+               (html/to-html [:div.happy])))
+        (is (= (vis [:div [:p "hello"]])
+               (html/to-html [:div.happy [:p.bold "hello"]])))
 
-      ;; test nested matches
-      (is (= (html/to-html [:div [:p "hello" [:div [:p "hello"]]]]
-                           (decorator html/visit))
-             (html/to-html [:div.happy [:p.bold "hello"
-                                        [:div.happy [:p.bold "hello"]]]])))
+        ;; test nested matches
+        (is (= (vis [:div [:p "hello" [:div [:p "hello"]]]])
+               (html/to-html [:div.happy [:p.bold "hello"
+                                          [:div.happy [:p.bold "hello"]]]])))
 
-      (is (= (html/to-html [:div [:p [(CustomType. 1 2)]]]
-                           (decorator html/visit))
-             (html/to-html [:div.happy [:p.bold "*1*"]])))
+        ;; custom types/records
+        (is (= (vis [:div [:p [(CustomType. 999 888)]]])
+               (html/to-html [:div.happy [:p.bold "999"]])))
+        (is (= (vis [:div [:p [(CustomType2. "--" "^^")]]])
+               (html/to-html [:div.happy [:p.bold "*--*"]])))
+        (is (= (vis [:div [:p [(CustomType3. (range 10) "foo")]]])
+               (html/to-html [:div.happy [:p.bold "*0123456789*"]])))
 
-      ;; test value replacements
-      (is (= (html/to-html [:pre.foo]
-                           (decorator html/visit))
-             (html/to-html [:pre.bar] (decorator html/visit))
-             "1234"
-             )))))
+        ;; using sets/maps
+        (is (= (vis [:div [:p [88 89]]])
+               (html/to-html [:div.happy [:p.bold "9899"]])))
+
+        ;; test value replacements
+        (is (= (vis [:pre.foo])
+               (vis [:pre.bar])
+               "1234"))))))
