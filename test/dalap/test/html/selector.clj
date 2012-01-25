@@ -56,6 +56,7 @@
 (defrecord CustomType [a b])
 (defrecord CustomType2 [a b])
 (defrecord CustomType3 [a b])
+(deftype CustomType4 [a b])
 
 (deftest test-match-selector*-custom-types
   (let [item    (CustomType. "hello" "world")
@@ -82,6 +83,7 @@
          ;; / java 1.6 jvms for some reason TODO
          ;;[#(= CustomType3 (type %))] #(do ["*" (:a %) "*"])
          [#(= CustomType3 (type %))] (fn [o w] ["*" (:a o) "*"])
+         [CustomType4] (fn [o w] ["*" (.a o) "*"])
 
          ;; simple replacements
          [:pre.foo] (fn anon-vis [el w] (w [1 2 3 4]))
@@ -113,13 +115,15 @@
                (html/to-html [:div.happy [:p.bold "hello"
                                           [:div.happy [:p.bold "hello"]]]])))
 
-        ;; custom types/records
+        ;; custom records/types
         (is (= (vis [:div [:p [(CustomType. 999 888)]]])
                (html/to-html [:div.happy [:p.bold "999"]])))
         (is (= (vis [:div [:p [(CustomType2. "--" "^^")]]])
                (html/to-html [:div.happy [:p.bold "*--*"]])))
         (is (= (vis [:div [:p [(CustomType3. (range 10) "foo")]]])
                (html/to-html [:div.happy [:p.bold "*0123456789*"]])))
+        (is (= (vis [:div [:p [(CustomType4. [:b "a"] "b")]]])
+               (html/to-html [:div.happy [:p.bold ["*" [:b "a"] "*"]]])))
 
         ;; using sets/maps
         (is (= (vis [:div [:p [88 89]]])
