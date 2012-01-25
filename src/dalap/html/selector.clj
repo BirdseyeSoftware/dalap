@@ -71,6 +71,18 @@
                (first rest-selectors)
                (rest rest-selectors))))))
 
+(defn- matching-node [selector history]
+  (first (match-selector* selector history)))
+
+(defn- selector-to-predicate [selector]
+  (cond
+    (fn? selector)
+    selector
+
+    :else
+    (fn [history-stack]
+    (matching-node selector history-stack))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defprotocol Trackable
@@ -84,48 +96,45 @@
   (track [_] true))
 
 (defn gen-history-tracking-visitor
-  "Visitor middleware that will track an node on the history
-  of the dalap walking when the given track-visit? function returns
-  true."
-  [track-visit? visit-fn]
+  "Visitor decorator that maintains a history stack for nodes for
+  which (track-node? node) is true."
+
+  [track-node? visit-fn]
   (fn history-tracking-visitor [x w]
-    (if (track-visit? x)
+    (if (track-node? x)
       (visit-fn x (update-in-state w :history #(conj % x)))
       (visit-fn x w))))
 
-(defn- matching-node [selector history]
-  (first (match-selector* selector history)))
-
 (defn decorate-visitor
-  "Visitor middleware that will track all the nodes on
-  the dalap walk tree that matches the given selectors."
-  [selectors+actions inspect-node? visit-fn]
-  (fn [node w]
-    (cond
-      (inspect-node? node)
-      (let [history (:history w)]
-        (or (some (fn [[selector action]]
-                    (if-let [match (matching-node selector history)]
-                      (visit-fn (action match) w)))
-                  selectors+actions)
-            (visit-fn node w)))
-      :else
-      (visit-fn node w))))
+  "Creates a visitor decorator that "
+  [predicates+transformers inspect-node? visit-fn]
+
+  (fn [node walker]
+    (visit-fn
+     (or (and (inspect-node? node)
+              (let [history (:history walker)]
+                (some (fn [[pred? transformer]]
+                        (if (pred? history) (transformer node)))
+                      predicates+transformers)))
+         node)
+     walker)))
 
 (defn gen-decorator
   "Creates visitor function decorator that will apply the provided
-  actions to any node that matches its corresponding selector.
+  transformers to any node that matches its corresponding selector.
 
   Example:
    (def add-class-to-p (gen-decorator
     [[:div.interesting :p] #(dalap.html/add-class % \"bold\")])
    (dalap.html/to-html html-content (add-class-to-p dalap.html/visit))"
-  [selectors+actions & [paired?]]
+  [selectors+transformers & [paired?]]
 
-  (let [selectors+actions (if paired?
-                            selectors+actions
-                            (partition 2 selectors+actions))]
+  (let [preds+transformers
+        (for [[sel trn] (if paired?
+                          selectors+transformers
+                          (partition 2 selectors+transformers))]
+          [(selector-to-predicate sel) trn])]
     (fn [visit-fn]
       (gen-history-tracking-visitor
        trackable?
-       (decorate-visitor selectors+actions trackable? visit-fn)))))
+       (decorate-visitor preds+transformers trackable? visit-fn)))))

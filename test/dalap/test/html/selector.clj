@@ -65,14 +65,13 @@
 (def bold-class #(html/add-class % "bold"))
 
 (deftest test-defdecorator
-  (let [selectors+actions [[:div :p] bold-class
+  (let [selectors+transformers [[:div :p] bold-class
                            [:div] #(html/add-class % "happy")]]
-    (doseq [decorator [(gen-decorator selectors+actions)
-                       (gen-decorator (partition 2 selectors+actions)
-                                      true)
-                       (gen-decorator (reverse
-                                       (partition 2 selectors+actions))
-                                      true)]]
+    (doseq [decorator [(gen-decorator selectors+transformers)
+                       (gen-decorator
+                        (partition 2 selectors+transformers) true)
+                       (gen-decorator
+                        (reverse (partition 2 selectors+transformers)) true)]]
       (is (= (html/to-html [:div [:p "hello"]]
                            (decorator html/visit)
                            )
