@@ -134,7 +134,7 @@
       visitor)
 
     :else
-    ;; else it's straigh-up replacement value rather than a func
+    ;; else it's straight-up replacement value rather than a func
     (fn replacement-value-visitor [_node _w] visitor)))
 
 (defn compile-selector-visitor-pairs [selectors+visitors]
