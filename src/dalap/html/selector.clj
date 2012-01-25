@@ -65,6 +65,7 @@
            true
            (html/has-class? dom-node class)))))
 
+;;; TODO make this a protocol function
 (defn- compile-selector
   "Creates a node matching predicate from a single selector."
   [single-selector]
@@ -81,6 +82,7 @@
     (fn type-matcher [node]
       (= (type node) single-selector))))
 
+;;; TODO make this a protocol function
 (defn- compile-selector* [selector]
   (cond
     (vector? selector)
@@ -111,6 +113,7 @@
                    predicates+visitors)))
         node)))
 
+;;; TODO make this a protocol function
 (defn normalize-visitor [visitor]
   (cond
     (vector? visitor)
