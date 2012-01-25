@@ -59,14 +59,12 @@
   "Creates a new visitor that calls outer-visitor on the result of
   a call to inner-visitor."
   [inner-visitor outer-visitor]
-
-  (fn [node walker]
+  (fn comp-visitor [node walker]
     (outer-visitor (inner-visitor node walker) walker)))
 
 (defn wrap-walker
   [visitor wrap-walker-fn]
-
-  (fn [node walker]
+  (fn wrapper [node walker]
     (visitor node (wrap-walker-fn node walker))))
 
 ;;;
