@@ -21,14 +21,6 @@
   (invoke [this x] (visitor x this))
   (applyTo [this args] (clojure.lang.AFn/applyToHelper this args))
 
-
-  ;; this is main for unit-testing of the state handling
-  Object
-  (equals [this other]
-    (and (instance? Walker other)
-         (= visitor (.visitor other))
-         (= state-map (.state-map other))))
-
   ;; the remaining methods are state-management
   IWalkerState
   (get-state [this] state-map)
@@ -41,7 +33,13 @@
       (Walker. visitor (update-in state-map keys fn))))
   ILookup                         ; for simpler lookup of state keys
   (valAt [this key] (state-map key))
-  (valAt [this key not-found] (state-map key not-found)))
+  (valAt [this key not-found] (state-map key not-found))
+  ;; this is mainly for unit-testing of the state handling:
+  Object
+  (equals [this other]
+    (and (instance? Walker other)
+         (= visitor (.visitor other))
+         (= state-map (.state-map other)))))
 
 
 (defn gen-walker
