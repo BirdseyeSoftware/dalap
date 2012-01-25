@@ -59,7 +59,7 @@
                  (build-dom-node :body)
                  (build-dom-node :html)]]
   (is (= [item history]
-         (match-selector* [:div `CustomType] history)))))
+         (match-selector* [:div CustomType] history)))))
 
 
 (def bold-class #(html/add-class % "bold"))

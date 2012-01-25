@@ -53,6 +53,23 @@
   ([x visitor] (walk x visitor {}))
   ([x visitor state-map] ((gen-walker visitor state-map) x)))
 
+
+;;;
+(defn compose-visitors
+  "Creates a new visitor that calls outer-visitor on the result of
+  a call to inner-visitor."
+  [inner-visitor outer-visitor]
+
+  (fn [node walker]
+    (outer-visitor (inner-visitor node walker) walker)))
+
+(defn wrap-walker
+  [visitor wrap-walker-fn]
+
+  (fn [node walker]
+    (visitor node (wrap-walker-fn node walker))))
+
+;;;
 (defn indent
   "This is an example of state manip functions that can used with the
   Walker's state-map. Call (::indent w) inside a visitor to get the
