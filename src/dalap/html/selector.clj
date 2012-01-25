@@ -112,12 +112,25 @@
         node)))
 
 (defn normalize-visitor [visitor]
-  (if (and (ifn? visitor) (not (vector? visitor)))
+  (cond
+    (vector? visitor)
+    (fn replacement-value-visitor [_node _w] visitor)
+
+    (or (keyword? visitor)
+        (map? visitor))
+    ;; these have to be handled here rather than in the ifn? clause
+    ;; because older jvms cause them to fail with wrong arity
+    ;; exceptions. Java 7 seems to work fine both ways.
+    (fn map-or-kw-visitor [node _w] (visitor node))
+
+    (ifn? visitor)
     (case (arg-count visitor)
-      0 (fn zero-arg-visitor [_node _w] (visitor))
-      1 (fn single-arg-visitor [node _w] (visitor node))
+      0 (fn zero-arg-fn-visitor [_node _w] (visitor))
+      1 (fn single-arg-fn-visitor [node _w] (visitor node))
       ;; else
       visitor)
+
+    :else
     ;; else it's straigh-up replacement value rather than a func
     (fn replacement-value-visitor [_node _w] visitor)))
 

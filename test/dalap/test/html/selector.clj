@@ -76,12 +76,12 @@
         [[:div :p] bold-class
          [:div] #(html/add-class % "happy")
 
-         ;; the following anon function doesn't get wrapped in 32 bit
-         ;; jvms for some reason
-         ;;[CustomType] :a   ; this also fails sometimes
-         [#(= CustomType (type %))] :a
+         [CustomType] :a
          [CustomType2] (fn [o w] ["*" (:a o) "*"])
-         [#(= CustomType3 (type %))] #(do ["*" (:a %) "*"])
+         ;; the following anon function doesn't get wrapped in 32 bit
+         ;; / java 1.6 jvms for some reason TODO
+         ;;[#(= CustomType3 (type %))] #(do ["*" (:a %) "*"])
+         [#(= CustomType3 (type %))] (fn [o w] ["*" (:a o) "*"])
 
          ;; simple replacements
          [:pre.foo] (fn anon-vis [el w] (w [1 2 3 4]))
