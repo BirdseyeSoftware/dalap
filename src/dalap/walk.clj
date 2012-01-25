@@ -16,7 +16,7 @@
 
 
 (deftype Walker [visitor state-map]
-
+  ;; this is the essence of it: (w node) -> (visitor node w)
   IFn
   (invoke [this x] (visitor x this))
   (applyTo [this args] (clojure.lang.AFn/applyToHelper this args))
