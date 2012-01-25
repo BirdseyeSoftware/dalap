@@ -71,7 +71,7 @@
 
 (def bold-class #(html/add-class % "bold"))
 
-(deftest test-defdecorator
+(deftest test-decorators
   (let [selectors+transformers
         [[:div :p] bold-class
          [:div] #(html/add-class % "happy")
