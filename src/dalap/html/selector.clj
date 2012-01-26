@@ -14,48 +14,9 @@
   ((juxt (partial take-while p)
          (partial drop-while p)) xs))
 
-(defn match-selector
-  "Grabs a node from history that matches the given
-  selector."
-  [select? history]
-  (let [[new-history [node & _]] (span (complement select?) history)]
-    (if (nil? node)
-      [nil history]
-      [node new-history])))
-
-(defn match-selector*
-  "Multiple selector version of match-selector.
-
-  Grabs an node from history that matches a group
-  of selectors, respecting a heriarchy of multiple nodes
-  in between."
-  [selectors history]
-  (loop [current-history  history
-         current-selector (first selectors)
-         rest-selectors   (rest selectors)]
-    (let [[node new-history]
-          (match-selector current-selector current-history)]
-      (cond
-        (nil? node) [nil history]
-
-        (and (empty? rest-selectors)
-             (not (empty? new-history)))
-        [nil history]
-
-        (empty? rest-selectors)
-        [node history]
-
-        :else
-        (recur new-history
-               (first rest-selectors)
-               (rest rest-selectors))))))
-
-(defn- matching-node [selector history]
-  (first (match-selector* selector history)))
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; Node/Tree/NodeVisitor protocols
+;; NodeSelector/TreeSelector/NodeVisitor protocols
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -110,6 +71,47 @@
   NOTE: This is currently only being used on vectors of NodeSelector and
   function like types."
   (to-tree-selector [spec]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defn match-selector
+  "Grabs a node from history that matches the given
+  selector."
+  [select? history]
+  (let [[new-history [node & _]] (span (complement select?) history)]
+    (if (nil? node)
+      [nil history]
+      [node new-history])))
+
+(defn match-selector*
+  "Multiple selector version of match-selector.
+
+  Grabs an node from history that matches a group
+  of selectors, respecting a heriarchy of multiple nodes
+  in between."
+  [selectors history]
+  (loop [current-history  history
+         current-selector (first selectors)
+         rest-selectors   (rest selectors)]
+    (let [[node new-history]
+          (match-selector current-selector current-history)]
+      (cond
+        (nil? node) [nil history]
+
+        (and (empty? rest-selectors)
+             (not (empty? new-history)))
+        [nil history]
+
+        (empty? rest-selectors)
+        [node history]
+
+        :else
+        (recur new-history
+               (first rest-selectors)
+               (rest rest-selectors))))))
+
+(defn- matching-node [selector history]
+  (first (match-selector* selector history)))
 
 (extend-protocol TreeSelector
 
