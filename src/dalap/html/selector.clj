@@ -16,20 +16,20 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
-;; NodeSelector/TreeSelector/NodeVisitor protocols
+;; NodeMatcher/TreeLocMatcher/NodeTransformer protocols
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol NodeSelector
+(defprotocol NodeMatcher
   "This protocol provides a function that returns another
-  function that accepts a node from the dalap Tree and checks
-  if it matches with the given implementing type."
-  (to-node-selector [spec]))
+  function that accepts a node from the dalap Tree and tests
+  it matches."
+  (to-node-matcher [spec]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn- dom-matches-tag-selector?
-  "Tells if a DomNode instance matches a given selector."
+  "Tests if a DomNode instance matches a given tag-selector."
   [dom-node tag-selector]
   (let [[_ tag id class] (re-matches html/re-tag (name tag-selector))]
     (and (html/has-tag-name? dom-node tag)
@@ -41,10 +41,10 @@
            (html/has-class? dom-node class)))))
 
 
-(extend-protocol NodeSelector
+(extend-protocol NodeMatcher
   ;; On Keywords it will try to match to DomNode instances.
   clojure.lang.Keyword
-  (to-node-selector [dom-node-kw]
+  (to-node-matcher [dom-node-kw]
     (fn dom-node-matcher [node]
       (if (html/dom-node? node)
         (dom-matches-tag-selector? node dom-node-kw))))
@@ -52,25 +52,25 @@
   ;; Something that behaves like function will always match
   ;; and return itself.
   clojure.lang.IFn
-  (to-node-selector [sfn] sfn)
+  (to-node-matcher [sfn] sfn)
 
   ;; Anything else, it will check the dalap node type is
   ;; equal to the object.
   Object
-  (to-node-selector [type_]
+  (to-node-matcher [type_]
     (fn type-matcher [node]
       (= (type node) type_))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol TreeSelector
+(defprotocol TreeLocMatcher
   "This protocol provides a function that returns another
   function that matches the given implementing type
   to nodes on the dalap tree.
 
-  NOTE: This is currently only being used on vectors of NodeSelector and
+  NOTE: This is currently only being used on vectors of NodeMatcher and
   function like types."
-  (to-tree-selector [spec]))
+  (to-tree-loc-matcher [spec]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -113,37 +113,36 @@
 (defn- matching-node [selector history]
   (first (match-selector* selector history)))
 
-(extend-protocol TreeSelector
-
-  ;; For vectors is going to check that each element
-  ;; matches in the history-stack using the NodeSelector
+(extend-protocol TreeLocMatcher
+  ;; For vectors, check that each element
+  ;; matches in the history-stack using the NodeMatcher
   ;; impl of each given selector.
   clojure.lang.PersistentVector
-  (to-tree-selector [selector-vec]
-    (let [selector (map to-node-selector selector-vec)]
+  (to-tree-loc-matcher [selector-vec]
+    (let [selector (map to-node-matcher selector-vec)]
       (fn location-matcher [history-stack]
         (matching-node selector history-stack))))
 
-  ;; This will try to match if the given function
-  ;; returns true.
+  ;; Match if the given function returns true.
   clojure.lang.IFn
-  (to-tree-selector [sfn] sfn))
+  (to-tree-loc-matcher [sfn] sfn))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol NodeVisitor
-  "Provides a function that will receive the replacement value
-  for nodes on the dalap tree that matches NodeSelector queries."
-  (to-node-visitor [spec]))
+(defprotocol NodeTransformer
+  "Provides a function that will adapt a 'transformer'
+  to regular dalap visitor function."
+
+  (to-visitor [spec]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; For Maps it checks if the current node is a key of the
 ;; given Map.
-(extend clojure.lang.IPersistentMap NodeVisitor
+(extend clojure.lang.IPersistentMap NodeTransformer
         ;; for some reason interfaces have to be extended like this
         ;; rather than via extend-protocol
-        {:to-node-visitor
+        {:to-visitor
          (fn [m] (fn map-visitor [node _w] (m node)))})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -163,31 +162,30 @@
 
 ;; For function like types it will just call them with
 ;; the node from the dalap Tree.
-(extend clojure.lang.IFn NodeVisitor
-        {:to-node-visitor ifn-to-visitor})
+(extend clojure.lang.IFn NodeTransformer
+        {:to-visitor ifn-to-visitor})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(extend-protocol NodeVisitor
-  ;; Keywords will be calling themselfs on the nodes of the
+(extend-protocol NodeTransformer
+  ;; Keywords will be called as functions on the nodes of the
   ;; dalap tree.
   clojure.lang.Keyword
-  (to-node-visitor [k]
+  (to-visitor [k]
     (fn map-visitor [node _w] (k node)))
 
-  ;; TAVIS: do we need this, given that PersistentVector is just
-  ;; an Object?
-  ;;
   ;; PersistentVectors replace the current node
   ;; of the dalap tree with themselves.
+  ;; This would match the IFn implementation if this more specific one
+  ;; were not provided here.
   clojure.lang.PersistentVector
-  (to-node-visitor [v]
-    (fn replacement-value-visitor [_node _w] v))
+  (to-visitor [v]
+    (fn vec-replacement-value-visitor [_node _w] v))
 
-  ;; Objects replace the current node
+  ;; All other Objects replace the current node
   ;; of the dalap tree with themselves.
   Object
-  (to-node-visitor [obj]
+  (to-visitor [obj]
     (fn replacement-value-visitor [_node _w] obj)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -205,11 +203,11 @@
 
 (defn compile-selector-visitor-pairs [selectors+visitors]
   (for [[sel vis] selectors+visitors]
-    [(to-tree-selector sel)
-     (to-node-visitor vis)]))
+    [(to-tree-loc-matcher sel)
+     (to-visitor vis)]))
 
 ;; TODO: Change the name of this function to something more meaningful
-;; related to replacing nodes on the dalap walk Tree with NodeSelectors.
+;; related to replacing nodes on the dalap walk Tree with NodeMatchers.
 ;; Difficult one, I know.
 (defn gen-decorator
   "Creates a visitor function decorator that will apply the provided

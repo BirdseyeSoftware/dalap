@@ -62,7 +62,7 @@
 
 (defn wrap-walker
   [visitor wrap-walker-fn]
-  (fn wrapper [node walker]
+  (fn wrapped-visitor [node walker]
     (visitor node (wrap-walker-fn node walker))))
 
 ;;;
