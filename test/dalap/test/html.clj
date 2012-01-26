@@ -53,7 +53,10 @@
 (deftest test-vector-tag-dsl
   (assert-html [:hr#id] "<hr id=\"id\" />")
   (assert-html [:hr.classA] "<hr class=\"classA\" />")
+  (assert-html [:hr.classA.classB] "<hr class=\"classA classB\" />")
   (assert-html [:hr#id.cls] "<hr id=\"id\" class=\"cls\" />")
+  (assert-html [:hr#id.classA.classB] "<hr id=\"id\" class=\"classA classB\" />")
+
   (assert-html [:div [:div basic-sample-data]]
                (str "<div><div>" basic-sample-data-str "</div></div>"))
   (assert-html [:hr.clear {:asdf 1234}]

@@ -2,6 +2,7 @@
   (:import [clojure.lang IPersistentVector])
 
   (:use [clojure.set :only [union]])
+  (:require [clojure.string :as string])
   (:require [clojure.core.match :as match])
 
   (:use [dalap.escape :only [safe]]
@@ -18,8 +19,8 @@
 
 (defn- make-set [x]
   (cond
-    (set? x) x
     (nil? x) (sorted-set)
+    (sequential? x) (apply sorted-set x)
     :else (sorted-set x)))
 
 (defn- nil-or-empty? [x]
@@ -92,20 +93,30 @@
                                        k
                                        (union (:class result #{})
                                               (make-set v)))
-                   :else (assoc result k v)))
-  ]
+                   :else (assoc result k v)))]
   (reduce attr-merge base-attrs tag-attrs)))
+
+(defn- norm-dom-node-classes [classes]
+  (make-set
+   (if (string? classes)
+     (string/split classes #"\.")
+     classes)))
 
 (defn- build-dom-node
   ([tag] (build-dom-node tag {} []))
   ([tag attrs] (build-dom-node tag attrs []))
   ([tag attrs content]
-    (let [[_ tag id class] (re-matches re-tag (name tag))
-          tag-name (name tag)
-          tag-attrs (TagAttrs.
-                     tag-name
-                     (merge-tag-attrs attrs id (make-set class)))]
-      (DomNode. tag-name tag-attrs content))))
+     (if-let [tag-match (re-matches re-tag (name tag))]
+       (let [[_ tag id classes] tag-match
+             tag-name (name tag)
+             tag-attrs (TagAttrs.
+                        tag-name
+                        (merge-tag-attrs attrs id (norm-dom-node-classes classes)))]
+         (DomNode. tag-name tag-attrs content))
+       (throw (Exception.
+               (format (str "This is an invalid dom node tag: %s."
+                            " Should be in the form :tagname#id.class")
+                       (name tag)))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
