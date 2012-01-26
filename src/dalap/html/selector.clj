@@ -201,14 +201,16 @@
                    predicates+visitors)))
         node)))
 
-(defn compile-selector-visitor-pairs [selectors+visitors]
-  (for [[sel vis] selectors+visitors]
+(defn normalize-selector-transformer-pairs [selectors+transformers]
+  (for [[sel vis] selectors+transformers]
     [(to-tree-loc-matcher sel)
      (to-visitor vis)]))
 
 ;; TODO: Change the name of this function to something more meaningful
 ;; related to replacing nodes on the dalap walk Tree with NodeMatchers.
 ;; Difficult one, I know.
+;;; TODO: determine if this is composable with regard to the
+;;; history-stack management.
 (defn gen-decorator
   "Creates a visitor function decorator that will apply the provided
   visitor to any node that matches its corresponding selector.
@@ -217,12 +219,12 @@
    (def add-class-to-p (gen-decorator
     [[:div.interesting :p] #(dalap.html/add-class % \"bold\")])
    (dalap.html/to-html html-content (add-class-to-p dalap.html/visit))"
-  [selectors+visitors & [paired?]]
+  [selectors+transformers & [paired?]]
 
   (let [inspect-node? identity ;; track/match-on everything except nil/false
-        pairs (if paired? selectors+visitors (partition 2 selectors+visitors))
+        pairs (if paired? selectors+transformers (partition 2 selectors+transformers))
         inner-visitor (gen-visitor-from-pred-visitor-pairs
-                       (compile-selector-visitor-pairs pairs)
+                       (normalize-selector-transformer-pairs pairs)
                        inspect-node?)
         add-history-to-walker (fn add-hist [node w]
                                 (if (inspect-node? node)

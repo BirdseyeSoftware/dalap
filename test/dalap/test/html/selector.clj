@@ -27,7 +27,6 @@
     (is (= [(->> history (drop 1) first) (take 1 history)]
            (-> :div.hello to-node-matcher (match-selector history))))))
 
-
 (deftest test-match-selector*
   (let [history [(build-dom-node :p)
                  (build-dom-node :div.hello)
@@ -72,15 +71,15 @@
 
 (def bold-class #(html/add-class % "bold"))
 
-(deftest test-decorators
+(deftest test-selectors+transformers
   (let [selectors+transformers
         [[:div :p] bold-class
          [:div] #(html/add-class % "happy")
 
          [CustomType] :a
          [CustomType2] (fn [o w] ["*" (:a o) "*"])
-         ;; the following anon function doesn't get wrapped in 32 bit
-         ;; / java 1.6 jvms for some reason TODO
+         ;; the following anon function doesn't get wrapped properly
+         ;  java 1.6 jvms for some reason TODO
          ;;[#(= CustomType3 (type %))] #(do ["*" (:a %) "*"])
          [#(= CustomType3 (type %))] (fn [o w] ["*" (:a o) "*"])
          [CustomType4] (fn [o w] ["*" (.a o) "*"])
