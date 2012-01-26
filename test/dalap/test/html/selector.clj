@@ -25,7 +25,7 @@
     (is (= [nil history]
            (match-selector :p.hello history)))
     (is (= [(->> history (drop 1) first) (take 1 history)]
-           (-> :div.hello adapt-to-node-selector (match-selector history))))))
+           (-> :div.hello to-node-selector (match-selector history))))))
 
 
 (deftest test-match-selector*
@@ -34,7 +34,7 @@
                  (build-dom-node :body)
                  (build-dom-node :html)]
         test-match (fn [selector]
-                     (match-selector* (map adapt-to-node-selector selector) history))]
+                     (match-selector* (map to-node-selector selector) history))]
 
     (is (= [(build-dom-node :p) history]
            (test-match [:p])))
@@ -65,7 +65,7 @@
                  (build-dom-node :body)
                  (build-dom-node :html)]
         test-match (fn [selector]
-                     (match-selector* (map adapt-to-node-selector selector) history))]
+                     (match-selector* (map to-node-selector selector) history))]
     (is (= [item history]
            (test-match [:div CustomType])))))
 

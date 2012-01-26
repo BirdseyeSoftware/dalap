@@ -53,6 +53,20 @@
 (defn- matching-node [selector history]
   (first (match-selector* selector history)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;
+;; Node/Tree/NodeVisitor protocols
+;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defprotocol NodeSelector
+  "This protocol provides a function that returns another
+  function that accepts a node from the dalap Tree and checks
+  if it matches with the given implementing type."
+  (to-node-selector [spec]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn- dom-matches-tag-selector?
   "Tells if a DomNode instance matches a given selector."
   [dom-node tag-selector]
@@ -65,80 +79,117 @@
            true
            (html/has-class? dom-node class)))))
 
-;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;; Node/Location selectors
 
-(defprotocol NodeSelectorSpec
-  (adapt-to-node-selector [spec]))
-
-(extend-protocol NodeSelectorSpec
+(extend-protocol NodeSelector
+  ;; On Keywords it will try to match to DomNode instances.
   clojure.lang.Keyword
-  (adapt-to-node-selector [dom-node-kw]
+  (to-node-selector [dom-node-kw]
     (fn dom-node-matcher [node]
       (if (html/dom-node? node)
         (dom-matches-tag-selector? node dom-node-kw))))
 
+  ;; Something that behaves like function will always match
+  ;; and return itself.
   clojure.lang.IFn
-  (adapt-to-node-selector [sfn] sfn)
+  (to-node-selector [sfn] sfn)
 
+  ;; Anything else, it will check the dalap node type is
+  ;; equal to the object.
   Object
-  (adapt-to-node-selector [type_]
+  (to-node-selector [type_]
     (fn type-matcher [node]
       (= (type node) type_))))
 
-(defprotocol LocationSelectorSpec
-  (adapt-to-location-selector [spec]))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(extend-protocol LocationSelectorSpec
+(defprotocol TreeSelector
+  "This protocol provides a function that returns another
+  function that matches the given implementing type
+  to nodes on the dalap tree.
+
+  NOTE: This is currently only being used on vectors of NodeSelector and
+  function like types."
+  (to-tree-selector [spec]))
+
+(extend-protocol TreeSelector
+
+  ;; For vectors is going to check that each element
+  ;; matches in the history-stack using the NodeSelector
+  ;; impl of each given selector.
   clojure.lang.PersistentVector
-  (adapt-to-location-selector [selector-vec]
-    (let [selector (map adapt-to-node-selector selector-vec)]
+  (to-tree-selector [selector-vec]
+    (let [selector (map to-node-selector selector-vec)]
       (fn location-matcher [history-stack]
         (matching-node selector history-stack))))
 
+  ;; This will try to match if the given function
+  ;; returns true.
   clojure.lang.IFn
-  (adapt-to-location-selector [sfn] sfn))
+  (to-tree-selector [sfn] sfn))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defprotocol NodeVisitor
+  "Provides a function that will receive the replacement value
+  for nodes on the dalap tree that matches NodeSelector queries."
+  (to-node-visitor [spec]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; For Maps it checks if the current node is a key of the
+;; given Map.
+(extend clojure.lang.IPersistentMap NodeVisitor
+        ;; for some reason interfaces have to be extended like this
+        ;; rather than via extend-protocol
+        {:to-node-visitor
+         (fn [m] (fn map-visitor [node _w] (m node)))})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn arg-count [f]
   ;; for cljs see js' function.length
   (let [m (first (.getDeclaredMethods (class f)))
         p (.getParameterTypes m)]
     (alength p)))
 
-(defprotocol VisitorSpec
-  (adapt-to-visitor [spec]))
-
-(extend clojure.lang.IPersistentMap VisitorSpec
-        ;; for some reason interfaces have to be extended like this
-        ;; rather than via extend-protocol
-        {:adapt-to-visitor
-         (fn [m] (fn map-visitor [node _w] (m node)))})
-
-(defn- adapt-fn-to-visitor [vfn]
+(defn- ifn-to-visitor [vfn]
     (case (arg-count vfn)
     0 (fn zero-arg-fn-visitor [_node _w] (vfn))
     1 (fn single-arg-fn-visitor [node _w] (vfn node))
     ;; else
     vfn))
-(extend clojure.lang.IFn VisitorSpec
-        {:adapt-to-visitor adapt-fn-to-visitor})
 
-(extend-protocol VisitorSpec
+;; For function like types it will just call them with
+;; the node from the dalap Tree.
+(extend clojure.lang.IFn NodeVisitor
+        {:to-node-visitor ifn-to-visitor})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(extend-protocol NodeVisitor
+  ;; Keywords will be calling themselfs on the nodes of the
+  ;; dalap tree.
   clojure.lang.Keyword
-  (adapt-to-visitor [k]
+  (to-node-visitor [k]
     (fn map-visitor [node _w] (k node)))
 
-  ;; make sure vectors don't get treated as functions
+  ;; TAVIS: do we need this, given that PersistentVector is just
+  ;; an Object?
+  ;;
+  ;; PersistentVectors replace the current node
+  ;; of the dalap tree with themselves.
   clojure.lang.PersistentVector
-  (adapt-to-visitor [v]
+  (to-node-visitor [v]
     (fn replacement-value-visitor [_node _w] v))
 
+  ;; Objects replace the current node
+  ;; of the dalap tree with themselves.
   Object
-  (adapt-to-visitor [obj]
+  (to-node-visitor [obj]
     (fn replacement-value-visitor [_node _w] obj)))
 
-;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn- gen-visitor-from-pred-visitor-pairs
   [predicates+visitors inspect-node?]
   (fn predicate-table-visitor [node walker]
@@ -152,9 +203,12 @@
 
 (defn compile-selector-visitor-pairs [selectors+visitors]
   (for [[sel vis] selectors+visitors]
-    [(adapt-to-location-selector sel)
-     (adapt-to-visitor vis)]))
+    [(to-tree-selector sel)
+     (to-node-visitor vis)]))
 
+;; TODO: Change the name of this function to something more meaningful
+;; related to replacing nodes on the dalap walk Tree with NodeSelectors.
+;; Difficult one, I know.
 (defn gen-decorator
   "Creates a visitor function decorator that will apply the provided
   visitor to any node that matches its corresponding selector.
