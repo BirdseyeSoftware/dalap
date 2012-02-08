@@ -19,7 +19,7 @@ differences:
   declarative and focus on the intent of a UI screen while deferring
   the concrete html/css/js representation. This allows for greater
   reuse and specialization of templates in different contexts. See
-  https://github.com/tavisrudd/throw_out_your_templates/blob/master/throw_out_your_templates.py#L193 
+  https://github.com/tavisrudd/throw_out_your_templates/blob/master/throw_out_your_templates.py#L197
   for further discussion of this.
 
 We intend to support client-side usage from clojurescript.
