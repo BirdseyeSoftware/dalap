@@ -10,7 +10,7 @@ On the surface, it is similar to the hiccup library and hiccup
 templates are valid input for Dalap. However, there are several key
 differences:
 
-* Dalap html-escapes all strings unlike hiccup.
+* Dalap html-escapes all strings, unlike hiccup.
 
 * Dalap provides a selector/transformer system similar to the css
   selectors/transformers in Enlive.
@@ -21,6 +21,8 @@ differences:
   reuse and specialization of templates in different contexts. See
   https://github.com/tavisrudd/throw_out_your_templates/blob/master/throw_out_your_templates.py#L193 
   for further discussion of this.
+
+We intend to support client-side usage from clojurescript.
 
 ## Usage
 
