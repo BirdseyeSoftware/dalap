@@ -1,4 +1,4 @@
-# Dalap (Decide As Late As Possible)
+# Dalap (Decide As Late As Possible) [![Build Status](https://secure.travis-ci.org/tavisrudd/dalap.png)](http://travis-ci.org/tavisrudd/dalap)
 
 Dalap is an extremely flexible serialization / template library for
 Clojure. 
