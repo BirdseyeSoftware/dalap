@@ -10,9 +10,6 @@
 ;;; NOTE: all the dynamically created functions (from `fn`) in this
 ;;; module are given names to aid in debugging
 
-(defn- span [p xs]
-  ((juxt (partial take-while p)
-         (partial drop-while p)) xs))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -64,15 +61,21 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defprotocol TreeLocMatcher
-  "This protocol provides a function that returns another
-  function that matches the given implementing type
-  to nodes on the dalap tree.
+  "Provides `to-tree-loc-matcher`, which converts a selector `spec`
+  into a matcher predicate that matches locations in a dalap input
+  tree. It can match on the type or attributes of the current node or,
+  optionally, also match on the parents of the current
+  node.
 
-  NOTE: This is currently only being used on vectors of NodeMatcher and
-  function like types."
+  The signature of the generated matcher function is [node, walker],
+  which is the same signature as dalap visitors. Any non-nil /
+  non-false return value is considered a match."
   (to-tree-loc-matcher [spec]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn- span [p xs]
+  ((juxt (partial take-while p)
+         (partial drop-while p)) xs))
 
 (defn match-selector
   "Grabs a node from history that matches the given
@@ -120,8 +123,9 @@
   clojure.lang.PersistentVector
   (to-tree-loc-matcher [selector-vec]
     (let [selector (map to-node-matcher selector-vec)]
-      (fn location-matcher [history-stack]
-        (matching-node selector history-stack))))
+      (fn location-matcher [node walker]
+        (let [history-stack (:history walker)]
+          (matching-node selector history-stack)))))
 
   ;; Match if the given function returns true.
   clojure.lang.IFn
@@ -130,7 +134,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defprotocol NodeTransformer
-  "Provides a function that will adapt a 'transformer'
+  "Provides `to-visitor`, which adapt a 'transformer spec'
   to regular dalap visitor function."
 
   (to-visitor [spec]))
@@ -138,7 +142,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; For Maps it checks if the current node is a key of the
-;; given Map.
+;; given map.
 (extend clojure.lang.IPersistentMap NodeTransformer
         ;; for some reason interfaces have to be extended like this
         ;; rather than via extend-protocol
@@ -160,8 +164,8 @@
     ;; else
     vfn))
 
-;; For function like types it will just call them with
-;; the node from the dalap Tree.
+;; For function-like types it will just call them with
+;; the current node
 (extend clojure.lang.IFn NodeTransformer
         {:to-visitor ifn-to-visitor})
 
@@ -193,12 +197,16 @@
 (defn- gen-visitor-from-pred-visitor-pairs
   [predicates+visitors inspect-node?]
   (fn predicate-table-visitor [node walker]
+    ;; this is becoming more and more like a dynamically created
+    ;; multimethod and should probably be converted into one
+    ;; In the simple case where only the current node is used for
+    ;; dispatch and not the walk history, this can be optimized into a
+    ;; dynamically created Protocol.
     (or (and (inspect-node? node)
-             (let [history-stack (:history walker)]
-               (some (fn sequential-pred-checker [[pred? visitor]]
-                       (if (pred? history-stack)
-                         (visitor node walker)))
-                   predicates+visitors)))
+             (some (fn sequential-pred-checker [[pred? visitor]]
+                     (if (pred? node walker)
+                       (visitor node walker)))
+                   predicates+visitors))
         node)))
 
 (defn normalize-selector-transformer-pairs [selectors+transformers]
