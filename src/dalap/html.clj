@@ -47,6 +47,30 @@
 ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(defrecord TagAttrs [tag attrs-map])
+(defrecord DomNode [tag attrs content])
+
+(defn visit-tag-attrs [attrs w]
+  (let [{:keys [tag attrs-map]} attrs]
+    (w (for [[k v] attrs-map]
+         (cond
+          (= :class k)
+          [" " (name k) (safe \= \")
+           (interpose " " v)
+           (safe \")]
+          :else
+          [" " (name k) (safe \= \") v (safe \")])))))
+
+(defn visit-dom-node  [dom-node w]
+  (let [{:keys [tag attrs content]} dom-node]
+    (let [tag-name (name tag)
+        is-empty (and (maybe-empty-tags tag-name) (empty? content))
+        open-tag [(safe \<) tag-name attrs
+                  (if is-empty (safe " />") (safe \>))]
+        close-tag [(safe "</") tag-name (safe \>)]]
+    (w [open-tag (if-not is-empty [content close-tag])]))))
+
+
 (defprotocol HtmlSerializable
   (visit [x w]))
 
@@ -54,29 +78,9 @@
   Object (visit [n w] (dalap.defaults/visit n w))
   nil (visit [_ _] "")
   Number (visit [n w] (safe (str n)))
-  PreEscaped (visit [x _] x))
-
-(defrecord TagAttrs [tag attrs-map]
-  HtmlSerializable
-  (visit [_ w] (w (for [[k v] attrs-map]
-                    (cond
-                      (= :class k)
-                      [" " (name k) (safe \= \")
-                       (interpose " " v)
-                       (safe \")]
-                      :else
-                      [" " (name k) (safe \= \") v (safe \")])))))
-
-(defrecord DomNode [tag attrs content]
-  HtmlSerializable
-  (visit [_ w]
-    (let [tag-name (name tag)
-          is-empty (and (maybe-empty-tags tag-name) (empty? content))
-          open-tag [(safe \<) tag-name attrs
-                    (if is-empty (safe " />") (safe \>))]
-          close-tag [(safe "</") tag-name (safe \>)]]
-      (w [open-tag (if-not is-empty [content close-tag])]) )))
-
+  PreEscaped (visit [x _] x)
+  DomNode (visit [dn w] (visit-dom-node dn w))
+  TagAttrs (visit [ta w] (visit-tag-attrs ta w)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;
@@ -151,6 +155,7 @@
 
 (defn visit-vector [v w]
   (let [named? (fn [x] (instance? clojure.lang.Named x))]
+    ;@@TR: replace this
     (match/match [v]
       [([(tag :when named?) (attrs :when map?) & content] :seq)]
       (w (build-dom-node tag attrs content))
