@@ -3,7 +3,9 @@
   (:use [clojure.pprint :only (pprint)])
 
   (:require [dalap.html :as html])
+  (:require [dalap.defaults :as defaults])
   (:use dalap.html.selector)
+  (:use [dalap.walk :only [walk]])
   (:use [dalap.html :only [add-class]]))
 
 (def build-dom-node (ns-resolve 'dalap.html 'build-dom-node))
@@ -68,15 +70,15 @@
     (is (= [item history]
            (test-match [:div CustomType])))))
 
-
 (def bold-class #(html/add-class % "bold"))
+
 
 (deftest test-selectors+transformers
   (let [selectors+transformers
         [[:div :p] bold-class
          [:div] #(html/add-class % "happy")
 
-         [CustomType] :a
+         CustomType :a
          [CustomType2] (fn [o w] ["*" (:a o) "*"])
          ;; the following anon function doesn't get wrapped properly
          ;  java 1.6 jvms for some reason TODO

@@ -123,9 +123,17 @@
   clojure.lang.PersistentVector
   (to-tree-loc-matcher [selector-vec]
     (let [selector (map to-node-matcher selector-vec)]
-      (fn location-matcher [node walker]
+      (fn location-matcher [_node walker]
         (let [history-stack (:history walker)]
           (matching-node selector history-stack)))))
+
+  clojure.lang.Symbol
+  (to-tree-loc-matcher [sym]
+    (fn [node _walker] (= node sym)))
+
+  java.lang.Class
+  (to-tree-loc-matcher [kls]
+    (fn [node _walker] (= (type node) kls)))
 
   ;; Match if the given function returns true.
   clojure.lang.IFn
@@ -186,6 +194,12 @@
   (to-visitor [v]
     (fn vec-replacement-value-visitor [_node _w] v))
 
+  ;; This would match the IFn implementation if this more specific one
+  ;; were not provided here.
+  clojure.lang.Symbol
+  (to-visitor [sym]
+    (fn symbol-replacement-value-visitor [_node _w] sym))
+
   ;; All other Objects replace the current node
   ;; of the dalap tree with themselves.
   Object
@@ -202,17 +216,19 @@
     ;; In the simple case where only the current node is used for
     ;; dispatch and not the walk history, this can be optimized into a
     ;; dynamically created Protocol.
-    (or (and (inspect-node? node)
-             (some (fn sequential-pred-checker [[pred? visitor]]
-                     (if (pred? node walker)
-                       (visitor node walker)))
-                   predicates+visitors))
-        node)))
+    (if (inspect-node? node)
+      (let [vis (or ; use the visitor for the first matching predicate
+                 (some (fn pred-checker [[p? v]] (if (p? node walker) v))
+                       predicates+visitors)
+                 ;; or fall through
+                 (constantly node))]
+        (vis node walker))
+      node)))
 
 (defn normalize-selector-transformer-pairs [selectors+transformers]
-  (for [[sel vis] selectors+transformers]
+  (for [[sel transformer] selectors+transformers]
     [(to-tree-loc-matcher sel)
-     (to-visitor vis)]))
+     (to-visitor transformer)]))
 
 ;; TODO: Change the name of this function to something more meaningful
 ;; related to replacing nodes on the dalap walk Tree with NodeMatchers.
