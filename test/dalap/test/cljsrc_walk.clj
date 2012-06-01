@@ -21,7 +21,7 @@
 (def clj-forms-to-drop #{'defmacro 'comment})
 (def cljs-core-transform-rules
   [(fn [form w] (contains? (meta form) :cljs))
-   (comp :cljs meta)
+   (fn [form w_] ((comp :cljs meta) form))
    ;;
    (fn [form w] (contains? (meta form) :clj))
    (constantly ::drop)
