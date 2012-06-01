@@ -111,15 +111,14 @@ Returns a sequence of File objects, in breadth-first sort order."
       clj-path output-path "cljs" cljs-default-transform-rules
       (constantly true)))
 
-  ([clj-path output-path extension rules file-filter]
+  ([clj-path output-path extension rules file-predicate]
      (doseq [f (find-clj-sources-in-dir (File. clj-path))]
-       (if (file-filter f)
+       (when (file-predicate f)
          (let [generated-f (File. (-> (.getPath f)
                                       (string/replace clj-path output-path)
                                       (string/replace #"clj$" extension)))]
            (make-parents generated-f)
-           (spit generated-f
-                 (transform-file f rules)))))))
+           (spit generated-f (transform-file f rules)))))))
 
 (comment
   (transform-directory "src/dalap" ".generated")
@@ -130,33 +129,31 @@ Returns a sequence of File objects, in breadth-first sort order."
 
 ;;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (deftest test-source-transformation
-  (let [visitor ((gen-decorator
-                  (concat
-                   ['something 'something-else
-                   'dalap.html.selector 'dalap.cljs.selector
-                   ] cljs-core-transform-rules))
-                 visit-form)
-        vis #(walk % visitor)
+  (let [rules (concat
+               ['something 'something-else
+                'dalap.html.selector 'dalap.cljs.selector
+                ] cljs-core-transform-rules)
+        transform #(cljs-transform % rules)
         ]
-    (is (= (vis '(something ^{:cljs something-else-cljs}
-                            foobar))
+    (is (= (transform '(something ^{:cljs something-else-cljs}
+                                  foobar))
            '(something-else something-else-cljs)))
 
-    (is (= (vis '(abcd ^:clj foobar))
+    (is (= (transform '(abcd ^:clj foobar))
            '(abcd)))
 
-    (is (= (vis '(ns dalap.test.html.selector
-                   (:use clojure.test)
-                   (:use [clojure.pprint :only (pprint)])
+    (is (= (transform '(ns dalap.test.html.selector
+                         (:use clojure.test)
+                         (:use [clojure.pprint :only (pprint)])
 
-                   (:require [dalap.html :as html])
+                         (:require [dalap.html :as html])
 
-                   ^{:cljs (:require [dalap.cljs.defaults :as defaults])}
-                   (:require [dalap.defaults :as defaults])
+                         ^{:cljs (:require [dalap.cljs.defaults :as defaults])}
+                         (:require [dalap.defaults :as defaults])
 
-                   (:use dalap.html.selector)
-                   (:use [dalap.walk :only [walk]])
-                   (:use [dalap.html :only [add-class]])))
+                         (:use dalap.html.selector)
+                         (:use [dalap.walk :only [walk]])
+                         (:use [dalap.html :only [add-class]])))
            '(ns dalap.test.html.selector
               (:use clojure.test)
               (:use [clojure.pprint :only (pprint)])
