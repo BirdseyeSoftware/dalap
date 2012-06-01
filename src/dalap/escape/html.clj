@@ -1,7 +1,7 @@
 (ns dalap.escape.html
   (:require [clojure.string :as string])
 
-  (:use dalap.escape)
+  (:use [dalap.escape :only [gen-str-escaper]])
   (:import [dalap.escape PreEscaped]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
