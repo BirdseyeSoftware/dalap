@@ -1,6 +1,5 @@
 (ns dalap.test.escape
   (:use [clojure.test])
-
   (:require [dalap.escape :as core]
             [dalap.escape.html :as html]))
 
@@ -13,8 +12,8 @@
       "uppercase version of str"))
 
 (deftest test-low-level-char-escaping
-  (doseq [[k v] html/html-esc-map]
-    [(is (= (html/escape-html-char-entities k) v)
+  (doseq [[k v] html/html-escaping-map]
+    [(is (= (html/-escape-html-chars k) v)
          "test lower-level escaper")
      (is (= (html/escape-html (str k)) v)
          "test via HtmlEscapable protocol")]))
@@ -29,8 +28,11 @@
                       "abcd&e" "abcd&amp;e"
                       "&-<->-\"" "&amp;-&lt;-&gt;-&quot;"
                       }]
-    (is (= (html/toHtmlEscapedStr inp) (html/escape-html inp) outp))))
+    (is (= (html/-to-html-escaped-str inp)
+           (html/escape-html inp)
+           outp))))
 
 (deftest test-mixed-pre-escaped-and-not
   (is (= (html/escape-html (core/safe "&-<->-\"") "-&->")
          "&-<->-\"-&amp;-&gt;")))
+
