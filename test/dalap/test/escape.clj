@@ -4,10 +4,10 @@
             [dalap.escape.html :as html]))
 
 (deftest test-gen-str-escaper
-  (is (= ((core/gen-str-escaper #(. %1 (toString))) "abc" 123)
+  (is (= ((core/-gen-str-escaper #(. %1 (toString))) "abc" 123)
          "abc123")
       "This should behave the same as `clojure.core/str`")
-  (is (= ((core/gen-str-escaper #(.toUpperCase (.toString %))) "abc" 123)
+  (is (= ((core/-gen-str-escaper #(.toUpperCase (.toString %))) "abc" 123)
          "ABC123")
       "uppercase version of str"))
 

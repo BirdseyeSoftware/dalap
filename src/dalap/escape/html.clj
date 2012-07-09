@@ -1,12 +1,13 @@
 (ns dalap.escape.html
   (:require [clojure.string :as string]
-            [dalap.escape :refer (gen-str-escaper)])
+            [dalap.escape :refer (-gen-str-escaper)])
   (:import [dalap.escape PreEscaped]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defonce
-  ^{:doc "Char -> String (HTML escaped representation)
+  ^{:api :public
+    :doc "([^Char] -> String) (HTML escaped representation)
          API: Public
 
           Map of special HTML characters to it's _escaped_ string
@@ -19,8 +20,8 @@
     \" "&quot;"
   })
 
-(defn -escape-html-chars
-  "Object -> String (HTML escaped)
+(defn ^{:api :internal} -escape-html-chars
+  "([^Object] -> String) (HTML escaped String)
   API: Internal
 
   Escapes string's characters that are contained in the
@@ -32,7 +33,7 @@
 (defprotocol HtmlEscapable
   (-to-html-escaped-str
     [x]
-    "dalap.escape.html/HtmlEscapable -> String (HTML escaped)
+    "([dalap.escape.html/HtmlEscapable] -> String (HTML escaped))
     API: Internal
 
     Transforms a record into a String. The resulting string
@@ -62,9 +63,10 @@
       (-escape-html-chars c)))
 
 (defonce
-  ^{:doc "`dalap.escape.html/HtmlEscapable -> String (HTML escaped)
+  ^{:api :public
+    :doc "([`dalap.escape.html/HtmlEscapable] -> String) (HTML escaped)
          API: Public
 
          Transforms a record that implements the HtmlEscapable protocol
          into a HTML escaped String"}
-  escape-html (gen-str-escaper -to-html-escaped-str))
+  escape-html (-gen-str-escaper -to-html-escaped-str))
