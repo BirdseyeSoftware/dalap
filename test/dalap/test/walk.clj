@@ -1,9 +1,13 @@
 (ns dalap.test.walk
-  (:use [clojure.test])
-
-  (:use [dalap.walk :only
-         [IWalkerState get-state conj-state update-state update-in-state
-          gen-walker walk]])
+  (:require [clojure.test :refer :all]
+            [dalap.walk :refer
+              (IWalkerState
+               get-state
+               conj-state
+               update-state
+               update-in-state
+               -gen-walker
+               walk)])
   (:import [dalap.walk Walker]))
 
 (def identity-visitor (fn [x _] x))
@@ -16,13 +20,13 @@
 
 (deftest test-constructors
   (doseq [w [(Walker. identity-visitor {})
-             (gen-walker identity-visitor)
-             (gen-walker identity-visitor {})]]
+             (-gen-walker identity-visitor)
+             (-gen-walker identity-visitor {})]]
     (test-ident-walker w)))
 
 (deftest test-state-management
   (doseq [st [{} {:a 1234} {:a 1234 :b 99}]]
-    (let [w (gen-walker identity-visitor st)]
+    (let [w (-gen-walker identity-visitor st)]
       (is (= (get-state w) st))
       (let [w2 (conj-state w {:c 12})]
         (is (:c w2) 12)

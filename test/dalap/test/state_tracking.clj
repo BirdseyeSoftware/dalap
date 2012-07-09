@@ -1,14 +1,18 @@
 (ns dalap.test.state_tracking
-  (:use [clojure.test])
-  (:require [clojure.core.match :as match])
+  (:require [clojure.test :refer :all]
+            [clojure.core.match :as match])
   (:import [clojure.lang Named ISeq Seqable])
 
-  (:use [dalap.walk :only
-         [IWalkerState get-state conj-state
-          update-state update-in-state gen-walker
-          walk]])
-  (:require [dalap.defaults]
-            [dalap.html :as html])
+  (:require [dalap.html :as html]
+            [dalap.defaults]
+            [dalap.walk :refer
+              (IWalkerState
+               get-state
+               conj-state
+               update-state
+               update-in-state
+               -gen-walker
+               walk)])
   (:import [dalap.html DomNode]
            [dalap.walk Walker]))
 

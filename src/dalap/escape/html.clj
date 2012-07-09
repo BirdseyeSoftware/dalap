@@ -33,7 +33,7 @@
 (defprotocol HtmlEscapable
   (-to-html-escaped-str
     [x]
-    "([dalap.escape.html/HtmlEscapable] -> String (HTML escaped))
+    "([^dalap.escape.html/HtmlEscapable] -> String (HTML escaped))
     API: Internal
 
     Transforms a record into a String. The resulting string
@@ -64,7 +64,7 @@
 
 (defonce
   ^{:api :public
-    :doc "([`dalap.escape.html/HtmlEscapable] -> String) (HTML escaped)
+    :doc "([^dalap.escape.html/HtmlEscapable] -> String) (HTML escaped)
          API: Public
 
          Transforms a record that implements the HtmlEscapable protocol
