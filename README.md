@@ -1,7 +1,7 @@
 # Dalap (Decide As Late As Possible) [![Build Status](https://secure.travis-ci.org/tavisrudd/dalap.png)](http://travis-ci.org/tavisrudd/dalap)
 
 Dalap is an extremely flexible serialization / template library for
-Clojure. 
+Clojure.
 
 The name is the acronym for Decide As Late As Possible, from lean
 programming.

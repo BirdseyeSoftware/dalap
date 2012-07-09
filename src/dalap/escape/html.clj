@@ -7,7 +7,7 @@
 
 (defonce
   ^{:doc "Char -> String (HTML escaped representation)
-         API: Public 
+         API: Public
 
           Map of special HTML characters to it's _escaped_ string
           representation"}
