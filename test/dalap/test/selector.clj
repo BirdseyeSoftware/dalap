@@ -1,17 +1,17 @@
-(ns dalap.test.html.selector
+(ns dalap.test.selector
   (:use clojure.test)
   (:use [clojure.pprint :only (pprint)])
 
   (:require [dalap.html :as html])
   (:require [dalap.defaults :as defaults])
-  (:use dalap.html.selector)
+  (:use dalap.selector)
   (:use [dalap.walk :only [walk]])
   (:use [dalap.html :only [add-class]]))
 
 (def build-dom-node (ns-resolve 'dalap.html 'build-dom-node))
 
 (def dom-matches-tag-selector?
-  (ns-resolve 'dalap.html.selector 'dom-matches-tag-selector?))
+  (ns-resolve 'dalap.selector 'dom-matches-tag-selector?))
 
 (deftest test-dom-matches-selector
   (is (dom-matches-tag-selector? (build-dom-node :p#uno.hello)
@@ -94,12 +94,7 @@
          [:span.hundred #{89 88}] {88 198, 89 199}
          [:p #{89 88}] {88 98, 89 99}
          ]]
-    (doseq [decorator [(gen-decorator selectors+transformers)
-                       (gen-decorator
-                        (partition 2 selectors+transformers) true)
-                       (gen-decorator
-                        (reverse (partition 2 selectors+transformers))
-                        true)]]
+    (let [decorator (-gen-decorator selectors+transformers)]
       (let [visitor (decorator html/visit)
             vis     #(html/to-html % visitor)]
         (is (= (vis [:div [:p "hello"]])

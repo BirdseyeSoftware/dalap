@@ -5,7 +5,7 @@
   (:import [clojure.lang LineNumberingPushbackReader])
   (:import [java.io File])
 
-  (:use dalap.html.selector)
+  (:use dalap.selector)
   (:use [dalap.walk :only [walk]]))
 
 (defn visit-form [form w]
@@ -51,7 +51,7 @@
   ([forms]
      (cljs-transform forms cljs-default-transform-rules))
   ([forms rules]
-     (walk forms ((gen-decorator rules) visit-form))))
+     (walk forms ((-gen-decorator rules) visit-form))))
 
 (defn read-file
   ;; see https://github.com/jonase/kibit/blob/master/src/kibit/check.clj

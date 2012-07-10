@@ -1,20 +1,15 @@
-(ns dalap.html.selector
-  (:use [clojure.core.match :only (match)])
-
-  (:use [dalap.walk :only [update-in-state
-                           wrap-walker
-                           compose-visitors]])
-  (:require [dalap.html :as html])
+(ns dalap.selector
+  (:require [clojure.core.match :refer (match)]
+            [dalap.html :as html]
+            [dalap.walk :refer
+              (update-in-state
+               wrap-walker
+               compose-visitors)])
   (:import [dalap.html DomNode]))
 
-;;; NOTE: all the dynamically created functions (from `fn`) in this
-;;; module are given names to aid in debugging
+;; NOTE: all the dynamically created functions (from `fn`) in this
+;; module are given names to aid in debugging
 
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;;
-;; NodeMatcher/TreeLocMatcher/NodeTransformer protocols
-;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defprotocol NodeMatcher
@@ -73,6 +68,7 @@
   (to-tree-loc-matcher [spec]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 (defn- span [p xs]
   ((juxt (partial take-while p)
          (partial drop-while p)) xs))
@@ -141,70 +137,93 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol NodeTransformer
-  "Provides `to-visitor`, which adapt a 'transformer spec'
-  to regular dalap visitor function."
+(defprotocol IVisitorPrototype
+  "Provides a function for types to create a dalap visitor function."
 
-  (to-visitor [spec]))
+  (to-visitor [prototype]
+    "Signature: [VisitorPrototype] -> Visitor Function
+    API: Public
+
+    Creates a dalap visitor from a record."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; For Maps it checks if the current node is a key of the
 ;; given map.
-(extend clojure.lang.IPersistentMap NodeTransformer
-        ;; for some reason interfaces have to be extended like this
-        ;; rather than via extend-protocol
-        {:to-visitor
-         (fn [m] (fn map-visitor [node _w] (m node)))})
+;(extend clojure.lang.IPersistentMap IVisitorPrototype
+;  ;; for some reason interfaces have to be extended like this
+;  ;; rather than via extend-protocol
+;  {:to-visitor
+;    (fn [m] (fn map-visitor [node _w] (m node)))})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn arg-count [f]
-  ;; for cljs see js' function.length
-  (let [m (first (.getDeclaredMethods (class f)))
-        p (.getParameterTypes m)]
-    (alength p)))
-
-(defn- ifn-to-visitor [vfn]
-    (case (arg-count vfn)
-    0 (fn zero-arg-fn-visitor [_node _w] (vfn))
-    1 (fn single-arg-fn-visitor [node _w] (vfn node))
-    ;; else
-    vfn))
-
-;; For function-like types it will just call them with
-;; the current node
-(extend clojure.lang.IFn NodeTransformer
-        {:to-visitor ifn-to-visitor})
+;(defn arg-count [f]
+;  ;; for cljs see js' function.length
+;  (let [m (first (.getDeclaredMethods (class f)))
+;        p (.getParameterTypes m)]
+;    (alength p)))
+;
+;(defn- ifn-to-visitor [vfn]
+;    (case (arg-count vfn)
+;    0 (fn zero-arg-fn-visitor [_node _w] (vfn))
+;    1 (fn single-arg-fn-visitor [node _w] (vfn node))
+;    ;; else
+;    vfn))
+;
+;;; For function-like types it will just call them with
+;;; the current node
+;(extend clojure.lang.IFn IVisitorPrototype
+;        {:to-visitor ifn-to-visitor})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(extend-protocol NodeTransformer
-  ;; Keywords will be called as functions on the nodes of the
-  ;; dalap tree.
+(extend-protocol IVisitorPrototype
+
+  clojure.lang.IPersistentMap
+  ;; For maps, it checks if the current node is a key of the
+  ;; given map.
+  (to-visitor [m]
+    (fn map-visitor [node _w] (m node)))
+
+  clojure.lang.IFn
+  ;; For function-like types it will just call them with the current
+  ;; node
+  (to-visitor [vfn]
+    (letfn [(arg-count [f]
+              (let [m (first (.getDeclaredMethods (class f)))
+                    p (.getParameterTypes m)]
+                (alength p)))]
+      (case (arg-count vfn)
+        0 (fn zero-arg-fn-visitor [_node _w] (vfn))
+        1 (fn single-arg-fn-visitor [node _w] (vfn node))
+        vfn)))
+
   clojure.lang.Keyword
+  ;; Keywords will be called as functions on the nodes of the dalap tree.
   (to-visitor [k]
-    (fn map-visitor [node _w] (k node)))
+    (fn keyword-replacement-value-visitor [node _walker] (k node)))
 
-  ;; PersistentVectors replace the current node
-  ;; of the dalap tree with themselves.
-  ;; This would match the IFn implementation if this more specific one
-  ;; were not provided here.
   clojure.lang.PersistentVector
-  (to-visitor [v]
-    (fn vec-replacement-value-visitor [_node _w] v))
-
+  ;; PersistentVectors replace the current node of the dalap tree
+  ;; with themselves.
+  ;;
   ;; This would match the IFn implementation if this more specific one
   ;; were not provided here.
-  clojure.lang.Symbol
-  (to-visitor [sym]
-    (fn symbol-replacement-value-visitor [_node _w] sym))
+  (to-visitor [v]
+    (fn vec-replacement-value-visitor [_node _walker] v))
 
-  ;; All other Objects replace the current node
-  ;; of the dalap tree with themselves.
+  clojure.lang.Symbol
+  ;; This would match the IFn implementation if this more specific one
+  ;; were not provided here.
+  (to-visitor [sym]
+    (fn symbol-replacement-value-visitor [_node _walker] sym))
+
   Object
+  ;; All other Objects replace the current node of the dalap tree
+  ;; with themselves.
   (to-visitor [obj]
-    (fn replacement-value-visitor [_node _w] obj)))
+    (fn replacement-value-visitor [_node _walker] obj)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -230,26 +249,29 @@
     [(to-tree-loc-matcher sel)
      (to-visitor transformer)]))
 
-;; TODO: Change the name of this function to something more meaningful
-;; related to replacing nodes on the dalap walk Tree with NodeMatchers.
-;; Difficult one, I know.
-;;; TODO: determine if this is composable with regard to the
-;;; history-stack management.
-(defn gen-decorator
-  "Creates a visitor function decorator that will apply the provided
+(defn ^{:api :internal} -gen-decorator
+  "API: Internal
+
+  Creates a visitor function decorator that will apply the provided
   visitor to any node that matches its corresponding selector.
 
   Example:
-   (def add-class-to-p (gen-decorator
-    [[:div.interesting :p] #(dalap.html/add-class % \"bold\")])
-   (dalap.html/to-html html-content (add-class-to-p dalap.html/visit))"
-  [selectors+transformers & [paired?]]
+    (def add-class-to-p
+         (-gen-decorator [[:div.interesting :p]
+                           #(dalap.html/add-class % \"bold\")
 
-  (let [inspect-node? identity ;; track/match-on everything except nil/false
-        pairs (if paired? selectors+transformers (partition 2 selectors+transformers))
+                          [:div.other :p]
+                           #(dalap.html/add-class % \"italics\")]))
+
+    (dalap.html/to-html html-content (add-class-to-p dalap.html/visit))"
+  [selectors+transformers]
+  (let [inspect-node? identity
+        ;; ^ track/match-on everything except nil/false
+        ;; TODO: it might better to do (constantly true) rather than identity
+        pairs (partition 2 selectors+transformers)
         inner-visitor (gen-visitor-from-pred-visitor-pairs
-                       (normalize-selector-transformer-pairs pairs)
-                       inspect-node?)
+                        (normalize-selector-transformer-pairs pairs)
+                        inspect-node?)
         add-history-to-walker (fn add-hist [node w]
                                 (if (inspect-node? node)
                                   (update-in-state w :history #(conj % node))
@@ -257,3 +279,13 @@
     (fn decorator [visit-fn]
       (wrap-walker (compose-visitors inner-visitor visit-fn)
                    add-history-to-walker))))
+
+
+(defn ^{:api :public} gen-visitor
+  "API: Public"
+  ([selectors+transformers]
+    (gen-visitor selectors+transformers dalap.defaults/visit))
+  ([selectors+transformers fallback-visitor]
+    ((-gen-decorator selectors+transformers) fallback-visitor)))
+
+
