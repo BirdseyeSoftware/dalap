@@ -1,11 +1,9 @@
 (ns dalap.walk
-  ^{
-  :doc "A `Walker` is a wrapper around a visitor function (a multimethod or
-  a single function from a Protocol). It simplifies the recursive
-  invocation of the visitor over a seq of objects and makes it
-  possible to decorate or replace the visitor for sub-regions of the
-  seq."
-  }
+  ^{ :doc "A `Walker` is a wrapper around a visitor function (a
+  multimethod or a single function from a Protocol). It simplifies the
+  recursive invocation of the visitor over a seq of objects (possibly
+  nested) and makes it possible to decorate or replace the visitor for
+  sub-regions of the seq." }
 
   (:import [clojure.lang IFn ILookup]))
 
@@ -70,70 +68,25 @@
   ; We want to keep the behavior given on defrecord, that record
   ; attributes can be accessed using symbol functions.
   (valAt [this key] (state-map key))
-  (valAt [this key not-found] (state-map key not-found))
-
-  Object
-  ;; ^ this is mainly for unit-testing of the state handling
-  (equals [this other]
-    (and (instance? Walker other)
-         (= visitor (.visitor other))
-         (= state-map (.state-map other)))))
-
+  (valAt [this key not-found] (state-map key not-found)))
 
 (defn ^{:api :internal} -gen-walker
   "Signature: (([^Object ^dalap.walk/Walker] -> Output) -> dalap.walk/Walker)
-  API: Internal
 
   Builds a `dalap.walk/Walker` instance using the provided visitor
-  function, if a state-map is provided it would use it as the walker
-  state-map, otherwise and empty dictionary is used."
+  function.  If a state-map is provided it would use it as the walker
+  state-map, otherwise an empty map is used."
   ([visitor] (-gen-walker visitor {}))
   ([visitor state-map] (Walker. visitor state-map)))
 
 (defn ^{:api :public} walk
-  "Signature: [^Input
-               ([^Input ^dalap.walk/Walker] -> Output)
-               ^PersistentMap]
-               -> dalap.walk/Walker
-
-  API: Public
-
-  Builds a `dalap.walk/Walker` instance using the provided visitor
+  "Builds a `dalap.walk/Walker` instance using the provided visitor
   function, and then runs the walker on the given input object. If a
   starte-map is given, it would use it as the internal state, otherwise an
   empty PersistentMap is used."
   ([input visitor] (walk input visitor {}))
   ([input visitor state-map] ((-gen-walker visitor state-map) input)))
 
-
-;;;
-
-(defn ^{:api :public} compose-visitors
-  "API: Public
-
-  Creates a visitor function that passes it's parameter to the
-  given inner-visitor function, then the result of this call is going
-  to be passed to the outer-visitor function, using the same walker
-  on both calls."
-  [inner-visitor outer-visitor]
-  (fn comp-visitor [input walker]
-    (outer-visitor (inner-visitor input walker) walker)))
-
-(defn ^{:api :public} wrap-walker
-  "Signature: [(^Input -> ^dalap.walk/Walker) -> Output)
-               (^Input -> ^dalap.walk/Walker) -> dalap.walk/Walker)]
-              -> Output
-          
-  
-  API: Public
-  
-  Modifies the walker instance when navigating through the input, you
-  would like to use this function when you want to transform the walker 
-  somehow while you are visiting an element of the input. This is intended 
-  to be called from a visitor function."
-  [visitor wrap-walker-fn]
-  (fn wrapped-visitor [input walker]
-    (visitor input (wrap-walker-fn input walker))))
 
 ;;;
 

@@ -10,6 +10,11 @@
                walk)])
   (:import [dalap.walk Walker]))
 
+(defn walker-equals [w other]
+  (and (instance? Walker other)
+       (= (.visitor w) (.visitor other))
+       (= (.state-map w) (.state-map other))))
+
 (def identity-visitor (fn [x _] x))
 
 (defn test-ident-walker [w]
@@ -31,7 +36,7 @@
       (let [w2 (conj-state w {:c 12})]
         (is (:c w2) 12)
         (not= w w2)
-        (= (update-state w2 #(dissoc % :c)) w)
-        (= (update-in-state w :c #(do % 12)) w2)
-        (= (conj-state w2 {:d 1 :e 2})
-           (update-state w2 #(conj % {:d 1 :e 2})))))))
+        (walker-equals (update-state w2 #(dissoc % :c)) w)
+        (walker-equals (update-in-state w :c #(do % 12)) w2)
+        (walker-equals (conj-state w2 {:d 1 :e 2})
+                       (update-state w2 #(conj % {:d 1 :e 2})))))))

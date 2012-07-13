@@ -1,14 +1,30 @@
 (ns dalap.selector
   (:require [clojure.core.match :refer (match)]
             [dalap.html :as html]
-            [dalap.walk :refer
-              (update-in-state
-               wrap-walker
-               compose-visitors)])
+            [dalap.walk :refer (update-in-state)])
   (:import [dalap.html DomNode]))
 
 ;; NOTE: all the dynamically created functions (from `fn`) in this
 ;; module are given names to aid in debugging
+
+(defn ^{:api :internal} -compose-visitors
+  "Creates a visitor function that passes it's parameter to the
+  given inner-visitor function, then the result of this call is going
+  to be passed to the outer-visitor function, using the same walker
+  on both calls."
+  [inner-visitor outer-visitor]
+  (fn comp-visitor [input walker]
+    (outer-visitor (inner-visitor input walker) walker)))
+
+(defn ^{:api :internal} -wrap-walker
+  "Modifies the walker instance when navigating through the input, you
+  would like to use this function when you want to transform the walker
+  somehow while you are visiting an element of the input. This is intended
+  to be called from a visitor function.
+  ";@@TODO: revisit the wording
+  [visitor -wrap-walker-fn]
+  (fn wrapped-visitor [input walker]
+    (visitor input (-wrap-walker-fn input walker))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -137,68 +153,41 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol IVisitorPrototype
-  "Provides a function for types to create a dalap visitor function."
+(defprotocol IAdaptToVisitor
+  "Adapts other types to dalap visitor function."
 
-  (to-visitor [prototype]
-    "Signature: [VisitorPrototype] -> Visitor Function
-    API: Public
-
-    Creates a dalap visitor from a record."))
+  (to-visitor [adaptable] "Creates a dalap visitor."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; The IPersistentMap and IFn implementations of IAdaptToVisitor
+;; need to be defined via extend rather than via extend-protocol.
+;; For Clojure 1.4 it makes no difference for 64-bit JVMs,
+;; but with 32-bit JVMs the protocol doesn't dispatch correctly and we
+;; end up with arity exceptions.
 
-;; For Maps it checks if the current node is a key of the
-;; given map.
-;(extend clojure.lang.IPersistentMap IVisitorPrototype
-;  ;; for some reason interfaces have to be extended like this
-;  ;; rather than via extend-protocol
-;  {:to-visitor
-;    (fn [m] (fn map-visitor [node _w] (m node)))})
+(extend clojure.lang.IPersistentMap IAdaptToVisitor
+  {:to-visitor
+    (fn [m] (fn map-visitor [node _w] (m node)))})
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defn- arg-count [f]
+  ;; for cljs see js' function.length
+  (let [m (first (.getDeclaredMethods (class f)))
+        p (.getParameterTypes m)]
+    (alength p)))
 
-;(defn arg-count [f]
-;  ;; for cljs see js' function.length
-;  (let [m (first (.getDeclaredMethods (class f)))
-;        p (.getParameterTypes m)]
-;    (alength p)))
-;
-;(defn- ifn-to-visitor [vfn]
-;    (case (arg-count vfn)
-;    0 (fn zero-arg-fn-visitor [_node _w] (vfn))
-;    1 (fn single-arg-fn-visitor [node _w] (vfn node))
-;    ;; else
-;    vfn))
-;
-;;; For function-like types it will just call them with
-;;; the current node
-;(extend clojure.lang.IFn IVisitorPrototype
-;        {:to-visitor ifn-to-visitor})
+(defn- ifn-to-visitor [vfn]
+    (case (arg-count vfn)
+    0 (fn zero-arg-fn-visitor [_node _w] (vfn))
+    1 (fn single-arg-fn-visitor [node _w] (vfn node))
+    ;; else
+    vfn))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; For function-like types it will just call them with
+;; the current node
+(extend clojure.lang.IFn IAdaptToVisitor
+        {:to-visitor ifn-to-visitor})
 
-(extend-protocol IVisitorPrototype
-
-  clojure.lang.IPersistentMap
-  ;; For maps, it checks if the current node is a key of the
-  ;; given map.
-  (to-visitor [m]
-    (fn map-visitor [node _w] (m node)))
-
-  clojure.lang.IFn
-  ;; For function-like types it will just call them with the current
-  ;; node
-  (to-visitor [vfn]
-    (letfn [(arg-count [f]
-              (let [m (first (.getDeclaredMethods (class f)))
-                    p (.getParameterTypes m)]
-                (alength p)))]
-      (case (arg-count vfn)
-        0 (fn zero-arg-fn-visitor [_node _w] (vfn))
-        1 (fn single-arg-fn-visitor [node _w] (vfn node))
-        vfn)))
-
+(extend-protocol IAdaptToVisitor
   clojure.lang.Keyword
   ;; Keywords will be called as functions on the nodes of the dalap tree.
   (to-visitor [k]
@@ -277,7 +266,7 @@
                                   (update-in-state w :history #(conj % node))
                                   w))]
     (fn decorator [visit-fn]
-      (wrap-walker (compose-visitors inner-visitor visit-fn)
+      (-wrap-walker (-compose-visitors inner-visitor visit-fn)
                    add-history-to-walker))))
 
 
@@ -287,5 +276,3 @@
     (gen-visitor selectors+transformers dalap.defaults/visit))
   ([selectors+transformers fallback-visitor]
     ((-gen-decorator selectors+transformers) fallback-visitor)))
-
-
