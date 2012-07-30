@@ -1,0 +1,14 @@
+* DONE make src code walker
+  :LOGBOOK:
+  - State "DONE"       from ""           [2012-07-30 Mon 14:56]
+  :END:
+* TODO extract all the protocol functions into separate definitions
+  - [X] dalap.html
+  - [X] dalap.defaults
+  - [ ] dalap.escape
+  - [ ] dalap.html.selectors
+* TODO re-implement dalap.escape for closurescript 
+* TODO refactor the escaping namespaces
+deftype dalap.escape.PreEscaped 
+defprotocol dalap.escape.html.HtmlEscapable
+* TODO replace the use of core.match
