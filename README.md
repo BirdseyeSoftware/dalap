@@ -32,4 +32,4 @@ FIXME: see the test suite for the time-being
 
 Copyright (C) 2012 Tavis Rudd and Roman Gonzalez
 
-Distributed under the Eclipse Public License, the same as Clojure.
+Distributed under the MIT License.
