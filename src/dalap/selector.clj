@@ -119,7 +119,9 @@
   (to-tree-loc-matcher [sym]
     (fn [node _walker] (= node sym)))
 
+  ^:clj
   java.lang.Class
+  ^:clj
   (to-tree-loc-matcher [kls]
     (fn [node _walker] (= (type node) kls)))
 

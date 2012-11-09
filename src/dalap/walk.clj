@@ -3,9 +3,7 @@
   multimethod or a single function from a Protocol). It simplifies the
   recursive invocation of the visitor over a seq of objects (possibly
   nested) and makes it possible to decorate or replace the visitor for
-  sub-regions of the seq." }
-
-  (:import [clojure.lang IFn ILookup]))
+  sub-regions of the seq."})
 
 (defprotocol IWalkerState
   "API: Public
@@ -43,11 +41,12 @@
   ;; iterating over a structure. Walkers purpose is to call itself
   ;; recursively in data structures, to map one object into another.
 
-  IFn
+  clojure.lang.IFn
   (invoke [this x] (visitor x this))
   ; ^ Calling a Walker as a function will call the internal
   ; `visitor` function.
 
+  ^:clj
   (applyTo [this args] (clojure.lang.AFn/applyToHelper this args))
   ; ^ Make it easy to use the apply function with the walker instance
 
@@ -64,13 +63,13 @@
     (let [keys (if (sequential? ks) ks [ks])]
       (Walker. visitor (update-in state-map keys fn))))
 
-  ILookup
+  clojure.lang.ILookup
   ; We want to keep the behavior given on defrecord, that record
   ; attributes can be accessed using symbol functions.
   (valAt [this key] (state-map key))
   (valAt [this key not-found] (state-map key not-found)))
 
-(defn ^{:api :internal} -gen-walker
+(defn -gen-walker
   "Signature: (([^Object ^dalap.walk/Walker] -> Output) -> dalap.walk/Walker)
 
   Builds a `dalap.walk/Walker` instance using the provided visitor
@@ -79,7 +78,7 @@
   ([visitor] (-gen-walker visitor {}))
   ([visitor state-map] (Walker. visitor state-map)))
 
-(defn ^{:api :public} walk
+(defn walk
   "Builds a `dalap.walk/Walker` instance using the provided visitor
   function, and then runs the walker on the given input object. If a
   starte-map is given, it would use it as the internal state, otherwise an
@@ -90,13 +89,13 @@
 
 ;;;
 
-(defn ^{:api :public} indent
-  "Signature: [^dalap.walk/IWalkerState] -> dalap.walk/IWalkerState
+;; (defn indent
+;;   "Signature: [^dalap.walk/IWalkerState] -> dalap.walk/IWalkerState
 
-  API: Public
+;;   API: Public
 
-  This is an example of functions that use the Walker's state-map.
-  Call `(:dalap.walk/indent walker-instance)` inside a visitor to
-  get the current indent level and do some pretty printing with it."
-  [walker]
-  (update-in-state walker ::indent #(inc (or % 0))))
+;;   This is an example of functions that use the Walker's state-map.
+;;   Call `(:dalap.walk/indent walker-instance)` inside a visitor to
+;;   get the current indent level and do some pretty printing with it."
+;;   [walker]
+;;   (update-in-state walker ::indent #(inc (or % 0))))

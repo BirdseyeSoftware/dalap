@@ -40,6 +40,7 @@
                 '(let [hello "hola"] (str hello))
                 '(let [hallo "hola"] (str hallo)))))
 
+^:clj
 (deftest test-class-as-a-selector
   (let [instance (CustomType. "a" "b")
         replacement-value "Something Else"
@@ -71,7 +72,7 @@
   (let [selector [set? CustomType]
         replacement-value 'custom-type-inside-set
         transform-rules [selector replacement-value]
-        ;; match any CustomTypes instances that are inside a set.
+        ;; ^ match any `CustomType` instances that are inside a set.
         ;; When using vectors as selectors, it will behave the
         ;; same way as a CSS `parent > child` selector.
         visitor (gen-visitor transform-rules visit-clj-form)]
