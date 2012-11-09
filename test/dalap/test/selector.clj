@@ -1,133 +1,80 @@
 (ns dalap.test.selector
-  (:use clojure.test)
-  (:use [clojure.pprint :only (pprint)])
-
-  (:require [dalap.html :as html])
-  (:require [dalap.defaults :as defaults])
-  (:use dalap.selector)
-  (:use [dalap.walk :only [walk]])
-  (:use [dalap.html :only [add-class]]))
-
-(def build-dom-node (ns-resolve 'dalap.html 'build-dom-node))
-
-(def dom-matches-tag-selector?
-  (ns-resolve 'dalap.selector 'dom-matches-tag-selector?))
-
-(deftest test-dom-matches-selector
-  (is (dom-matches-tag-selector? (build-dom-node :p#uno.hello)
-                                 :p#uno.hello))
-  (is (not (dom-matches-tag-selector? (build-dom-node :p)
-                                      :p.hello))))
-
-(deftest test-match-selector
-  (let [history [(build-dom-node :p)
-                 (build-dom-node :div.hello)
-                 (build-dom-node :body)
-                 (build-dom-node :html)]]
-    (is (= [nil history]
-           (match-selector :p.hello history)))
-    (is (= [(->> history (drop 1) first) (take 1 history)]
-           (-> :div.hello to-node-matcher (match-selector history))))))
-
-(deftest test-match-selector*
-  (let [history [(build-dom-node :p)
-                 (build-dom-node :div.hello)
-                 (build-dom-node :body)
-                 (build-dom-node :html)]
-        test-match (fn [selector]
-                     (match-selector* (map to-node-matcher selector) history))]
-
-    (is (= [(build-dom-node :p) history]
-           (test-match [:p])))
-
-    (is (= [(build-dom-node :p) history]
-           (test-match [:div.hello :p])))
-
-    (is (= [nil history]
-           (test-match [:div.hello :p.world])))
-
-    ;; :div.hello is not in the start of the history
-    ;; so it doesn't match
-    (is (= [nil history]
-           (test-match [:div.hello])))
-
-    (is (= [nil history]
-           (test-match [:body :div.not-there])))))
+  (:require [clojure.test :refer :all]
+            [clojure.pprint :refer [pprint]]
+            [dalap.selector :refer [-gen-decorator gen-visitor]]
+            [dalap.walk :refer [walk]]))
 
 (defrecord CustomType [a b])
 (defrecord CustomType2 [a b])
 (defrecord CustomType3 [a b])
 (deftype CustomType4 [a b])
 
-(deftest test-match-selector*-custom-types
-  (let [item    (CustomType. "hello" "world")
-        history [item
-                 (build-dom-node :div#custom)
-                 (build-dom-node :body)
-                 (build-dom-node :html)]
-        test-match (fn [selector]
-                     (match-selector* (map to-node-matcher selector) history))]
-    (is (= [item history]
-           (test-match [:div CustomType])))))
+(defn visit-clj-form [form w]
+  ;; a modified version of clojure.walk with the ability to drop forms
+  (letfn [(filter-map [f form] (remove #(= % :dalap/drop-form)
+                                       (map f form)))]
+    (cond
+      (list? form) (apply list (filter-map w form))
+      (instance? clojure.lang.IMapEntry form) (vec (filter-map w form))
+      (seq? form) (doall (filter-map w form))
+      (coll? form) (into (empty form) (filter-map w form))
+      :else form)))
 
-(def bold-class #(html/add-class % "bold"))
+(defn assert-walk [visitor input expected]
+  (is (= (walk input visitor)
+         expected)))
 
+(deftest test-identity-visitor
+  (let [sample-form
+        '(let [hello "hola"] (str hello))
+        visitor (gen-visitor [] visit-clj-form)]
+    (assert-walk visitor sample-form sample-form)))
 
-(deftest test-selectors+transformers
-  (let [selectors+transformers
-        [[:div :p] bold-class
-         [:div] #(html/add-class % "happy")
+;; rule -> (selector, transformer)
 
-         CustomType :a
-         [CustomType2] (fn [o w] ["*" (:a o) "*"])
-         ;; the following anon function doesn't get wrapped properly
-         ;  java 1.6 jvms for some reason TODO
-         ;;[#(= CustomType3 (type %))] #(do ["*" (:a %) "*"])
-         [#(= CustomType3 (type %))] (fn [o w] ["*" (:a o) "*"])
-         [CustomType4] (fn [o w] ["*" (.a o) "*"])
+(deftest test-symbol-as-a-selector
+  (let [transform-rules ['hello 'hallo]
+        ;; ^ replace 'hello to 'hallo
+        visitor (gen-visitor transform-rules visit-clj-form)]
+    (assert-walk visitor
+                '(let [hello "hola"] (str hello))
+                '(let [hallo "hola"] (str hallo)))))
 
-         ;; simple replacements
-         [:pre.foo] (fn anon-vis [el w] (w [1 2 3 4]))
-         [:pre.bar] [1 2 3 4]
+(deftest test-class-as-a-selector
+  (let [instance (CustomType. "a" "b")
+        replacement-value "Something Else"
+        transform-rules [CustomType replacement-value]
+        ;; ^ replace CustomType instances with replacement value
+        visitor (gen-visitor transform-rules visit-clj-form)]
 
-         ;; using sets/maps as predicates and visitors
-         [:span.hundred #{89 88}] {88 198, 89 199}
-         [:p #{89 88}] {88 98, 89 99}
-         ]]
-    (let [decorator (-gen-decorator selectors+transformers)]
-      (let [visitor (decorator html/visit)
-            vis     #(html/to-html % visitor)]
-        (is (= (vis [:div [:p "hello"]])
-               (html/to-html [:div.happy [:p.bold "hello"]])))
-        (is (= (vis [:div [:span]])
-               (html/to-html [:div.happy [:span]])))
-        (is (= (vis [:div])
-               (html/to-html [:div.happy])))
-        (is (= (vis [:div [:p "hello"]])
-               (html/to-html [:div.happy [:p.bold "hello"]])))
+    (assert-walk visitor
+                 [instance]
+                 [replacement-value])
 
-        ;; test nested matches
-        (is (= (vis [:div [:p "hello" [:div [:p "hello"]]]])
-               (html/to-html [:div.happy [:p.bold "hello"
-                                          [:div.happy [:p.bold "hello"]]]])))
+    (assert-walk visitor
+                 [123 "hello world" [instance "other value"]]
+                 [123 "hello world" [replacement-value "other value"]])))
 
-        ;; custom records/types
-        (is (= (vis [:div [:p [(CustomType. 999 888)]]])
-               (html/to-html [:div.happy [:p.bold "999"]])))
-        (is (= (vis [:div [:p [(CustomType2. "--" "^^")]]])
-               (html/to-html [:div.happy [:p.bold "*--*"]])))
-        (is (= (vis [:div [:p [(CustomType3. (range 10) "foo")]]])
-               (html/to-html [:div.happy [:p.bold "*0123456789*"]])))
-        (is (= (vis [:div [:p [(CustomType4. [:b "a"] "b")]]])
-               (html/to-html [:div.happy [:p.bold ["*" [:b "a"] "*"]]])))
+(deftest test-function-as-a-selector
+  (let [selector-fn (fn [o w] (vector? o))
+        replacement-value "Something Else"
+        transform-rules [selector-fn replacement-value]
+        ;; ^ replace whenever selector-fn returns true
+        ;; with replacement-value
+        visitor (gen-visitor transform-rules visit-clj-form)]
 
-        ;; using sets/maps
-        (is (= (vis [:div [:p [88 89]]])
-               (html/to-html [:div.happy [:p.bold "9899"]])))
-        (is (= (vis [:div [:span.hundred [88 89]]])
-               (html/to-html [:div.happy [:span.hundred "198199"]])))
+    (assert-walk visitor
+                 `(["uno" 2] (foobar))
+                 `(~replacement-value (foobar)))))
 
-        ;; test value replacements
-        (is (= (vis [:pre.foo])
-               (vis [:pre.bar])
-               "1234"))))))
+(deftest test-vector-as-a-selector
+  (let [selector [set? CustomType]
+        replacement-value 'custom-type-inside-set
+        transform-rules [selector replacement-value]
+        ;; match any CustomTypes instances that are inside a set.
+        ;; When using vectors as selectors, it will behave the
+        ;; same way as a CSS `parent > child` selector.
+        visitor (gen-visitor transform-rules visit-clj-form)]
+    (assert-walk visitor
+                 [1 2 #{(CustomType. "a" "b")} "other value"]
+                 [1 2 #{'custom-type-inside-set} "other value"])))
