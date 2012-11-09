@@ -35,11 +35,15 @@
 (extend-protocol NodeMatcher
   ;; Something that behaves like function will always match
   ;; and return itself.
+  ^{:cljs 'function }
   clojure.lang.IFn
-  (to-node-matcher [sfn] sfn)
+  (to-node-matcher [sfn]
+    ^:clj (println "fakjsdfjdskalfjasldkf")
+    sfn)
 
   ;; Anything else, it will check the dalap node type is
   ;; equal to the object.
+  ^{:cljs 'default}
   Object
   (to-node-matcher [type_]
     (fn type-matcher [node]
@@ -66,10 +70,13 @@
          (partial drop-while p)) xs))
 
 (defn match-selector
-  "Grabs a node from history that matches the given
-  selector."
-  [select? history]
-  (let [[new-history [node & _]] (span (complement select?) history)]
+  "Grabs a single node from history that matches the given selector."
+  [selector? history]
+  (let [[new-history [node & _]]
+        (span (fn selector-span [n]
+                ;; second arg is walker that we don't have
+                (not (selector? n nil)))
+              history)]
     (if (nil? node)
       [nil history]
       [node new-history])))
@@ -77,25 +84,32 @@
 (defn match-selector*
   "Multiple selector version of match-selector.
 
-  Grabs an node from history that matches a group
-  of selectors, respecting a heriarchy of multiple nodes
-  in between."
+  Grabs a node from history that matches a group of selectors,
+  respecting a heriarchy of multiple nodes in between."
   [selectors history]
   (loop [current-history  history
          current-selector (first selectors)
          rest-selectors   (rest selectors)]
-    (let [[node new-history]
+
+   (let [[node new-history]
           (match-selector current-selector current-history)]
       (cond
+        ;; when current selector does not match halt
         (nil? node) [nil history]
 
+        ;; when selectors are done and history still
+        ;; going, just halt, didn't match
         (and (empty? rest-selectors)
              (not (empty? new-history)))
         [nil history]
 
+        ;; when selectors is empty, just return node
+        ;; and history *we have a match*
         (empty? rest-selectors)
         [node history]
 
+        ;; recurse with the rest of the history until
+        ;; rest of selectors to be empty
         :else
         (recur new-history
                (first rest-selectors)
@@ -110,12 +124,21 @@
   ;; impl of each given selector.
   clojure.lang.PersistentVector
   (to-tree-loc-matcher [selector-vec]
-    (let [selector (map to-node-matcher selector-vec)]
+    (let [selector (map to-tree-loc-matcher selector-vec)]
       (fn location-matcher [_node walker]
         (let [history-stack (:history walker)]
           (matching-node selector history-stack)))))
 
+  ^{:cljs string}
   clojure.lang.Symbol
+  ^{:cljs
+    (to-tree-loc-matcher
+     [s]
+     (cond
+       (symbol? s)
+       (fn symbol-matcher [node _walker] (= node s))
+       :else (throw (js/Error. (str "No tree-loc-matcher for "
+                                    (type s))))))}
   (to-tree-loc-matcher [sym]
     (fn [node _walker] (= node sym)))
 
@@ -123,9 +146,10 @@
   java.lang.Class
   ^:clj
   (to-tree-loc-matcher [kls]
-    (fn [node _walker] (= (type node) kls)))
+    (fn class-matcher [node _walker] (= (type node) kls)))
 
   ;; Match if the given function returns true.
+  ^{:cljs 'function}
   clojure.lang.IFn
   (to-tree-loc-matcher [sfn] sfn))
 
@@ -143,10 +167,16 @@
 ;; but with 32-bit JVMs the protocol doesn't dispatch correctly and we
 ;; end up with arity exceptions.
 
+^{:cljs
+  (extend-protocol IAdaptToVisitor
+    cljs.core.PersistentHashMap
+    (to-visitor [m] (fn map-visitor [node _w] (m node))))}
 (extend clojure.lang.IPersistentMap IAdaptToVisitor
   {:to-visitor
-    (fn [m] (fn map-visitor [node _w] (m node)))})
+   (fn map-visitor-adapter [m]
+     (fn map-visitor [node _w] (m node)))})
 
+^:clj
 (defn- arg-count [f]
   ;; for cljs see js' function.length
   (let [m (first (.getDeclaredMethods (class f)))
@@ -154,7 +184,8 @@
     (alength p)))
 
 (defn- ifn-to-visitor [vfn]
-    (case (arg-count vfn)
+  ^{:cljs (fn single-arg-fn-visitor [node _w] (vfn node))}
+  (case (arg-count vfn)
     0 (fn zero-arg-fn-visitor [_node _w] (vfn))
     1 (fn single-arg-fn-visitor [node _w] (vfn node))
     ;; else
@@ -162,12 +193,18 @@
 
 ;; For function-like types it will just call them with
 ;; the current node
+^{:cljs
+  (extend-protocol IAdaptToVisitor
+    function
+    (to-visitor [vfn] (ifn-to-visitor vfn)))}
 (extend clojure.lang.IFn IAdaptToVisitor
         {:to-visitor ifn-to-visitor})
 
 (extend-protocol IAdaptToVisitor
+  ^:clj
   clojure.lang.Keyword
   ;; Keywords will be called as functions on the nodes of the dalap tree.
+  ^:clj
   (to-visitor [k]
     (fn keyword-replacement-value-visitor [node _walker] (k node)))
 
@@ -180,12 +217,26 @@
   (to-visitor [v]
     (fn vec-replacement-value-visitor [_node _walker] v))
 
+  ^{:cljs string}
   clojure.lang.Symbol
   ;; This would match the IFn implementation if this more specific one
   ;; were not provided here.
+  ^{:cljs
+    (to-visitor
+     [s]
+     (cond
+       (symbol? s)
+       (fn symbol-replacement-value-visitor [_node _walker] s)
+       ;;
+       (keyword? s)
+       (fn keyword-replacement-value-visitor [node _walker] (s node))
+       ;;
+       :else
+       (fn string-replacement-value-visitor [node _walker] s)))}
   (to-visitor [sym]
     (fn symbol-replacement-value-visitor [_node _walker] sym))
 
+  ^{:cljs 'default}
   Object
   ;; All other Objects replace the current node of the dalap tree
   ;; with themselves.

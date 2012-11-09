@@ -4,11 +4,15 @@ The name is the acronym for Decide As Late As Possible, from lean
 programming."
 
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [org.clojure/core.match "0.2.0-alpha9"]]
+                 [org.clojure/core.match "0.2.0-alpha9"]
+                 [buster-cljs "0.1.0-SNAPSHOT"]]
 
   :plugins [[lein-cljsbuild "0.2.9"]
             [lein-dalap-cljsbuild "0.1.0-SNAPSHOT"]]
   :hooks [leiningen.dalap-cljsbuild]
+
+  :source-paths ["src/clj" "src/cljs"]
+  :test-paths ["test/clj" "test/cljs"]
 
   :cljsbuild
   {:builds
@@ -17,7 +21,8 @@ programming."
      :dalap
      {:paths
       {"src/clj/dalap/walk.clj" "src/cljs/dalap/walk.cljs"
-       "src/clj/dalap/selector.clj" "src/cljs/dalap/selector.cljs"}}
+       "src/clj/dalap/selector.clj" "src/cljs/dalap/selector.cljs"
+       }}
 
      :compiler
      {:output-to "resources/js/dalap_core_dev.js"
@@ -28,8 +33,8 @@ programming."
      :source-path "test/cljs"
      :dalap
      {:paths
-      {"test/clj/dalap/test/selector.clj"
-       "test/cljs/dalap/test/selector_test.cljs"}}
+      {"test/clj/dalap/test/selector.clj" "test/cljs/dalap/test/selector.cljs"
+       "test/clj/dalap/test/walk.clj" "test/cljs/dalap/test/walk.cljs" }}
      :compiler
      {:externs ["externs/buster.js"]
       :libraries ["resources/js/dalap_core_dev.js"]

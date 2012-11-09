@@ -1,9 +1,10 @@
 (ns dalap.walk
-  ^{ :doc "A `Walker` is a wrapper around a visitor function (a
-  multimethod or a single function from a Protocol). It simplifies the
-  recursive invocation of the visitor over a seq of objects (possibly
-  nested) and makes it possible to decorate or replace the visitor for
-  sub-regions of the seq."})
+  ;; ^{:doc "A `Walker` is a wrapper around a visitor function (a
+  ;; multimethod or a single function from a Protocol). It simplifies the
+  ;; recursive invocation of the visitor over a seq of objects (possibly
+  ;; nested) and makes it possible to decorate or replace the visitor for
+  ;; sub-regions of the seq."}
+  )
 
 (defprotocol IWalkerState
   "API: Public
@@ -66,8 +67,8 @@
   clojure.lang.ILookup
   ; We want to keep the behavior given on defrecord, that record
   ; attributes can be accessed using symbol functions.
-  (valAt [this key] (state-map key))
-  (valAt [this key not-found] (state-map key not-found)))
+  (^{:cljs '-lookup} valAt [this key] (state-map key))
+  (^{:cljs '-lookup} valAt [this key not-found] (state-map key not-found)))
 
 (defn -gen-walker
   "Signature: (([^Object ^dalap.walk/Walker] -> Output) -> dalap.walk/Walker)
