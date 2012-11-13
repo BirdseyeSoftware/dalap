@@ -1,4 +1,5 @@
 (ns dalap.selector
+  (:refer-clojure :exclude [when])
   (:require [dalap.walk :refer (update-in-state)]))
 
 ;; NOTE: all the dynamically created functions (from `fn`) in this
@@ -100,31 +101,32 @@
     (let [selector (map to-rule-selector selector-vec)]
       (fn location-matcher [_node walker]
         (let [history-stack (:history walker)]
-          (-matching-node selector history-stack)))))
+          (-matching-node selector history-stack))))))
 
-  ^{:cljs string}
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+#_(:cljs
+   (extend-protocol IRuleSelector
+     string
+     (to-rule-selector [s]
+       (cond
+         (symbol? s) (fn symbol-matcher [node _walker] (= node s))
+         :else (throw (js/Error. (str "No IRuleSelector instance for type `"
+                                      (type s) "`, value: `" s "`")))))))
+
+^:clj
+(extend-protocol IRuleSelector
   clojure.lang.Symbol
-  ^{:cljs
-    (to-rule-selector
-     [s]
-     (cond
-       (symbol? s)
-       (fn symbol-matcher [node _walker] (= node s))
-       :else (throw (js/Error. (str "No tree-loc-matcher for "
-                                    (type s))))))}
   (to-rule-selector [sym]
-    (fn [node _walker] (= node sym)))
+    (fn [node _walker] (= node sym))))
 
-  ^:clj
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+^:clj
+(extend-protocol IRuleSelector
   java.lang.Class
-  ^:clj
   (to-rule-selector [kls]
-    (fn class-matcher [node _walker] (= (type node) kls)))
-
-  ;; Match if the given function returns true.
-  ^{:cljs 'function}
-  clojure.lang.IFn
-  (to-rule-selector [sfn] sfn))
+    (fn class-rule-selector [node _walker] (= (type node) kls))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -134,7 +136,7 @@
   (to-rule-transformer [adaptable] "Creates a dalap visitor."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; The IPersistentMap and IFn implementations of IRuleTransformer
+;; The IPersistentMap implementation of IRuleTransformer
 ;; need to be defined via extend rather than via extend-protocol.
 ;; For Clojure 1.4 it makes no difference for 64-bit JVMs,
 ;; but with 32-bit JVMs the protocol doesn't dispatch correctly and we
@@ -144,77 +146,73 @@
   (extend-protocol IRuleTransformer
     cljs.core.PersistentHashMap
     (to-rule-transformer [m] (fn map-visitor [node _w] (m node))))}
-(extend clojure.lang.IPersistentMap IRuleTransformer
-  {:to-rule-transformer
-   (fn map-visitor-adapter [m]
-     (fn map-visitor [node _w] (m node)))})
+(extend clojure.lang.IPersistentMap
+  IRuleTransformer
+  {:to-rule-transformer (fn map-visitor-adapter [m]
+                          (fn map-visitor [node _w] (m node)))})
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; (extend-protocol IRuleTransformer
+;;   ;; PersistentVectors replace the current node of the dalap tree
+;;   ;; with themselves.
+;;   ;;
+;;   ;; This would match the IFn implementation if this more specific one
+;;   ;; were not provided here.
+;;   clojure.lang.PersistentVector
+;;   (to-rule-transformer [v]
+;;     (fn vec-transformer-visitor [_node _walker] v)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ^:clj
-(defn- arg-count [f]
-  ;; for cljs see js' function.length
-  (let [m (first (.getDeclaredMethods (class f)))
-        p (.getParameterTypes m)]
-    (alength p)))
+(extend-protocol IRuleTransformer
+  ;; Keywords will be called as functions on the nodes of the dalap tree.
+  clojure.lang.Keyword
+  (to-rule-transformer [k]
+    (fn keyword-transformer-visitor [node _walker] (k node))))
 
-(defn- ifn-to-rule-transformer [vfn]
-  ^{:cljs (fn single-arg-fn-visitor [node _w] (vfn node))}
-  (case (arg-count vfn)
-    0 (fn zero-arg-fn-visitor [_node _w] (vfn))
-    1 (fn single-arg-fn-visitor [node _w] (vfn node))
-    ;; else
-    vfn))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;; For function-like types it will just call them with
-;; the current node
-^{:cljs
-  (extend-protocol IRuleTransformer
-    function
-    (to-rule-transformer [vfn] (ifn-to-rule-transformer vfn)))}
-(extend clojure.lang.IFn IRuleTransformer
-        {:to-rule-transformer ifn-to-rule-transformer})
+#_(:cljs
+   (extend-protocol IRuleTransformer
+
+     string
+     (to-rule-transformer
+       [s]
+       (cond
+         (symbol? s) (fn symbol-transformer-visitor [_node _walker] s)
+         ;;
+         (keyword? s) (fn keyword-transformer-visitor [node _walker] (s node))
+         ;;
+         :else (fn string-transformer-visitor [node _walker] s)))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (extend-protocol IRuleTransformer
-  ^:clj
-  clojure.lang.Keyword
-  ;; Keywords will be called as functions on the nodes of the dalap tree.
-  ^:clj
-  (to-rule-transformer [k]
-    (fn keyword-transformer-visitor [node _walker] (k node)))
-
-  clojure.lang.PersistentVector
-  ;; PersistentVectors replace the current node of the dalap tree
-  ;; with themselves.
-  ;;
-  ;; This would match the IFn implementation if this more specific one
-  ;; were not provided here.
-  (to-rule-transformer [v]
-    (fn vec-transformer-visitor [_node _walker] v))
-
-  ^{:cljs string}
-  clojure.lang.Symbol
-  ;; This would match the IFn implementation if this more specific one
-  ;; were not provided here.
-  ^{:cljs
-    (to-rule-transformer
-     [s]
-     (cond
-       (symbol? s)
-       (fn symbol-transformer-visitor [_node _walker] s)
-       ;;
-       (keyword? s)
-       (fn keyword-transformer-visitor [node _walker] (s node))
-       ;;
-       :else
-       (fn string-transformer-visitor [node _walker] s)))}
-  (to-rule-transformer [sym]
-    (fn symbol-transformer-visitor [_node _walker] sym))
-
-  ^{:cljs 'default}
-  Object
   ;; All other Objects replace the current node of the dalap tree
   ;; with themselves.
+  ^{:cljs default}
+  Object
   (to-rule-transformer [obj]
     (fn object-transformer-visitor [_node _walker] obj)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(deftype FnRule [f]
+  ;;;
+  IRuleSelector
+  (to-rule-selector [_] (fn [node walker_] (f node)))
+  ;;;
+  IRuleTransformer
+  (to-rule-transformer [_] (fn [node] (f node))))
+
+(defn when
+  ""
+  [f]
+  (FnRule. f))
+
+(def transform when)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -234,19 +232,19 @@
         (visitor node walker))
       node)))
 
-(defn normalize-rules [rules]
+(defn -normalize-rules [rules]
   (for [[selector transformer] rules]
     [(to-rule-selector selector)
      (to-rule-transformer transformer)]))
 
 (defn -gen-rules-decorator
-  "Revisit documentation"
+  ""
   [rules]
   (let [inspect-node? identity
         ;; ^ track/match-on everything except nil/false
         ;; TODO: it might better to do (constantly true) rather than identity
         rule-pairs (partition 2 rules)
-        inner-visitor (-gen-visitor-from-rules (normalize-rules rule-pairs)
+        inner-visitor (-gen-visitor-from-rules (-normalize-rules rule-pairs)
                                                inspect-node?)
         add-history-to-walker (fn add-hist [node w]
                                 (if (inspect-node? node)
@@ -258,6 +256,6 @@
 
 
 (defn gen-rules-visitor
-  "API: Public"
+  ""
   ([rules fallback-visitor]
     ((-gen-rules-decorator rules) fallback-visitor)))

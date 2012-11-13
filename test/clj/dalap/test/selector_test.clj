@@ -1,15 +1,16 @@
 ^{:cljs
   (ns dalap.test.selector-test
-   (:require [buster-cljs.core :refer [is]]
-            [dalap.selector :refer [-gen-rules-decorator gen-rules-visitor]]
-            [dalap.walk :refer [walk]])
-   (:require-macros [buster-cljs.macros :refer [deftest it initialize-buster]]))}
+    (:require [buster-cljs.core :refer [is]]
+              [dalap.selector :as selector]
+              [dalap.selector :refer [-gen-rules-decorator gen-rules-visitor]]
+              [dalap.walk :refer [walk]])
+    (:require-macros [buster-cljs.macros :refer [deftest it initialize-buster]]))}
 (ns dalap.test.selector-test
   (:require [clojure.test :refer [deftest is]]
             [buster-cljs.clojure :refer [it]]
+            [dalap.selector :as selector]
             [dalap.selector :refer [-gen-rules-decorator gen-rules-visitor]]
-            [dalap.walk :refer [walk]]
-            ))
+            [dalap.walk :refer [walk]]))
 
 #_(:cljs (initialize-buster))
 
@@ -75,7 +76,7 @@
 
 (deftest test-function-as-a-selector
   (it  "with functions as a selector on rules"
-    (let [selector-fn (fn [o w] (vector? o))
+    (let [selector-fn (selector/when vector?)
           replacement-value "Something Else"
           transform-rules [selector-fn replacement-value]
           ;; ^ replace whenever selector-fn returns true
@@ -99,7 +100,7 @@
 
 (deftest test-vector-as-a-selector
   (it "with vectors as selector on rules"
-    (let [selector [(fn [n _] (vector? n)) 'foobar]
+    (let [selector [(selector/when vector?) 'foobar]
           replacement-value 'replacement
           transform-rules [selector replacement-value]
           ;; ^ match any `CustomType` instances that are inside a set.
