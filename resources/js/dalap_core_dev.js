@@ -20956,15 +20956,15 @@ dalap.walk.Walker.prototype.dalap$walk$IWalkerState$update_in_state$arity$3 = fu
   var keys = cljs.core.sequential_QMARK_.call(null, ks) ? ks : cljs.core.PersistentVector.fromArray([ks], true);
   return new dalap.walk.Walker(self__.visitor, cljs.core.update_in.call(null, self__.state_map, keys, fn))
 };
-dalap.walk.Walker.prototype.call = function(this_sym2849, x) {
+dalap.walk.Walker.prototype.call = function(this_sym2823, x) {
   var self__ = this;
-  var this_sym2849__$1 = this;
-  var this$ = this_sym2849__$1;
+  var this_sym2823__$1 = this;
+  var this$ = this_sym2823__$1;
   return self__.visitor.call(null, x, this$)
 };
-dalap.walk.Walker.prototype.apply = function(this_sym2847, args2848) {
+dalap.walk.Walker.prototype.apply = function(this_sym2821, args2822) {
   var self__ = this;
-  return this_sym2847.call.apply(this_sym2847, [this_sym2847].concat(args2848.slice()))
+  return this_sym2821.call.apply(this_sym2821, [this_sym2821].concat(args2822.slice()))
 };
 dalap.walk.Walker;
 dalap.walk._gen_walker = function() {
@@ -21009,42 +21009,42 @@ dalap.walk.walk = function() {
   walk.cljs$lang$arity$3 = walk__3;
   return walk
 }();
-goog.provide("dalap.selector");
+goog.provide("dalap.rules");
 goog.require("cljs.core");
 goog.require("dalap.walk");
 goog.require("dalap.walk");
-dalap.selector.span = function span(p, xs) {
+dalap.rules.span = function span(p, xs) {
   return cljs.core.juxt.call(null, cljs.core.partial.call(null, cljs.core.take_while, p), cljs.core.partial.call(null, cljs.core.drop_while, p)).call(null, xs)
 };
-dalap.selector._compose_visitors = function _compose_visitors(inner_visitor, outer_visitor) {
+dalap.rules._compose_visitors = function _compose_visitors(inner_visitor, outer_visitor) {
   return function comp_visitor(input, walker) {
     return outer_visitor.call(null, inner_visitor.call(null, input, walker), walker)
   }
 };
-dalap.selector._wrap_walker = function _wrap_walker(visitor, _wrap_walker_fn) {
+dalap.rules._wrap_walker = function _wrap_walker(visitor, _wrap_walker_fn) {
   return function wrapped_visitor(input, walker) {
     return visitor.call(null, input, _wrap_walker_fn.call(null, input, walker))
   }
 };
-dalap.selector.IRuleSelector = {};
-dalap.selector.to_rule_selector = function to_rule_selector(selectable) {
+dalap.rules.IRuleSelector = {};
+dalap.rules.to_rule_selector = function to_rule_selector(selectable) {
   if(function() {
     var and__3822__auto__ = selectable;
     if(and__3822__auto__) {
-      return selectable.dalap$selector$IRuleSelector$to_rule_selector$arity$1
+      return selectable.dalap$rules$IRuleSelector$to_rule_selector$arity$1
     }else {
       return and__3822__auto__
     }
   }()) {
-    return selectable.dalap$selector$IRuleSelector$to_rule_selector$arity$1(selectable)
+    return selectable.dalap$rules$IRuleSelector$to_rule_selector$arity$1(selectable)
   }else {
     var x__2373__auto__ = selectable == null ? null : selectable;
     return function() {
-      var or__3824__auto__ = dalap.selector.to_rule_selector[goog.typeOf(x__2373__auto__)];
+      var or__3824__auto__ = dalap.rules.to_rule_selector[goog.typeOf(x__2373__auto__)];
       if(or__3824__auto__) {
         return or__3824__auto__
       }else {
-        var or__3824__auto____$1 = dalap.selector.to_rule_selector["_"];
+        var or__3824__auto____$1 = dalap.rules.to_rule_selector["_"];
         if(or__3824__auto____$1) {
           return or__3824__auto____$1
         }else {
@@ -21054,28 +21054,28 @@ dalap.selector.to_rule_selector = function to_rule_selector(selectable) {
     }().call(null, selectable)
   }
 };
-dalap.selector._match_selector = function _match_selector(selector_QMARK_, history) {
-  var vec__4065 = dalap.selector.span.call(null, function selector_span(n) {
+dalap.rules._match_selector = function _match_selector(selector_QMARK_, history) {
+  var vec__2826 = dalap.rules.span.call(null, function selector_span(n) {
     return cljs.core.not.call(null, selector_QMARK_.call(null, n, null))
   }, history);
-  var new_history = cljs.core.nth.call(null, vec__4065, 0, null);
-  var vec__4066 = cljs.core.nth.call(null, vec__4065, 1, null);
-  var node = cljs.core.nth.call(null, vec__4066, 0, null);
-  var _ = cljs.core.nthnext.call(null, vec__4066, 1);
+  var new_history = cljs.core.nth.call(null, vec__2826, 0, null);
+  var vec__2827 = cljs.core.nth.call(null, vec__2826, 1, null);
+  var node = cljs.core.nth.call(null, vec__2827, 0, null);
+  var _ = cljs.core.nthnext.call(null, vec__2827, 1);
   if(node == null) {
     return cljs.core.PersistentVector.fromArray([null, history], true)
   }else {
     return cljs.core.PersistentVector.fromArray([node, new_history], true)
   }
 };
-dalap.selector._match_selector_STAR_ = function _match_selector_STAR_(selectors, history) {
+dalap.rules._match_selector_STAR_ = function _match_selector_STAR_(selectors, history) {
   var current_history = history;
   var current_selector = cljs.core.first.call(null, selectors);
   var rest_selectors = cljs.core.rest.call(null, selectors);
   while(true) {
-    var vec__4068 = dalap.selector._match_selector.call(null, current_selector, current_history);
-    var node = cljs.core.nth.call(null, vec__4068, 0, null);
-    var new_history = cljs.core.nth.call(null, vec__4068, 1, null);
+    var vec__2829 = dalap.rules._match_selector.call(null, current_selector, current_history);
+    var node = cljs.core.nth.call(null, vec__2829, 0, null);
+    var new_history = cljs.core.nth.call(null, vec__2829, 1, null);
     if(node == null) {
       return cljs.core.PersistentVector.fromArray([null, history], true)
     }else {
@@ -21093,12 +21093,12 @@ dalap.selector._match_selector_STAR_ = function _match_selector_STAR_(selectors,
           return cljs.core.PersistentVector.fromArray([node, history], true)
         }else {
           if("\ufdd0'else") {
-            var G__4069 = new_history;
-            var G__4070 = cljs.core.first.call(null, rest_selectors);
-            var G__4071 = cljs.core.rest.call(null, rest_selectors);
-            current_history = G__4069;
-            current_selector = G__4070;
-            rest_selectors = G__4071;
+            var G__2830 = new_history;
+            var G__2831 = cljs.core.first.call(null, rest_selectors);
+            var G__2832 = cljs.core.rest.call(null, rest_selectors);
+            current_history = G__2830;
+            current_selector = G__2831;
+            rest_selectors = G__2832;
             continue
           }else {
             return null
@@ -21109,19 +21109,19 @@ dalap.selector._match_selector_STAR_ = function _match_selector_STAR_(selectors,
     break
   }
 };
-dalap.selector._matching_node = function _matching_node(selector, history) {
-  return cljs.core.first.call(null, dalap.selector._match_selector_STAR_.call(null, selector, history))
+dalap.rules._matching_node = function _matching_node(selector, history) {
+  return cljs.core.first.call(null, dalap.rules._match_selector_STAR_.call(null, selector, history))
 };
-cljs.core.PersistentVector.prototype.dalap$selector$IRuleSelector$ = true;
-cljs.core.PersistentVector.prototype.dalap$selector$IRuleSelector$to_rule_selector$arity$1 = function(selector_vec) {
-  var selector = cljs.core.map.call(null, dalap.selector.to_rule_selector, selector_vec);
+cljs.core.PersistentVector.prototype.dalap$rules$IRuleSelector$ = true;
+cljs.core.PersistentVector.prototype.dalap$rules$IRuleSelector$to_rule_selector$arity$1 = function(selector_vec) {
+  var selector = cljs.core.map.call(null, dalap.rules.to_rule_selector, selector_vec);
   return function location_matcher(_node, walker) {
     var history_stack = (new cljs.core.Keyword("\ufdd0'history")).call(null, walker);
-    return dalap.selector._matching_node.call(null, selector, history_stack)
+    return dalap.rules._matching_node.call(null, selector, history_stack)
   }
 };
-dalap.selector.IRuleSelector["string"] = true;
-dalap.selector.to_rule_selector["string"] = function(s) {
+dalap.rules.IRuleSelector["string"] = true;
+dalap.rules.to_rule_selector["string"] = function(s) {
   if(cljs.core.symbol_QMARK_.call(null, s)) {
     return function symbol_matcher(node, _walker) {
       return cljs.core._EQ_.call(null, node, s)
@@ -21134,25 +21134,25 @@ dalap.selector.to_rule_selector["string"] = function(s) {
     }
   }
 };
-dalap.selector.IRuleTransformer = {};
-dalap.selector.to_rule_transformer = function to_rule_transformer(adaptable) {
+dalap.rules.IRuleTransformer = {};
+dalap.rules.to_rule_transformer = function to_rule_transformer(adaptable) {
   if(function() {
     var and__3822__auto__ = adaptable;
     if(and__3822__auto__) {
-      return adaptable.dalap$selector$IRuleTransformer$to_rule_transformer$arity$1
+      return adaptable.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1
     }else {
       return and__3822__auto__
     }
   }()) {
-    return adaptable.dalap$selector$IRuleTransformer$to_rule_transformer$arity$1(adaptable)
+    return adaptable.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1(adaptable)
   }else {
     var x__2373__auto__ = adaptable == null ? null : adaptable;
     return function() {
-      var or__3824__auto__ = dalap.selector.to_rule_transformer[goog.typeOf(x__2373__auto__)];
+      var or__3824__auto__ = dalap.rules.to_rule_transformer[goog.typeOf(x__2373__auto__)];
       if(or__3824__auto__) {
         return or__3824__auto__
       }else {
-        var or__3824__auto____$1 = dalap.selector.to_rule_transformer["_"];
+        var or__3824__auto____$1 = dalap.rules.to_rule_transformer["_"];
         if(or__3824__auto____$1) {
           return or__3824__auto____$1
         }else {
@@ -21162,14 +21162,14 @@ dalap.selector.to_rule_transformer = function to_rule_transformer(adaptable) {
     }().call(null, adaptable)
   }
 };
-cljs.core.PersistentHashMap.prototype.dalap$selector$IRuleTransformer$ = true;
-cljs.core.PersistentHashMap.prototype.dalap$selector$IRuleTransformer$to_rule_transformer$arity$1 = function(m) {
+cljs.core.PersistentHashMap.prototype.dalap$rules$IRuleTransformer$ = true;
+cljs.core.PersistentHashMap.prototype.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1 = function(m) {
   return function map_visitor(node, _w) {
     return m.call(null, node)
   }
 };
-dalap.selector.IRuleTransformer["string"] = true;
-dalap.selector.to_rule_transformer["string"] = function(s) {
+dalap.rules.IRuleTransformer["string"] = true;
+dalap.rules.to_rule_transformer["string"] = function(s) {
   if(cljs.core.symbol_QMARK_.call(null, s)) {
     return function symbol_transformer_visitor(_node, _walker) {
       return s
@@ -21190,47 +21190,47 @@ dalap.selector.to_rule_transformer["string"] = function(s) {
     }
   }
 };
-dalap.selector.IRuleTransformer["_"] = true;
-dalap.selector.to_rule_transformer["_"] = function(obj) {
+dalap.rules.IRuleTransformer["_"] = true;
+dalap.rules.to_rule_transformer["_"] = function(obj) {
   return function object_transformer_visitor(_node, _walker) {
     return obj
   }
 };
-goog.provide("dalap.selector.FnRule");
-dalap.selector.FnRule = function(f) {
+goog.provide("dalap.rules.FnRule");
+dalap.rules.FnRule = function(f) {
   this.f = f
 };
-dalap.selector.FnRule.cljs$lang$type = true;
-dalap.selector.FnRule.cljs$lang$ctorPrSeq = function(this__2315__auto__) {
-  return cljs.core.list.call(null, "dalap.selector/FnRule")
+dalap.rules.FnRule.cljs$lang$type = true;
+dalap.rules.FnRule.cljs$lang$ctorPrSeq = function(this__2315__auto__) {
+  return cljs.core.list.call(null, "dalap.rules/FnRule")
 };
-dalap.selector.FnRule.cljs$lang$ctorPrWriter = function(this__2315__auto__, writer__2316__auto__) {
-  return cljs.core._write.call(null, writer__2316__auto__, "dalap.selector/FnRule")
+dalap.rules.FnRule.cljs$lang$ctorPrWriter = function(this__2315__auto__, writer__2316__auto__) {
+  return cljs.core._write.call(null, writer__2316__auto__, "dalap.rules/FnRule")
 };
-dalap.selector.FnRule.prototype.dalap$selector$IRuleTransformer$ = true;
-dalap.selector.FnRule.prototype.dalap$selector$IRuleTransformer$to_rule_transformer$arity$1 = function(_) {
+dalap.rules.FnRule.prototype.dalap$rules$IRuleTransformer$ = true;
+dalap.rules.FnRule.prototype.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1 = function(_) {
   var self__ = this;
   return function(node) {
     return self__.f.call(null, node)
   }
 };
-dalap.selector.FnRule.prototype.dalap$selector$IRuleSelector$ = true;
-dalap.selector.FnRule.prototype.dalap$selector$IRuleSelector$to_rule_selector$arity$1 = function(_) {
+dalap.rules.FnRule.prototype.dalap$rules$IRuleSelector$ = true;
+dalap.rules.FnRule.prototype.dalap$rules$IRuleSelector$to_rule_selector$arity$1 = function(_) {
   var self__ = this;
   return function(node, walker_) {
     return self__.f.call(null, node)
   }
 };
-dalap.selector.FnRule;
-dalap.selector.when = function when(f) {
-  return new dalap.selector.FnRule(f)
+dalap.rules.FnRule;
+dalap.rules.when = function when(f) {
+  return new dalap.rules.FnRule(f)
 };
-dalap.selector.transform = dalap.selector.when;
-dalap.selector._get_transformer_of_first_matching_rule = function _get_transformer_of_first_matching_rule(node, walker, rules) {
-  var transformer_if_match = function transformer_if_match(p__4075) {
-    var vec__4077 = p__4075;
-    var selector_QMARK_ = cljs.core.nth.call(null, vec__4077, 0, null);
-    var transformer = cljs.core.nth.call(null, vec__4077, 1, null);
+dalap.rules.transform = dalap.rules.when;
+dalap.rules._get_transformer_of_first_matching_rule = function _get_transformer_of_first_matching_rule(node, walker, rules) {
+  var transformer_if_match = function transformer_if_match(p__2836) {
+    var vec__2838 = p__2836;
+    var selector_QMARK_ = cljs.core.nth.call(null, vec__2838, 0, null);
+    var transformer = cljs.core.nth.call(null, vec__2838, 1, null);
     if(cljs.core.truth_(selector_QMARK_.call(null, node, walker))) {
       return transformer
     }else {
@@ -21239,11 +21239,11 @@ dalap.selector._get_transformer_of_first_matching_rule = function _get_transform
   };
   return cljs.core.some.call(null, transformer_if_match, rules)
 };
-dalap.selector._gen_visitor_from_rules = function _gen_visitor_from_rules(rules, inspect_node_fn_QMARK_) {
+dalap.rules._gen_visitor_from_rules = function _gen_visitor_from_rules(rules, inspect_node_fn_QMARK_) {
   return function rules_visitor(node, walker) {
     if(cljs.core.truth_(inspect_node_fn_QMARK_.call(null, node))) {
       var visitor = function() {
-        var or__3824__auto__ = dalap.selector._get_transformer_of_first_matching_rule.call(null, node, walker, rules);
+        var or__3824__auto__ = dalap.rules._get_transformer_of_first_matching_rule.call(null, node, walker, rules);
         if(cljs.core.truth_(or__3824__auto__)) {
           return or__3824__auto__
         }else {
@@ -21256,16 +21256,16 @@ dalap.selector._gen_visitor_from_rules = function _gen_visitor_from_rules(rules,
     }
   }
 };
-dalap.selector._normalize_rules = function _normalize_rules(rules) {
-  var iter__2470__auto__ = function iter__4082(s__4083) {
+dalap.rules._normalize_rules = function _normalize_rules(rules) {
+  var iter__2470__auto__ = function iter__2843(s__2844) {
     return new cljs.core.LazySeq(null, false, function() {
-      var s__4083__$1 = s__4083;
+      var s__2844__$1 = s__2844;
       while(true) {
-        if(cljs.core.seq.call(null, s__4083__$1)) {
-          var vec__4085 = cljs.core.first.call(null, s__4083__$1);
-          var selector = cljs.core.nth.call(null, vec__4085, 0, null);
-          var transformer = cljs.core.nth.call(null, vec__4085, 1, null);
-          return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([dalap.selector.to_rule_selector.call(null, selector), dalap.selector.to_rule_transformer.call(null, transformer)], true), iter__4082.call(null, cljs.core.rest.call(null, s__4083__$1)))
+        if(cljs.core.seq.call(null, s__2844__$1)) {
+          var vec__2846 = cljs.core.first.call(null, s__2844__$1);
+          var selector = cljs.core.nth.call(null, vec__2846, 0, null);
+          var transformer = cljs.core.nth.call(null, vec__2846, 1, null);
+          return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([dalap.rules.to_rule_selector.call(null, selector), dalap.rules.to_rule_transformer.call(null, transformer)], true), iter__2843.call(null, cljs.core.rest.call(null, s__2844__$1)))
         }else {
           return null
         }
@@ -21275,23 +21275,23 @@ dalap.selector._normalize_rules = function _normalize_rules(rules) {
   };
   return iter__2470__auto__.call(null, rules)
 };
-dalap.selector._gen_rules_decorator = function _gen_rules_decorator(rules) {
+dalap.rules._gen_rules_decorator = function _gen_rules_decorator(rules) {
   var inspect_node_QMARK_ = cljs.core.identity;
   var rule_pairs = cljs.core.partition.call(null, 2, rules);
-  var inner_visitor = dalap.selector._gen_visitor_from_rules.call(null, dalap.selector._normalize_rules.call(null, rule_pairs), inspect_node_QMARK_);
+  var inner_visitor = dalap.rules._gen_visitor_from_rules.call(null, dalap.rules._normalize_rules.call(null, rule_pairs), inspect_node_QMARK_);
   var add_history_to_walker = function add_hist(node, w) {
     if(cljs.core.truth_(inspect_node_QMARK_.call(null, node))) {
-      return dalap.walk.update_in_state.call(null, w, "\ufdd0'history", function(p1__5456_SHARP_) {
-        return cljs.core.conj.call(null, p1__5456_SHARP_, node)
+      return dalap.walk.update_in_state.call(null, w, "\ufdd0'history", function(p1__5452_SHARP_) {
+        return cljs.core.conj.call(null, p1__5452_SHARP_, node)
       })
     }else {
       return w
     }
   };
   return function rules_decorator(visit_fn) {
-    return dalap.selector._wrap_walker.call(null, dalap.selector._compose_visitors.call(null, inner_visitor, visit_fn), add_history_to_walker)
+    return dalap.rules._wrap_walker.call(null, dalap.rules._compose_visitors.call(null, inner_visitor, visit_fn), add_history_to_walker)
   }
 };
-dalap.selector.gen_rules_visitor = function gen_rules_visitor(rules, fallback_visitor) {
-  return dalap.selector._gen_rules_decorator.call(null, rules).call(null, fallback_visitor)
+dalap.rules.gen_rules_visitor = function gen_rules_visitor(rules, fallback_visitor) {
+  return dalap.rules._gen_rules_decorator.call(null, rules).call(null, fallback_visitor)
 };

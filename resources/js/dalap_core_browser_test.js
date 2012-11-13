@@ -12817,42 +12817,42 @@ dalap.walk.walk = function() {
   a.cljs$lang$arity$3 = c;
   return a
 }();
-dalap.selector = {};
-dalap.selector.span = function(a, b) {
+dalap.rules = {};
+dalap.rules.span = function(a, b) {
   return cljs.core.juxt.call(null, cljs.core.partial.call(null, cljs.core.take_while, a), cljs.core.partial.call(null, cljs.core.drop_while, a)).call(null, b)
 };
-dalap.selector._compose_visitors = function(a, b) {
+dalap.rules._compose_visitors = function(a, b) {
   return function(c, d) {
     return b.call(null, a.call(null, c, d), d)
   }
 };
-dalap.selector._wrap_walker = function(a, b) {
+dalap.rules._wrap_walker = function(a, b) {
   return function(c, d) {
     return a.call(null, c, b.call(null, c, d))
   }
 };
-dalap.selector.IRuleSelector = {};
-dalap.selector.to_rule_selector = function(a) {
-  if(a ? a.dalap$selector$IRuleSelector$to_rule_selector$arity$1 : a) {
-    return a.dalap$selector$IRuleSelector$to_rule_selector$arity$1(a)
+dalap.rules.IRuleSelector = {};
+dalap.rules.to_rule_selector = function(a) {
+  if(a ? a.dalap$rules$IRuleSelector$to_rule_selector$arity$1 : a) {
+    return a.dalap$rules$IRuleSelector$to_rule_selector$arity$1(a)
   }
   var b;
-  b = dalap.selector.to_rule_selector[goog.typeOf(null == a ? null : a)];
-  if(!b && (b = dalap.selector.to_rule_selector._, !b)) {
+  b = dalap.rules.to_rule_selector[goog.typeOf(null == a ? null : a)];
+  if(!b && (b = dalap.rules.to_rule_selector._, !b)) {
     throw cljs.core.missing_protocol.call(null, "IRuleSelector.to-rule-selector", a);
   }
   return b.call(null, a)
 };
-dalap.selector._match_selector = function(a, b) {
-  var c = dalap.selector.span.call(null, function(b) {
+dalap.rules._match_selector = function(a, b) {
+  var c = dalap.rules.span.call(null, function(b) {
     return cljs.core.not.call(null, a.call(null, b, null))
   }, b), d = cljs.core.nth.call(null, c, 0, null), c = cljs.core.nth.call(null, c, 1, null), e = cljs.core.nth.call(null, c, 0, null);
   cljs.core.nthnext.call(null, c, 1);
   return null == e ? cljs.core.PersistentVector.fromArray([null, b], !0) : cljs.core.PersistentVector.fromArray([e, d], !0)
 };
-dalap.selector._match_selector_STAR_ = function(a, b) {
+dalap.rules._match_selector_STAR_ = function(a, b) {
   for(var c = b, d = cljs.core.first.call(null, a), e = cljs.core.rest.call(null, a);;) {
-    d = dalap.selector._match_selector.call(null, d, c);
+    d = dalap.rules._match_selector.call(null, d, c);
     c = cljs.core.nth.call(null, d, 0, null);
     d = cljs.core.nth.call(null, d, 1, null);
     if(null == c) {
@@ -12871,19 +12871,19 @@ dalap.selector._match_selector_STAR_ = function(a, b) {
     e = cljs.core.rest.call(null, e)
   }
 };
-dalap.selector._matching_node = function(a, b) {
-  return cljs.core.first.call(null, dalap.selector._match_selector_STAR_.call(null, a, b))
+dalap.rules._matching_node = function(a, b) {
+  return cljs.core.first.call(null, dalap.rules._match_selector_STAR_.call(null, a, b))
 };
-cljs.core.PersistentVector.prototype.dalap$selector$IRuleSelector$ = !0;
-cljs.core.PersistentVector.prototype.dalap$selector$IRuleSelector$to_rule_selector$arity$1 = function(a) {
-  var b = cljs.core.map.call(null, dalap.selector.to_rule_selector, a);
+cljs.core.PersistentVector.prototype.dalap$rules$IRuleSelector$ = !0;
+cljs.core.PersistentVector.prototype.dalap$rules$IRuleSelector$to_rule_selector$arity$1 = function(a) {
+  var b = cljs.core.map.call(null, dalap.rules.to_rule_selector, a);
   return function(a, d) {
     var e = (new cljs.core.Keyword("\ufdd0'history")).call(null, d);
-    return dalap.selector._matching_node.call(null, b, e)
+    return dalap.rules._matching_node.call(null, b, e)
   }
 };
-dalap.selector.IRuleSelector.string = !0;
-dalap.selector.to_rule_selector.string = function(a) {
+dalap.rules.IRuleSelector.string = !0;
+dalap.rules.to_rule_selector.string = function(a) {
   if(cljs.core.symbol_QMARK_.call(null, a)) {
     return function(b) {
       return cljs.core._EQ_.call(null, b, a)
@@ -12891,26 +12891,26 @@ dalap.selector.to_rule_selector.string = function(a) {
   }
   throw Error([cljs.core.str("No IRuleSelector instance for type `"), cljs.core.str(cljs.core.type.call(null, a)), cljs.core.str("`, value: `"), cljs.core.str(a), cljs.core.str("`")].join(""));
 };
-dalap.selector.IRuleTransformer = {};
-dalap.selector.to_rule_transformer = function(a) {
-  if(a ? a.dalap$selector$IRuleTransformer$to_rule_transformer$arity$1 : a) {
-    return a.dalap$selector$IRuleTransformer$to_rule_transformer$arity$1(a)
+dalap.rules.IRuleTransformer = {};
+dalap.rules.to_rule_transformer = function(a) {
+  if(a ? a.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1 : a) {
+    return a.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1(a)
   }
   var b;
-  b = dalap.selector.to_rule_transformer[goog.typeOf(null == a ? null : a)];
-  if(!b && (b = dalap.selector.to_rule_transformer._, !b)) {
+  b = dalap.rules.to_rule_transformer[goog.typeOf(null == a ? null : a)];
+  if(!b && (b = dalap.rules.to_rule_transformer._, !b)) {
     throw cljs.core.missing_protocol.call(null, "IRuleTransformer.to-rule-transformer", a);
   }
   return b.call(null, a)
 };
-cljs.core.PersistentHashMap.prototype.dalap$selector$IRuleTransformer$ = !0;
-cljs.core.PersistentHashMap.prototype.dalap$selector$IRuleTransformer$to_rule_transformer$arity$1 = function(a) {
+cljs.core.PersistentHashMap.prototype.dalap$rules$IRuleTransformer$ = !0;
+cljs.core.PersistentHashMap.prototype.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1 = function(a) {
   return function(b) {
     return a.call(null, b)
   }
 };
-dalap.selector.IRuleTransformer.string = !0;
-dalap.selector.to_rule_transformer.string = function(a) {
+dalap.rules.IRuleTransformer.string = !0;
+dalap.rules.to_rule_transformer.string = function(a) {
   return cljs.core.symbol_QMARK_.call(null, a) ? function() {
     return a
   } : cljs.core.keyword_QMARK_.call(null, a) ? function(b) {
@@ -12919,83 +12919,83 @@ dalap.selector.to_rule_transformer.string = function(a) {
     return a
   }
 };
-dalap.selector.IRuleTransformer._ = !0;
-dalap.selector.to_rule_transformer._ = function(a) {
+dalap.rules.IRuleTransformer._ = !0;
+dalap.rules.to_rule_transformer._ = function(a) {
   return function() {
     return a
   }
 };
-dalap.selector.FnRule = function(a) {
+dalap.rules.FnRule = function(a) {
   this.f = a
 };
-dalap.selector.FnRule.cljs$lang$type = !0;
-dalap.selector.FnRule.cljs$lang$ctorPrSeq = function() {
-  return cljs.core.list.call(null, "dalap.selector/FnRule")
+dalap.rules.FnRule.cljs$lang$type = !0;
+dalap.rules.FnRule.cljs$lang$ctorPrSeq = function() {
+  return cljs.core.list.call(null, "dalap.rules/FnRule")
 };
-dalap.selector.FnRule.cljs$lang$ctorPrWriter = function(a, b) {
-  return cljs.core._write.call(null, b, "dalap.selector/FnRule")
+dalap.rules.FnRule.cljs$lang$ctorPrWriter = function(a, b) {
+  return cljs.core._write.call(null, b, "dalap.rules/FnRule")
 };
-dalap.selector.FnRule.prototype.dalap$selector$IRuleTransformer$ = !0;
-dalap.selector.FnRule.prototype.dalap$selector$IRuleTransformer$to_rule_transformer$arity$1 = function() {
+dalap.rules.FnRule.prototype.dalap$rules$IRuleTransformer$ = !0;
+dalap.rules.FnRule.prototype.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1 = function() {
   var a = this;
   return function(b) {
     return a.f.call(null, b)
   }
 };
-dalap.selector.FnRule.prototype.dalap$selector$IRuleSelector$ = !0;
-dalap.selector.FnRule.prototype.dalap$selector$IRuleSelector$to_rule_selector$arity$1 = function() {
+dalap.rules.FnRule.prototype.dalap$rules$IRuleSelector$ = !0;
+dalap.rules.FnRule.prototype.dalap$rules$IRuleSelector$to_rule_selector$arity$1 = function() {
   var a = this;
   return function(b) {
     return a.f.call(null, b)
   }
 };
-dalap.selector.FnRule;
-dalap.selector.when = function(a) {
-  return new dalap.selector.FnRule(a)
+dalap.rules.FnRule;
+dalap.rules.when = function(a) {
+  return new dalap.rules.FnRule(a)
 };
-dalap.selector.transform = dalap.selector.when;
-dalap.selector._get_transformer_of_first_matching_rule = function(a, b, c) {
+dalap.rules.transform = dalap.rules.when;
+dalap.rules._get_transformer_of_first_matching_rule = function(a, b, c) {
   return cljs.core.some.call(null, function(c) {
     var e = cljs.core.nth.call(null, c, 0, null), c = cljs.core.nth.call(null, c, 1, null);
     return cljs.core.truth_(e.call(null, a, b)) ? c : null
   }, c)
 };
-dalap.selector._gen_visitor_from_rules = function(a, b) {
+dalap.rules._gen_visitor_from_rules = function(a, b) {
   return function(c, d) {
     if(cljs.core.truth_(b.call(null, c))) {
       var e;
-      e = dalap.selector._get_transformer_of_first_matching_rule.call(null, c, d, a);
+      e = dalap.rules._get_transformer_of_first_matching_rule.call(null, c, d, a);
       e = cljs.core.truth_(e) ? e : cljs.core.constantly.call(null, c);
       return e.call(null, c, d)
     }
     return c
   }
 };
-dalap.selector._normalize_rules = function(a) {
+dalap.rules._normalize_rules = function(a) {
   return function c(a) {
     return new cljs.core.LazySeq(null, !1, function() {
       for(;;) {
         if(cljs.core.seq.call(null, a)) {
           var e = cljs.core.first.call(null, a), f = cljs.core.nth.call(null, e, 0, null), e = cljs.core.nth.call(null, e, 1, null);
-          return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([dalap.selector.to_rule_selector.call(null, f), dalap.selector.to_rule_transformer.call(null, e)], true), c.call(null, cljs.core.rest.call(null, a)))
+          return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([dalap.rules.to_rule_selector.call(null, f), dalap.rules.to_rule_transformer.call(null, e)], true), c.call(null, cljs.core.rest.call(null, a)))
         }
         return null
       }
     }, null)
   }.call(null, a)
 };
-dalap.selector._gen_rules_decorator = function(a) {
-  var b = cljs.core.identity, a = cljs.core.partition.call(null, 2, a), c = dalap.selector._gen_visitor_from_rules.call(null, dalap.selector._normalize_rules.call(null, a), b), d = function(a, c) {
+dalap.rules._gen_rules_decorator = function(a) {
+  var b = cljs.core.identity, a = cljs.core.partition.call(null, 2, a), c = dalap.rules._gen_visitor_from_rules.call(null, dalap.rules._normalize_rules.call(null, a), b), d = function(a, c) {
     return cljs.core.truth_(b.call(null, a)) ? dalap.walk.update_in_state.call(null, c, "\ufdd0'history", function(b) {
       return cljs.core.conj.call(null, b, a)
     }) : c
   };
   return function(a) {
-    return dalap.selector._wrap_walker.call(null, dalap.selector._compose_visitors.call(null, c, a), d)
+    return dalap.rules._wrap_walker.call(null, dalap.rules._compose_visitors.call(null, c, a), d)
   }
 };
-dalap.selector.gen_rules_visitor = function(a, b) {
-  return dalap.selector._gen_rules_decorator.call(null, a).call(null, b)
+dalap.rules.gen_rules_visitor = function(a, b) {
+  return dalap.rules._gen_rules_decorator.call(null, a).call(null, b)
 };
 var buster_cljs = {core:{}};
 buster_cljs.core.cljs__GT_js = function cljs__GT_js(b) {
@@ -13036,9 +13036,9 @@ buster_cljs.core.is = function() {
   return b
 }();
 dalap.test = {};
-dalap.test.selector_test = {};
+dalap.test.rules_test = {};
 cljs.core.not_EQ_.call(null, "undefined", typeof exports) && (buster = require("buster"));
-dalap.test.selector_test.CustomType = function(a, b, c, d) {
+dalap.test.rules_test.CustomType = function(a, b, c, d) {
   this.a = a;
   this.b = b;
   this.__meta = c;
@@ -13047,35 +13047,35 @@ dalap.test.selector_test.CustomType = function(a, b, c, d) {
   this.cljs$lang$protocol_mask$partition0$ = 2229667594;
   2 < arguments.length ? (this.__meta = c, this.__extmap = d) : this.__extmap = this.__meta = null
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$IHash$_hash$arity$1 = function(a) {
+dalap.test.rules_test.CustomType.prototype.cljs$core$IHash$_hash$arity$1 = function(a) {
   var b = this.__hash;
   return null != b ? b : this.__hash = a = cljs.core.hash_imap.call(null, a)
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$ILookup$_lookup$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType.prototype.cljs$core$ILookup$_lookup$arity$2 = function(a, b) {
   return a.cljs$core$ILookup$_lookup$arity$3(a, b, null)
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$ILookup$_lookup$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType.prototype.cljs$core$ILookup$_lookup$arity$3 = function(a, b, c) {
   return"\ufdd0'a" === b ? this.a : "\ufdd0'b" === b ? this.b : cljs.core._lookup.call(null, this.__extmap, b, c)
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$IAssociative$_assoc$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType.prototype.cljs$core$IAssociative$_assoc$arity$3 = function(a, b, c) {
   a = cljs.core.identical_QMARK_;
-  return a.call(null, "\ufdd0'a", b) ? new dalap.test.selector_test.CustomType(c, this.b, this.__meta, this.__extmap, null) : a.call(null, "\ufdd0'b", b) ? new dalap.test.selector_test.CustomType(this.a, c, this.__meta, this.__extmap, null) : new dalap.test.selector_test.CustomType(this.a, this.b, this.__meta, cljs.core.assoc.call(null, this.__extmap, b, c), null)
+  return a.call(null, "\ufdd0'a", b) ? new dalap.test.rules_test.CustomType(c, this.b, this.__meta, this.__extmap, null) : a.call(null, "\ufdd0'b", b) ? new dalap.test.rules_test.CustomType(this.a, c, this.__meta, this.__extmap, null) : new dalap.test.rules_test.CustomType(this.a, this.b, this.__meta, cljs.core.assoc.call(null, this.__extmap, b, c), null)
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$IPrintWithWriter$_pr_writer$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType.prototype.cljs$core$IPrintWithWriter$_pr_writer$arity$3 = function(a, b, c) {
   return cljs.core.pr_sequential_writer.call(null, b, function(a) {
     return cljs.core.pr_sequential_writer.call(null, b, cljs.core.pr_writer, "", " ", "", c, a)
   }, [cljs.core.str("#"), cljs.core.str("CustomType"), cljs.core.str("{")].join(""), ", ", "}", c, cljs.core.concat.call(null, cljs.core.PersistentVector.fromArray([cljs.core.vector.call(null, "\ufdd0'a", this.a), cljs.core.vector.call(null, "\ufdd0'b", this.b)], !0), this.__extmap))
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$ICollection$_conj$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType.prototype.cljs$core$ICollection$_conj$arity$2 = function(a, b) {
   return cljs.core.vector_QMARK_.call(null, b) ? a.cljs$core$IAssociative$_assoc$arity$3(a, cljs.core._nth.call(null, b, 0), cljs.core._nth.call(null, b, 1)) : cljs.core.reduce.call(null, cljs.core._conj, a, b)
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$ISeqable$_seq$arity$1 = function() {
+dalap.test.rules_test.CustomType.prototype.cljs$core$ISeqable$_seq$arity$1 = function() {
   return cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.PersistentVector.fromArray([cljs.core.vector.call(null, "\ufdd0'a", this.a), cljs.core.vector.call(null, "\ufdd0'b", this.b)], !0), this.__extmap))
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$ICounted$_count$arity$1 = function() {
+dalap.test.rules_test.CustomType.prototype.cljs$core$ICounted$_count$arity$1 = function() {
   return 2 + cljs.core.count.call(null, this.__extmap)
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$IEquiv$_equiv$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType.prototype.cljs$core$IEquiv$_equiv$arity$2 = function(a, b) {
   return cljs.core.truth_(function() {
     if(cljs.core.truth_(b)) {
       var c = a.constructor === b.constructor;
@@ -13084,30 +13084,30 @@ dalap.test.selector_test.CustomType.prototype.cljs$core$IEquiv$_equiv$arity$2 = 
     return b
   }()) ? !0 : !1
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
-  return new dalap.test.selector_test.CustomType(this.a, this.b, b, this.__extmap, this.__hash)
+dalap.test.rules_test.CustomType.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
+  return new dalap.test.rules_test.CustomType(this.a, this.b, b, this.__extmap, this.__hash)
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$IMeta$_meta$arity$1 = function() {
+dalap.test.rules_test.CustomType.prototype.cljs$core$IMeta$_meta$arity$1 = function() {
   return this.__meta
 };
-dalap.test.selector_test.CustomType.prototype.cljs$core$IMap$_dissoc$arity$2 = function(a, b) {
-  return cljs.core.contains_QMARK_.call(null, cljs.core.PersistentHashSet.fromArray(["\ufdd0'a", "\ufdd0'b"]), b) ? cljs.core.dissoc.call(null, cljs.core.with_meta.call(null, cljs.core.into.call(null, cljs.core.ObjMap.EMPTY, a), this.__meta), b) : new dalap.test.selector_test.CustomType(this.a, this.b, this.__meta, cljs.core.not_empty.call(null, cljs.core.dissoc.call(null, this.__extmap, b)), null)
+dalap.test.rules_test.CustomType.prototype.cljs$core$IMap$_dissoc$arity$2 = function(a, b) {
+  return cljs.core.contains_QMARK_.call(null, cljs.core.PersistentHashSet.fromArray(["\ufdd0'a", "\ufdd0'b"]), b) ? cljs.core.dissoc.call(null, cljs.core.with_meta.call(null, cljs.core.into.call(null, cljs.core.ObjMap.EMPTY, a), this.__meta), b) : new dalap.test.rules_test.CustomType(this.a, this.b, this.__meta, cljs.core.not_empty.call(null, cljs.core.dissoc.call(null, this.__extmap, b)), null)
 };
-dalap.test.selector_test.CustomType.cljs$lang$type = !0;
-dalap.test.selector_test.CustomType.cljs$lang$ctorPrSeq = function() {
-  return cljs.core.list.call(null, "dalap.test.selector-test/CustomType")
+dalap.test.rules_test.CustomType.cljs$lang$type = !0;
+dalap.test.rules_test.CustomType.cljs$lang$ctorPrSeq = function() {
+  return cljs.core.list.call(null, "dalap.test.rules-test/CustomType")
 };
-dalap.test.selector_test.CustomType.cljs$lang$ctorPrWriter = function(a, b) {
-  return cljs.core._write.call(null, b, "dalap.test.selector-test/CustomType")
+dalap.test.rules_test.CustomType.cljs$lang$ctorPrWriter = function(a, b) {
+  return cljs.core._write.call(null, b, "dalap.test.rules-test/CustomType")
 };
-dalap.test.selector_test.__GT_CustomType = function(a, b) {
-  return new dalap.test.selector_test.CustomType(a, b)
+dalap.test.rules_test.__GT_CustomType = function(a, b) {
+  return new dalap.test.rules_test.CustomType(a, b)
 };
-dalap.test.selector_test.map__GT_CustomType = function(a) {
-  return new dalap.test.selector_test.CustomType((new cljs.core.Keyword("\ufdd0'a")).call(null, a), (new cljs.core.Keyword("\ufdd0'b")).call(null, a), null, cljs.core.dissoc.call(null, a, "\ufdd0'a", "\ufdd0'b"))
+dalap.test.rules_test.map__GT_CustomType = function(a) {
+  return new dalap.test.rules_test.CustomType((new cljs.core.Keyword("\ufdd0'a")).call(null, a), (new cljs.core.Keyword("\ufdd0'b")).call(null, a), null, cljs.core.dissoc.call(null, a, "\ufdd0'a", "\ufdd0'b"))
 };
-dalap.test.selector_test.CustomType;
-dalap.test.selector_test.CustomType2 = function(a, b, c, d) {
+dalap.test.rules_test.CustomType;
+dalap.test.rules_test.CustomType2 = function(a, b, c, d) {
   this.a = a;
   this.b = b;
   this.__meta = c;
@@ -13116,35 +13116,35 @@ dalap.test.selector_test.CustomType2 = function(a, b, c, d) {
   this.cljs$lang$protocol_mask$partition0$ = 2229667594;
   2 < arguments.length ? (this.__meta = c, this.__extmap = d) : this.__extmap = this.__meta = null
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$IHash$_hash$arity$1 = function(a) {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$IHash$_hash$arity$1 = function(a) {
   var b = this.__hash;
   return null != b ? b : this.__hash = a = cljs.core.hash_imap.call(null, a)
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$ILookup$_lookup$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$ILookup$_lookup$arity$2 = function(a, b) {
   return a.cljs$core$ILookup$_lookup$arity$3(a, b, null)
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$ILookup$_lookup$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$ILookup$_lookup$arity$3 = function(a, b, c) {
   return"\ufdd0'a" === b ? this.a : "\ufdd0'b" === b ? this.b : cljs.core._lookup.call(null, this.__extmap, b, c)
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$IAssociative$_assoc$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$IAssociative$_assoc$arity$3 = function(a, b, c) {
   a = cljs.core.identical_QMARK_;
-  return a.call(null, "\ufdd0'a", b) ? new dalap.test.selector_test.CustomType2(c, this.b, this.__meta, this.__extmap, null) : a.call(null, "\ufdd0'b", b) ? new dalap.test.selector_test.CustomType2(this.a, c, this.__meta, this.__extmap, null) : new dalap.test.selector_test.CustomType2(this.a, this.b, this.__meta, cljs.core.assoc.call(null, this.__extmap, b, c), null)
+  return a.call(null, "\ufdd0'a", b) ? new dalap.test.rules_test.CustomType2(c, this.b, this.__meta, this.__extmap, null) : a.call(null, "\ufdd0'b", b) ? new dalap.test.rules_test.CustomType2(this.a, c, this.__meta, this.__extmap, null) : new dalap.test.rules_test.CustomType2(this.a, this.b, this.__meta, cljs.core.assoc.call(null, this.__extmap, b, c), null)
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$IPrintWithWriter$_pr_writer$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$IPrintWithWriter$_pr_writer$arity$3 = function(a, b, c) {
   return cljs.core.pr_sequential_writer.call(null, b, function(a) {
     return cljs.core.pr_sequential_writer.call(null, b, cljs.core.pr_writer, "", " ", "", c, a)
   }, [cljs.core.str("#"), cljs.core.str("CustomType2"), cljs.core.str("{")].join(""), ", ", "}", c, cljs.core.concat.call(null, cljs.core.PersistentVector.fromArray([cljs.core.vector.call(null, "\ufdd0'a", this.a), cljs.core.vector.call(null, "\ufdd0'b", this.b)], !0), this.__extmap))
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$ICollection$_conj$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$ICollection$_conj$arity$2 = function(a, b) {
   return cljs.core.vector_QMARK_.call(null, b) ? a.cljs$core$IAssociative$_assoc$arity$3(a, cljs.core._nth.call(null, b, 0), cljs.core._nth.call(null, b, 1)) : cljs.core.reduce.call(null, cljs.core._conj, a, b)
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$ISeqable$_seq$arity$1 = function() {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$ISeqable$_seq$arity$1 = function() {
   return cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.PersistentVector.fromArray([cljs.core.vector.call(null, "\ufdd0'a", this.a), cljs.core.vector.call(null, "\ufdd0'b", this.b)], !0), this.__extmap))
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$ICounted$_count$arity$1 = function() {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$ICounted$_count$arity$1 = function() {
   return 2 + cljs.core.count.call(null, this.__extmap)
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$IEquiv$_equiv$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$IEquiv$_equiv$arity$2 = function(a, b) {
   return cljs.core.truth_(function() {
     if(cljs.core.truth_(b)) {
       var c = a.constructor === b.constructor;
@@ -13153,30 +13153,30 @@ dalap.test.selector_test.CustomType2.prototype.cljs$core$IEquiv$_equiv$arity$2 =
     return b
   }()) ? !0 : !1
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
-  return new dalap.test.selector_test.CustomType2(this.a, this.b, b, this.__extmap, this.__hash)
+dalap.test.rules_test.CustomType2.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
+  return new dalap.test.rules_test.CustomType2(this.a, this.b, b, this.__extmap, this.__hash)
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$IMeta$_meta$arity$1 = function() {
+dalap.test.rules_test.CustomType2.prototype.cljs$core$IMeta$_meta$arity$1 = function() {
   return this.__meta
 };
-dalap.test.selector_test.CustomType2.prototype.cljs$core$IMap$_dissoc$arity$2 = function(a, b) {
-  return cljs.core.contains_QMARK_.call(null, cljs.core.PersistentHashSet.fromArray(["\ufdd0'a", "\ufdd0'b"]), b) ? cljs.core.dissoc.call(null, cljs.core.with_meta.call(null, cljs.core.into.call(null, cljs.core.ObjMap.EMPTY, a), this.__meta), b) : new dalap.test.selector_test.CustomType2(this.a, this.b, this.__meta, cljs.core.not_empty.call(null, cljs.core.dissoc.call(null, this.__extmap, b)), null)
+dalap.test.rules_test.CustomType2.prototype.cljs$core$IMap$_dissoc$arity$2 = function(a, b) {
+  return cljs.core.contains_QMARK_.call(null, cljs.core.PersistentHashSet.fromArray(["\ufdd0'a", "\ufdd0'b"]), b) ? cljs.core.dissoc.call(null, cljs.core.with_meta.call(null, cljs.core.into.call(null, cljs.core.ObjMap.EMPTY, a), this.__meta), b) : new dalap.test.rules_test.CustomType2(this.a, this.b, this.__meta, cljs.core.not_empty.call(null, cljs.core.dissoc.call(null, this.__extmap, b)), null)
 };
-dalap.test.selector_test.CustomType2.cljs$lang$type = !0;
-dalap.test.selector_test.CustomType2.cljs$lang$ctorPrSeq = function() {
-  return cljs.core.list.call(null, "dalap.test.selector-test/CustomType2")
+dalap.test.rules_test.CustomType2.cljs$lang$type = !0;
+dalap.test.rules_test.CustomType2.cljs$lang$ctorPrSeq = function() {
+  return cljs.core.list.call(null, "dalap.test.rules-test/CustomType2")
 };
-dalap.test.selector_test.CustomType2.cljs$lang$ctorPrWriter = function(a, b) {
-  return cljs.core._write.call(null, b, "dalap.test.selector-test/CustomType2")
+dalap.test.rules_test.CustomType2.cljs$lang$ctorPrWriter = function(a, b) {
+  return cljs.core._write.call(null, b, "dalap.test.rules-test/CustomType2")
 };
-dalap.test.selector_test.__GT_CustomType2 = function(a, b) {
-  return new dalap.test.selector_test.CustomType2(a, b)
+dalap.test.rules_test.__GT_CustomType2 = function(a, b) {
+  return new dalap.test.rules_test.CustomType2(a, b)
 };
-dalap.test.selector_test.map__GT_CustomType2 = function(a) {
-  return new dalap.test.selector_test.CustomType2((new cljs.core.Keyword("\ufdd0'a")).call(null, a), (new cljs.core.Keyword("\ufdd0'b")).call(null, a), null, cljs.core.dissoc.call(null, a, "\ufdd0'a", "\ufdd0'b"))
+dalap.test.rules_test.map__GT_CustomType2 = function(a) {
+  return new dalap.test.rules_test.CustomType2((new cljs.core.Keyword("\ufdd0'a")).call(null, a), (new cljs.core.Keyword("\ufdd0'b")).call(null, a), null, cljs.core.dissoc.call(null, a, "\ufdd0'a", "\ufdd0'b"))
 };
-dalap.test.selector_test.CustomType2;
-dalap.test.selector_test.CustomType3 = function(a, b, c, d) {
+dalap.test.rules_test.CustomType2;
+dalap.test.rules_test.CustomType3 = function(a, b, c, d) {
   this.a = a;
   this.b = b;
   this.__meta = c;
@@ -13185,35 +13185,35 @@ dalap.test.selector_test.CustomType3 = function(a, b, c, d) {
   this.cljs$lang$protocol_mask$partition0$ = 2229667594;
   2 < arguments.length ? (this.__meta = c, this.__extmap = d) : this.__extmap = this.__meta = null
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$IHash$_hash$arity$1 = function(a) {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$IHash$_hash$arity$1 = function(a) {
   var b = this.__hash;
   return null != b ? b : this.__hash = a = cljs.core.hash_imap.call(null, a)
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$ILookup$_lookup$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$ILookup$_lookup$arity$2 = function(a, b) {
   return a.cljs$core$ILookup$_lookup$arity$3(a, b, null)
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$ILookup$_lookup$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$ILookup$_lookup$arity$3 = function(a, b, c) {
   return"\ufdd0'a" === b ? this.a : "\ufdd0'b" === b ? this.b : cljs.core._lookup.call(null, this.__extmap, b, c)
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$IAssociative$_assoc$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$IAssociative$_assoc$arity$3 = function(a, b, c) {
   a = cljs.core.identical_QMARK_;
-  return a.call(null, "\ufdd0'a", b) ? new dalap.test.selector_test.CustomType3(c, this.b, this.__meta, this.__extmap, null) : a.call(null, "\ufdd0'b", b) ? new dalap.test.selector_test.CustomType3(this.a, c, this.__meta, this.__extmap, null) : new dalap.test.selector_test.CustomType3(this.a, this.b, this.__meta, cljs.core.assoc.call(null, this.__extmap, b, c), null)
+  return a.call(null, "\ufdd0'a", b) ? new dalap.test.rules_test.CustomType3(c, this.b, this.__meta, this.__extmap, null) : a.call(null, "\ufdd0'b", b) ? new dalap.test.rules_test.CustomType3(this.a, c, this.__meta, this.__extmap, null) : new dalap.test.rules_test.CustomType3(this.a, this.b, this.__meta, cljs.core.assoc.call(null, this.__extmap, b, c), null)
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$IPrintWithWriter$_pr_writer$arity$3 = function(a, b, c) {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$IPrintWithWriter$_pr_writer$arity$3 = function(a, b, c) {
   return cljs.core.pr_sequential_writer.call(null, b, function(a) {
     return cljs.core.pr_sequential_writer.call(null, b, cljs.core.pr_writer, "", " ", "", c, a)
   }, [cljs.core.str("#"), cljs.core.str("CustomType3"), cljs.core.str("{")].join(""), ", ", "}", c, cljs.core.concat.call(null, cljs.core.PersistentVector.fromArray([cljs.core.vector.call(null, "\ufdd0'a", this.a), cljs.core.vector.call(null, "\ufdd0'b", this.b)], !0), this.__extmap))
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$ICollection$_conj$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$ICollection$_conj$arity$2 = function(a, b) {
   return cljs.core.vector_QMARK_.call(null, b) ? a.cljs$core$IAssociative$_assoc$arity$3(a, cljs.core._nth.call(null, b, 0), cljs.core._nth.call(null, b, 1)) : cljs.core.reduce.call(null, cljs.core._conj, a, b)
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$ISeqable$_seq$arity$1 = function() {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$ISeqable$_seq$arity$1 = function() {
   return cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.PersistentVector.fromArray([cljs.core.vector.call(null, "\ufdd0'a", this.a), cljs.core.vector.call(null, "\ufdd0'b", this.b)], !0), this.__extmap))
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$ICounted$_count$arity$1 = function() {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$ICounted$_count$arity$1 = function() {
   return 2 + cljs.core.count.call(null, this.__extmap)
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$IEquiv$_equiv$arity$2 = function(a, b) {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$IEquiv$_equiv$arity$2 = function(a, b) {
   return cljs.core.truth_(function() {
     if(cljs.core.truth_(b)) {
       var c = a.constructor === b.constructor;
@@ -13222,42 +13222,42 @@ dalap.test.selector_test.CustomType3.prototype.cljs$core$IEquiv$_equiv$arity$2 =
     return b
   }()) ? !0 : !1
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
-  return new dalap.test.selector_test.CustomType3(this.a, this.b, b, this.__extmap, this.__hash)
+dalap.test.rules_test.CustomType3.prototype.cljs$core$IWithMeta$_with_meta$arity$2 = function(a, b) {
+  return new dalap.test.rules_test.CustomType3(this.a, this.b, b, this.__extmap, this.__hash)
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$IMeta$_meta$arity$1 = function() {
+dalap.test.rules_test.CustomType3.prototype.cljs$core$IMeta$_meta$arity$1 = function() {
   return this.__meta
 };
-dalap.test.selector_test.CustomType3.prototype.cljs$core$IMap$_dissoc$arity$2 = function(a, b) {
-  return cljs.core.contains_QMARK_.call(null, cljs.core.PersistentHashSet.fromArray(["\ufdd0'a", "\ufdd0'b"]), b) ? cljs.core.dissoc.call(null, cljs.core.with_meta.call(null, cljs.core.into.call(null, cljs.core.ObjMap.EMPTY, a), this.__meta), b) : new dalap.test.selector_test.CustomType3(this.a, this.b, this.__meta, cljs.core.not_empty.call(null, cljs.core.dissoc.call(null, this.__extmap, b)), null)
+dalap.test.rules_test.CustomType3.prototype.cljs$core$IMap$_dissoc$arity$2 = function(a, b) {
+  return cljs.core.contains_QMARK_.call(null, cljs.core.PersistentHashSet.fromArray(["\ufdd0'a", "\ufdd0'b"]), b) ? cljs.core.dissoc.call(null, cljs.core.with_meta.call(null, cljs.core.into.call(null, cljs.core.ObjMap.EMPTY, a), this.__meta), b) : new dalap.test.rules_test.CustomType3(this.a, this.b, this.__meta, cljs.core.not_empty.call(null, cljs.core.dissoc.call(null, this.__extmap, b)), null)
 };
-dalap.test.selector_test.CustomType3.cljs$lang$type = !0;
-dalap.test.selector_test.CustomType3.cljs$lang$ctorPrSeq = function() {
-  return cljs.core.list.call(null, "dalap.test.selector-test/CustomType3")
+dalap.test.rules_test.CustomType3.cljs$lang$type = !0;
+dalap.test.rules_test.CustomType3.cljs$lang$ctorPrSeq = function() {
+  return cljs.core.list.call(null, "dalap.test.rules-test/CustomType3")
 };
-dalap.test.selector_test.CustomType3.cljs$lang$ctorPrWriter = function(a, b) {
-  return cljs.core._write.call(null, b, "dalap.test.selector-test/CustomType3")
+dalap.test.rules_test.CustomType3.cljs$lang$ctorPrWriter = function(a, b) {
+  return cljs.core._write.call(null, b, "dalap.test.rules-test/CustomType3")
 };
-dalap.test.selector_test.__GT_CustomType3 = function(a, b) {
-  return new dalap.test.selector_test.CustomType3(a, b)
+dalap.test.rules_test.__GT_CustomType3 = function(a, b) {
+  return new dalap.test.rules_test.CustomType3(a, b)
 };
-dalap.test.selector_test.map__GT_CustomType3 = function(a) {
-  return new dalap.test.selector_test.CustomType3((new cljs.core.Keyword("\ufdd0'a")).call(null, a), (new cljs.core.Keyword("\ufdd0'b")).call(null, a), null, cljs.core.dissoc.call(null, a, "\ufdd0'a", "\ufdd0'b"))
+dalap.test.rules_test.map__GT_CustomType3 = function(a) {
+  return new dalap.test.rules_test.CustomType3((new cljs.core.Keyword("\ufdd0'a")).call(null, a), (new cljs.core.Keyword("\ufdd0'b")).call(null, a), null, cljs.core.dissoc.call(null, a, "\ufdd0'a", "\ufdd0'b"))
 };
-dalap.test.selector_test.CustomType3;
-dalap.test.selector_test.CustomType4 = function(a, b) {
+dalap.test.rules_test.CustomType3;
+dalap.test.rules_test.CustomType4 = function(a, b) {
   this.a = a;
   this.b = b
 };
-dalap.test.selector_test.CustomType4.cljs$lang$type = !0;
-dalap.test.selector_test.CustomType4.cljs$lang$ctorPrSeq = function() {
-  return cljs.core.list.call(null, "dalap.test.selector-test/CustomType4")
+dalap.test.rules_test.CustomType4.cljs$lang$type = !0;
+dalap.test.rules_test.CustomType4.cljs$lang$ctorPrSeq = function() {
+  return cljs.core.list.call(null, "dalap.test.rules-test/CustomType4")
 };
-dalap.test.selector_test.CustomType4.cljs$lang$ctorPrWriter = function(a, b) {
-  return cljs.core._write.call(null, b, "dalap.test.selector-test/CustomType4")
+dalap.test.rules_test.CustomType4.cljs$lang$ctorPrWriter = function(a, b) {
+  return cljs.core._write.call(null, b, "dalap.test.rules-test/CustomType4")
 };
-dalap.test.selector_test.CustomType4;
-dalap.test.selector_test.visit_clj_form = function(a, b) {
+dalap.test.rules_test.CustomType4;
+dalap.test.rules_test.visit_clj_form = function(a, b) {
   var c = function(a, b) {
     return cljs.core.remove.call(null, function(a) {
       return cljs.core._EQ_.call(null, a, cljs.core.keyword.call(null, "dalap/form"))
@@ -13265,7 +13265,7 @@ dalap.test.selector_test.visit_clj_form = function(a, b) {
   };
   return cljs.core.list_QMARK_.call(null, a) ? cljs.core.apply.call(null, cljs.core.list, c.call(null, b, a)) : cljs.core.seq_QMARK_.call(null, a) ? cljs.core.doall.call(null, c.call(null, b, a)) : cljs.core.coll_QMARK_.call(null, a) ? cljs.core.into.call(null, cljs.core.empty.call(null, a), c.call(null, b, a)) : a
 };
-dalap.test.selector_test.assert_walk = function() {
+dalap.test.rules_test.assert_walk = function() {
   var a = function(a, b, e, f) {
     f = cljs.core.nth.call(null, f, 0, null);
     a = dalap.walk.walk.call(null, b, a);
@@ -13285,16 +13285,16 @@ dalap.test.selector_test.assert_walk = function() {
 }();
 buster.spec.describe("test-walk-with-no-rules", function() {
   buster.spec.it("without any rules on visit", function() {
-    var a = cljs.core.with_meta(cljs.core.list("\ufdd1'let", cljs.core.vec(["\ufdd1'hello", "hola"]), cljs.core.with_meta(cljs.core.list("\ufdd1'str", "\ufdd1'hello"), cljs.core.hash_map("\ufdd0'line", 13))), cljs.core.hash_map("\ufdd0'line", 13)), b = dalap.selector.gen_rules_visitor.call(null, cljs.core.PersistentVector.EMPTY, dalap.test.selector_test.visit_clj_form);
-    dalap.test.selector_test.assert_walk.call(null, b, a, a, "should be same value");
+    var a = cljs.core.with_meta(cljs.core.list("\ufdd1'let", cljs.core.vec(["\ufdd1'hello", "hola"]), cljs.core.with_meta(cljs.core.list("\ufdd1'str", "\ufdd1'hello"), cljs.core.hash_map("\ufdd0'line", 13))), cljs.core.hash_map("\ufdd0'line", 13)), b = dalap.rules.gen_rules_visitor.call(null, cljs.core.PersistentVector.EMPTY, dalap.test.rules_test.visit_clj_form);
+    dalap.test.rules_test.assert_walk.call(null, b, a, a, "should be same value");
     return null
   });
   return null
 });
 buster.spec.describe("test-symbol-as-a-selector", function() {
   buster.spec.it("with symbol as a selector on rules", function() {
-    var a = cljs.core.PersistentVector.fromArray(["\ufdd1'hello", "\ufdd1'hallo"], !0), a = dalap.selector.gen_rules_visitor.call(null, a, dalap.test.selector_test.visit_clj_form);
-    dalap.test.selector_test.assert_walk.call(null, a, cljs.core.with_meta(cljs.core.list("\ufdd1'let", cljs.core.vec(["\ufdd1'hello", "hola"]), cljs.core.with_meta(cljs.core.list("\ufdd1'str", "\ufdd1'hello"), cljs.core.hash_map("\ufdd0'line", 14))), cljs.core.hash_map("\ufdd0'line", 14)), cljs.core.with_meta(cljs.core.list("\ufdd1'let", cljs.core.vec(["\ufdd1'hallo", "hola"]), cljs.core.with_meta(cljs.core.list("\ufdd1'str", "\ufdd1'hallo"), cljs.core.hash_map("\ufdd0'line", 14))), cljs.core.hash_map("\ufdd0'line", 
+    var a = cljs.core.PersistentVector.fromArray(["\ufdd1'hello", "\ufdd1'hallo"], !0), a = dalap.rules.gen_rules_visitor.call(null, a, dalap.test.rules_test.visit_clj_form);
+    dalap.test.rules_test.assert_walk.call(null, a, cljs.core.with_meta(cljs.core.list("\ufdd1'let", cljs.core.vec(["\ufdd1'hello", "hola"]), cljs.core.with_meta(cljs.core.list("\ufdd1'str", "\ufdd1'hello"), cljs.core.hash_map("\ufdd0'line", 14))), cljs.core.hash_map("\ufdd0'line", 14)), cljs.core.with_meta(cljs.core.list("\ufdd1'let", cljs.core.vec(["\ufdd1'hallo", "hola"]), cljs.core.with_meta(cljs.core.list("\ufdd1'str", "\ufdd1'hallo"), cljs.core.hash_map("\ufdd0'line", 14))), cljs.core.hash_map("\ufdd0'line", 
     14)));
     return null
   });
@@ -13302,8 +13302,8 @@ buster.spec.describe("test-symbol-as-a-selector", function() {
 });
 buster.spec.describe("test-function-as-a-selector", function() {
   buster.spec.it("with functions as a selector on rules", function() {
-    var a = dalap.selector.when.call(null, cljs.core.vector_QMARK_), a = cljs.core.PersistentVector.fromArray([a, "Something Else"], !0), a = dalap.selector.gen_rules_visitor.call(null, a, dalap.test.selector_test.visit_clj_form);
-    dalap.test.selector_test.assert_walk.call(null, a, cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, cljs.core.apply.call(null, cljs.core.vector, cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, "uno"), cljs.core.list.call(null, 2))))), cljs.core.list.call(null, cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, "\ufdd1'user/foobar")))))), cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, 
+    var a = dalap.rules.when.call(null, cljs.core.vector_QMARK_), a = cljs.core.PersistentVector.fromArray([a, "Something Else"], !0), a = dalap.rules.gen_rules_visitor.call(null, a, dalap.test.rules_test.visit_clj_form);
+    dalap.test.rules_test.assert_walk.call(null, a, cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, cljs.core.apply.call(null, cljs.core.vector, cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, "uno"), cljs.core.list.call(null, 2))))), cljs.core.list.call(null, cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, "\ufdd1'user/foobar")))))), cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, 
     "Something Else"), cljs.core.list.call(null, cljs.core.seq.call(null, cljs.core.concat.call(null, cljs.core.list.call(null, "\ufdd1'user/foobar")))))));
     return null
   });
@@ -13311,16 +13311,16 @@ buster.spec.describe("test-function-as-a-selector", function() {
 });
 buster.spec.describe("test-walking-over-a-set", function() {
   buster.spec.it("with set as the collection we are visiting", function() {
-    var a = cljs.core.PersistentVector.fromArray(["\ufdd1'foo", 999], !0), a = dalap.selector.gen_rules_visitor.call(null, a, dalap.test.selector_test.visit_clj_form);
-    dalap.test.selector_test.assert_walk.call(null, a, cljs.core.PersistentHashSet.fromArray(["\ufdd1'foo", "\ufdd1'hello"]), cljs.core.PersistentHashSet.fromArray([999, "\ufdd1'hello"]), "visitor should be able to walk on sets");
+    var a = cljs.core.PersistentVector.fromArray(["\ufdd1'foo", 999], !0), a = dalap.rules.gen_rules_visitor.call(null, a, dalap.test.rules_test.visit_clj_form);
+    dalap.test.rules_test.assert_walk.call(null, a, cljs.core.PersistentHashSet.fromArray(["\ufdd1'foo", "\ufdd1'hello"]), cljs.core.PersistentHashSet.fromArray([999, "\ufdd1'hello"]), "visitor should be able to walk on sets");
     return null
   });
   return null
 });
 buster.spec.describe("test-vector-as-a-selector", function() {
   buster.spec.it("with vectors as selector on rules", function() {
-    var a = cljs.core.PersistentVector.fromArray([dalap.selector.when.call(null, cljs.core.vector_QMARK_), "\ufdd1'foobar"], !0), a = cljs.core.PersistentVector.fromArray([a, "\ufdd1'replacement"], !0), a = dalap.selector.gen_rules_visitor.call(null, a, dalap.test.selector_test.visit_clj_form);
-    dalap.test.selector_test.assert_walk.call(null, a, cljs.core.PersistentVector.fromArray([1, 2, cljs.core.PersistentVector.fromArray(["\ufdd1'foobar"], !0), "other value"], !0), cljs.core.PersistentVector.fromArray([1, 2, cljs.core.PersistentVector.fromArray(["\ufdd1'replacement"], !0), "other value"], !0));
+    var a = cljs.core.PersistentVector.fromArray([dalap.rules.when.call(null, cljs.core.vector_QMARK_), "\ufdd1'foobar"], !0), a = cljs.core.PersistentVector.fromArray([a, "\ufdd1'replacement"], !0), a = dalap.rules.gen_rules_visitor.call(null, a, dalap.test.rules_test.visit_clj_form);
+    dalap.test.rules_test.assert_walk.call(null, a, cljs.core.PersistentVector.fromArray([1, 2, cljs.core.PersistentVector.fromArray(["\ufdd1'foobar"], !0), "other value"], !0), cljs.core.PersistentVector.fromArray([1, 2, cljs.core.PersistentVector.fromArray(["\ufdd1'replacement"], !0), "other value"], !0));
     return null
   });
   return null

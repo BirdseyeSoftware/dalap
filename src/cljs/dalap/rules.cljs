@@ -1,8 +1,8 @@
 ;; This file was generated with dalap-cljsbuild from
 ;;
-;; src/clj/dalap/selector.clj @ Tue Nov 13 19:41:55 UTC 2012
+;; src/clj/dalap/rules.clj @ Tue Nov 13 19:51:03 UTC 2012
 ;;
-(ns dalap.selector (:refer-clojure :exclude [when]) (:require [dalap.walk :refer (update-in-state)]))
+(ns dalap.rules (:refer-clojure :exclude [when]) (:require [dalap.walk :refer (update-in-state)]))
 (defn- span [p xs] ((juxt (partial take-while p) (partial drop-while p)) xs))
 (defn -compose-visitors "Creates a visitor function that passes it's parameter to the\n  given inner-visitor function, then the result of this call is going\n  to be passed to the outer-visitor function, using the same walker\n  on both calls." [inner-visitor outer-visitor] (fn comp-visitor [input walker] (outer-visitor (inner-visitor input walker) walker)))
 (defn -wrap-walker "Modifies the walker instance when navigating through the input, you\n  would like to use this function when you want to transform the walker\n  somehow while you are visiting an element of the input. This is intended\n  to be called from a visitor function.\n  " [visitor -wrap-walker-fn] (fn wrapped-visitor [input walker] (visitor input (-wrap-walker-fn input walker))))
@@ -22,5 +22,5 @@
 (defn -get-transformer-of-first-matching-rule [node walker rules] (letfn [(transformer-if-match [[selector? transformer]] (if (selector? node walker) transformer))] (some transformer-if-match rules)))
 (defn- -gen-visitor-from-rules [rules inspect-node-fn?] (fn rules-visitor [node walker] (if (inspect-node-fn? node) (let [visitor (or (-get-transformer-of-first-matching-rule node walker rules) (constantly node))] (visitor node walker)) node)))
 (defn -normalize-rules [rules] (for [[selector transformer] rules] [(to-rule-selector selector) (to-rule-transformer transformer)]))
-(defn -gen-rules-decorator "" [rules] (let [inspect-node? identity rule-pairs (partition 2 rules) inner-visitor (-gen-visitor-from-rules (-normalize-rules rule-pairs) inspect-node?) add-history-to-walker (fn add-hist [node w] (if (inspect-node? node) (update-in-state w :history (fn* [p1__5456#] (conj p1__5456# node))) w))] (fn rules-decorator [visit-fn] (-wrap-walker (-compose-visitors inner-visitor visit-fn) add-history-to-walker))))
+(defn -gen-rules-decorator "" [rules] (let [inspect-node? identity rule-pairs (partition 2 rules) inner-visitor (-gen-visitor-from-rules (-normalize-rules rule-pairs) inspect-node?) add-history-to-walker (fn add-hist [node w] (if (inspect-node? node) (update-in-state w :history (fn* [p1__5452#] (conj p1__5452# node))) w))] (fn rules-decorator [visit-fn] (-wrap-walker (-compose-visitors inner-visitor visit-fn) add-history-to-walker))))
 (defn gen-rules-visitor "" ([rules fallback-visitor] ((-gen-rules-decorator rules) fallback-visitor)))

@@ -1,4 +1,4 @@
-(ns dalap.selector
+(ns dalap.rules
   (:refer-clojure :exclude [when])
   (:require [dalap.walk :refer (update-in-state)]))
 

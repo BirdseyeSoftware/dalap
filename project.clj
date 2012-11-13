@@ -21,7 +21,7 @@ programming."
      :dalap
      {:paths
       {"src/clj/dalap/walk.clj" "src/cljs/dalap/walk.cljs"
-       "src/clj/dalap/selector.clj" "src/cljs/dalap/selector.cljs"}}
+       "src/clj/dalap/rules.clj" "src/cljs/dalap/rules.cljs"}}
      :compiler
      {:output-to "resources/js/dalap_core_dev.js"
       :optimizations :whitespace
@@ -31,7 +31,7 @@ programming."
      :source-path "test/cljs"
      :dalap
      {:paths
-      {"test/clj/dalap/test/selector_test.clj" "test/cljs/dalap/test/selector_test.cljs"
+      {"test/clj/dalap/test/rules_test.clj" "test/cljs/dalap/test/rules_test.cljs"
        "test/clj/dalap/test/walk_test.clj" "test/cljs/dalap/test/walk_test.cljs" }}
      :compiler
      {:externs ["externs/buster.js"]
@@ -53,7 +53,7 @@ programming."
      :source-path "test/cljs"
      ;; :dalap
      ;; {:paths
-     ;;  {"test/clj/dalap/test/selector_test.clj" "test/cljs/dalap/test/selector_test.cljs"
+     ;;  {"test/clj/dalap/test/rules_test.clj" "test/cljs/dalap/test/rules_test.cljs"
      ;;   "test/clj/dalap/test/walk_test.clj" "test/cljs/dalap/test/walk_test.cljs"}}
      :compiler
      {:externs ["externs/buster.js"]
