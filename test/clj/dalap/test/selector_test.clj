@@ -1,10 +1,10 @@
 ^{:cljs
-  (ns dalap.test.selector
+  (ns dalap.test.selector-test
    (:require [buster-cljs.core :refer [is]]
             [dalap.selector :refer [-gen-decorator gen-visitor]]
             [dalap.walk :refer [walk]])
    (:require-macros [buster-cljs.macros :refer [deftest it]]))}
-(ns dalap.test.selector
+(ns dalap.test.selector-test
   (:require [clojure.test :refer [deftest is]]
             [buster-cljs.clojure :refer [it]]
             [dalap.selector :refer [-gen-decorator gen-visitor]]

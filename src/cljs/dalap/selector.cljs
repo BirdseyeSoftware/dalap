@@ -1,6 +1,6 @@
 ;; This file was generated with dalap-cljsbuild from
 ;;
-;; src/clj/dalap/selector.clj @ Tue Nov 13 00:36:30 UTC 2012
+;; src/clj/dalap/selector.clj @ Tue Nov 13 07:46:46 UTC 2012
 ;;
 (ns dalap.selector (:require [dalap.walk :refer (update-in-state)]))
 (defn -compose-visitors "Creates a visitor function that passes it's parameter to the\n  given inner-visitor function, then the result of this call is going\n  to be passed to the outer-visitor function, using the same walker\n  on both calls." [inner-visitor outer-visitor] (fn comp-visitor [input walker] (outer-visitor (inner-visitor input walker) walker)))
@@ -18,5 +18,5 @@
 (extend-protocol IAdaptToVisitor PersistentVector (to-visitor [v] (fn vec-replacement-value-visitor [_node _walker] v)) string (to-visitor [s] (cond (symbol? s) (fn symbol-replacement-value-visitor [_node _walker] s) (keyword? s) (fn keyword-replacement-value-visitor [node _walker] (s node)) :else (fn string-replacement-value-visitor [node _walker] s))) default (to-visitor [obj] (fn replacement-value-visitor [_node _walker] obj)))
 (defn- gen-visitor-from-pred-visitor-pairs [predicates+visitors inspect-node?] (fn predicate-table-visitor [node walker] (if (inspect-node? node) (let [vis (or (some (fn pred-checker [[p? v]] (if (p? node walker) v)) predicates+visitors) (constantly node))] (vis node walker)) node)))
 (defn normalize-selector-transformer-pairs [selectors+transformers] (for [[sel transformer] selectors+transformers] [(to-tree-loc-matcher sel) (to-visitor transformer)]))
-(defn -gen-decorator "Revisit documentation" [selectors+transformers] (let [inspect-node? identity pairs (partition 2 selectors+transformers) inner-visitor (gen-visitor-from-pred-visitor-pairs (normalize-selector-transformer-pairs pairs) inspect-node?) add-history-to-walker (fn add-hist [node w] (if (inspect-node? node) (update-in-state w :history (fn* [p1__5451#] (conj p1__5451# node))) w))] (fn decorator [visit-fn] (-wrap-walker (-compose-visitors inner-visitor visit-fn) add-history-to-walker))))
+(defn -gen-decorator "Revisit documentation" [selectors+transformers] (let [inspect-node? identity pairs (partition 2 selectors+transformers) inner-visitor (gen-visitor-from-pred-visitor-pairs (normalize-selector-transformer-pairs pairs) inspect-node?) add-history-to-walker (fn add-hist [node w] (if (inspect-node? node) (update-in-state w :history (fn* [p1__5446#] (conj p1__5446# node))) w))] (fn decorator [visit-fn] (-wrap-walker (-compose-visitors inner-visitor visit-fn) add-history-to-walker))))
 (defn gen-visitor "API: Public" ([selectors+transformers fallback-visitor] ((-gen-decorator selectors+transformers) fallback-visitor)))

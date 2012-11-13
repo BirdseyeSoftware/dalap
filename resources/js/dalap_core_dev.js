@@ -21266,8 +21266,8 @@ dalap.selector._gen_decorator = function _gen_decorator(selectors_PLUS_transform
   var inner_visitor = dalap.selector.gen_visitor_from_pred_visitor_pairs.call(null, dalap.selector.normalize_selector_transformer_pairs.call(null, pairs), inspect_node_QMARK_);
   var add_history_to_walker = function add_hist(node, w) {
     if(cljs.core.truth_(inspect_node_QMARK_.call(null, node))) {
-      return dalap.walk.update_in_state.call(null, w, "\ufdd0'history", function(p1__5451_SHARP_) {
-        return cljs.core.conj.call(null, p1__5451_SHARP_, node)
+      return dalap.walk.update_in_state.call(null, w, "\ufdd0'history", function(p1__5446_SHARP_) {
+        return cljs.core.conj.call(null, p1__5446_SHARP_, node)
       })
     }else {
       return w

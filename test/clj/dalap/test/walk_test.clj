@@ -1,5 +1,5 @@
 ^{:cljs
-  (ns dalap.test.walk
+  (ns dalap.test.walk-test
     (:require [buster-cljs.core :refer [is]]
               [dalap.walk :refer
                (IWalkerState
@@ -11,7 +11,7 @@
                 -gen-walker
                 walk)])
     (:require-macros [buster-cljs.macros :refer [initialize-buster deftest it]]))}
-(ns dalap.test.walk
+(ns dalap.test.walk-test
   (:require [clojure.test :refer :all]
             [buster-cljs.clojure :refer [it]]
             [dalap.walk :refer
