@@ -1,6 +1,6 @@
 ;; This file was generated with dalap-cljsbuild from
 ;;
-;; src/clj/dalap/walk.clj @ Fri Nov 09 21:28:48 UTC 2012
+;; src/clj/dalap/walk.clj @ Tue Nov 13 00:36:30 UTC 2012
 ;;
 (ns dalap.walk)
 (defprotocol IWalkerState "API: Public\n\n  The IWalkerState is used to add a state interface to a\n  Walker type. Initially this protocol is being used only on\n  dalap.walk/Walker; if you need to implement your own walker\n  and you want to hold a state on this walker, you should use this\n  protocol to do so." (get-state [this] "Returns the state of a walker") (update-state [this update-fn] "Updates the state of a walker using `update-fn`") (update-in-state [this keys fn] "Updates a value in the state map pointed by `keys`, it\n      uses the `fn` function to transform the value.") (conj-state [this new-state] "Conjs a value into the state map."))

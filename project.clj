@@ -49,5 +49,18 @@ programming."
       :libraries ["resources/js/dalap_core_dev.js"]
       :output-to "resources/js/dalap_core_node_test.js"
       :optimizations :simple
-      :pretty-print true}}]}
+      :pretty-print true}}
+    ;;;
+    {:id :browser-test-optimized
+     :source-path "test/cljs"
+     :dalap
+     {:paths
+      {"test/clj/dalap/test/selector.clj" "test/cljs/dalap/test/selector.cljs"
+       "test/clj/dalap/test/walk.clj" "test/cljs/dalap/test/walk.cljs" }}
+     :compiler
+     {:externs ["externs/buster.js"]
+      :libraries ["src/cljs"]
+      :output-to "resources/js/dalap_core_browser_test_optimized.js"
+      :optimizations :advanced}}
+    ]}
   :repositories {"snapshots" {:url "s3p://lein-snapshots/snapshots"}})

@@ -388,6 +388,13 @@ goog.base = function(a, b, c) {
 goog.scope = function(a) {
   a.call(goog.global)
 };
+goog.debug = {};
+goog.debug.Error = function(a) {
+  this.stack = Error().stack || "";
+  a && (this.message = "" + a)
+};
+goog.inherits(goog.debug.Error, Error);
+goog.debug.Error.prototype.name = "CustomError";
 goog.string = {};
 goog.string.Unicode = {NBSP:"\u00a0"};
 goog.string.startsWith = function(a, b) {
@@ -708,13 +715,6 @@ goog.string.toSelectorCaseCache_ = {};
 goog.string.toSelectorCase = function(a) {
   return goog.string.toSelectorCaseCache_[a] || (goog.string.toSelectorCaseCache_[a] = ("" + a).replace(/([A-Z])/g, "-$1").toLowerCase())
 };
-goog.debug = {};
-goog.debug.Error = function(a) {
-  this.stack = Error().stack || "";
-  a && (this.message = "" + a)
-};
-goog.inherits(goog.debug.Error, Error);
-goog.debug.Error.prototype.name = "CustomError";
 goog.asserts = {};
 goog.asserts.ENABLE_ASSERTS = goog.DEBUG;
 goog.asserts.AssertionError = function(a, b) {
@@ -12695,44 +12695,6 @@ cljs.core.UUID.prototype.toString = function() {
   return cljs.core.pr_str.call(null, this)
 };
 cljs.core.UUID;
-var buster_cljs = {core:{}};
-buster_cljs.core.cljs__GT_js = function cljs__GT_js(b) {
-  if(cljs.core.string_QMARK_.call(null, b)) {
-    return b
-  }
-  if(cljs.core.keyword_QMARK_.call(null, b)) {
-    return cljs.core.name.call(null, b)
-  }
-  if(cljs.core.map_QMARK_.call(null, b)) {
-    for(var c = {}, b = cljs.core.seq.call(null, b);;) {
-      if(b) {
-        var d = cljs.core.first.call(null, b), e = cljs.core.nth.call(null, d, 0, null), d = cljs.core.nth.call(null, d, 1, null);
-        c[cljs__GT_js.call(null, e)] = cljs__GT_js.call(null, d);
-        b = cljs.core.next.call(null, b)
-      }else {
-        break
-      }
-    }
-    return c
-  }
-  return cljs.core.coll_QMARK_.call(null, b) ? cljs.core.apply.call(null, cljs.core.array, cljs.core.map.call(null, cljs__GT_js, b)) : b
-};
-buster_cljs.core.is = function() {
-  var a = function(a, b) {
-    return buster.assert(a, b)
-  }, b = function(b, d) {
-    var e = null;
-    goog.isDef(d) && (e = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0));
-    return a.call(this, b, e)
-  };
-  b.cljs$lang$maxFixedArity = 1;
-  b.cljs$lang$applyTo = function(b) {
-    var d = cljs.core.first(b), b = cljs.core.rest(b);
-    return a(d, b)
-  };
-  b.cljs$lang$arity$variadic = a;
-  return b
-}();
 var dalap = {walk:{}};
 dalap.walk.IWalkerState = {};
 dalap.walk.get_state = function(a) {
@@ -12855,83 +12817,6 @@ dalap.walk.walk = function() {
   a.cljs$lang$arity$3 = c;
   return a
 }();
-dalap.test = {};
-dalap.test.walk = {};
-cljs.core.not_EQ_.call(null, "undefined", typeof exports) && (buster = require("buster"));
-dalap.test.walk.walker_equals = function(a, b) {
-  return buster_cljs.core.is.call(null, function() {
-    var c = cljs.core.instance_QMARK_.call(null, dalap.walk.Walker, b);
-    return c ? (c = cljs.core._EQ_.call(null, a.visitor, b.visitor)) ? cljs.core._EQ_.call(null, a.state_map, b.state_map) : c : c
-  }())
-};
-dalap.test.walk.identity_visitor = function(a) {
-  return a
-};
-buster.spec.describe("test-walker-constructors", function() {
-  buster.spec.it("various walker constructors work identically", function() {
-    for(var a = cljs.core.seq.call(null, cljs.core.PersistentVector.fromArray([new dalap.walk.Walker(dalap.test.walk.identity_visitor, cljs.core.ObjMap.EMPTY), dalap.walk._gen_walker.call(null, dalap.test.walk.identity_visitor), dalap.walk._gen_walker.call(null, dalap.test.walk.identity_visitor, cljs.core.ObjMap.EMPTY)], !0));;) {
-      if(a) {
-        var b = cljs.core.first.call(null, a);
-        buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, 1, b.call(null, 1)), "1");
-        buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, dalap.walk.get_state.call(null, b), cljs.core.ObjMap.EMPTY), "2");
-        buster_cljs.core.is.call(null, function() {
-          var a = b;
-          return a ? cljs.core.truth_(cljs.core.truth_(null) ? null : a.dalap$walk$IWalkerState$) ? !0 : a.cljs$lang$protocol_mask$partition$ ? !1 : cljs.core.type_satisfies_.call(null, dalap.walk.IWalkerState, a) : cljs.core.type_satisfies_.call(null, dalap.walk.IWalkerState, a)
-        }(), "3");
-        buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, b.visitor, dalap.test.walk.identity_visitor), "4");
-        a = cljs.core.next.call(null, a)
-      }else {
-        break
-      }
-    }
-    return null
-  });
-  return null
-});
-buster.spec.describe("test-walker-state-management", function() {
-  buster.spec.it("manages state correctly", function() {
-    for(var a = cljs.core.seq.call(null, cljs.core.PersistentVector.fromArray([cljs.core.ObjMap.EMPTY, cljs.core.ObjMap.fromObject(["\ufdd0'a"], {"\ufdd0'a":1234}), cljs.core.ObjMap.fromObject(["\ufdd0'a", "\ufdd0'b"], {"\ufdd0'a":1234, "\ufdd0'b":99})], !0));;) {
-      if(a) {
-        var b = cljs.core.first.call(null, a), c = dalap.walk._gen_walker.call(null, dalap.test.walk.identity_visitor, b);
-        buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, dalap.walk.get_state.call(null, c), b));
-        var d = dalap.walk.conj_state.call(null, c, cljs.core.ObjMap.fromObject(["\ufdd0'c"], {"\ufdd0'c":12}));
-        buster_cljs.core.is.call(null, (new cljs.core.Keyword("\ufdd0'c")).call(null, d), 12);
-        cljs.core.not_EQ_.call(null, c, d);
-        dalap.test.walk.walker_equals.call(null, dalap.walk.update_state.call(null, d, function() {
-          return function(a) {
-            return cljs.core.dissoc.call(null, a, "\ufdd0'c")
-          }
-        }(a, d, c, b)), c);
-        dalap.test.walk.walker_equals.call(null, dalap.walk.update_in_state.call(null, c, "\ufdd0'c", function() {
-          return function(a) {
-            a;
-            return 12
-          }
-        }(a, d, c, b)), d);
-        dalap.test.walk.walker_equals.call(null, dalap.walk.conj_state.call(null, d, cljs.core.ObjMap.fromObject(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2})), dalap.walk.update_state.call(null, d, function() {
-          return function(a) {
-            return cljs.core.conj.call(null, a, cljs.core.ObjMap.fromObject(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2}))
-          }
-        }(a, d, c, b)));
-        a = cljs.core.next.call(null, a)
-      }else {
-        break
-      }
-    }
-    return null
-  });
-  return null
-});
-dalap.test.walk.recursive_visitor = function(a, b) {
-  return cljs.core.vector_QMARK_.call(null, a) ? cljs.core.into.call(null, cljs.core.PersistentVector.EMPTY, cljs.core.map.call(null, b, a)) : a
-};
-buster.spec.describe("test-walker-with-recursive-visitor-fn", function() {
-  buster.spec.it("recur over the walk function", function() {
-    buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, dalap.walk.walk.call(null, cljs.core.PersistentVector.fromArray([cljs.core.PersistentVector.fromArray([1, 2, 3], !0), cljs.core.PersistentVector.fromArray([4, 5], !0)], !0), dalap.test.walk.recursive_visitor), cljs.core.PersistentVector.fromArray([cljs.core.PersistentVector.fromArray([1, 2, 3], !0), cljs.core.PersistentVector.fromArray([4, 5], !0)], !0)));
-    return null
-  });
-  return null
-});
 dalap.selector = {};
 dalap.selector._compose_visitors = function(a, b) {
   return function(c, d) {
@@ -12942,28 +12827,6 @@ dalap.selector._wrap_walker = function(a, b) {
   return function(c, d) {
     return a.call(null, c, b.call(null, c, d))
   }
-};
-dalap.selector.NodeMatcher = {};
-dalap.selector.to_node_matcher = function(a) {
-  if(a ? a.dalap$selector$NodeMatcher$to_node_matcher$arity$1 : a) {
-    return a.dalap$selector$NodeMatcher$to_node_matcher$arity$1(a)
-  }
-  var b;
-  b = dalap.selector.to_node_matcher[goog.typeOf(null == a ? null : a)];
-  if(!b && (b = dalap.selector.to_node_matcher._, !b)) {
-    throw cljs.core.missing_protocol.call(null, "NodeMatcher.to-node-matcher", a);
-  }
-  return b.call(null, a)
-};
-dalap.selector.NodeMatcher._ = !0;
-dalap.selector.to_node_matcher._ = function(a) {
-  return function(b) {
-    return cljs.core._EQ_.call(null, cljs.core.type.call(null, b), a)
-  }
-};
-dalap.selector.NodeMatcher["function"] = !0;
-dalap.selector.to_node_matcher["function"] = function(a) {
-  return a
 };
 dalap.selector.TreeLocMatcher = {};
 dalap.selector.to_tree_loc_matcher = function(a) {
@@ -13118,6 +12981,121 @@ dalap.selector._gen_decorator = function(a) {
 dalap.selector.gen_visitor = function(a, b) {
   return dalap.selector._gen_decorator.call(null, a).call(null, b)
 };
+var buster_cljs = {core:{}};
+buster_cljs.core.cljs__GT_js = function cljs__GT_js(b) {
+  if(cljs.core.string_QMARK_.call(null, b)) {
+    return b
+  }
+  if(cljs.core.keyword_QMARK_.call(null, b)) {
+    return cljs.core.name.call(null, b)
+  }
+  if(cljs.core.map_QMARK_.call(null, b)) {
+    for(var c = {}, b = cljs.core.seq.call(null, b);;) {
+      if(b) {
+        var d = cljs.core.first.call(null, b), e = cljs.core.nth.call(null, d, 0, null), d = cljs.core.nth.call(null, d, 1, null);
+        c[cljs__GT_js.call(null, e)] = cljs__GT_js.call(null, d);
+        b = cljs.core.next.call(null, b)
+      }else {
+        break
+      }
+    }
+    return c
+  }
+  return cljs.core.coll_QMARK_.call(null, b) ? cljs.core.apply.call(null, cljs.core.array, cljs.core.map.call(null, cljs__GT_js, b)) : b
+};
+buster_cljs.core.is = function() {
+  var a = function(a, b) {
+    return buster.assert(a, b)
+  }, b = function(b, d) {
+    var e = null;
+    goog.isDef(d) && (e = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0));
+    return a.call(this, b, e)
+  };
+  b.cljs$lang$maxFixedArity = 1;
+  b.cljs$lang$applyTo = function(b) {
+    var d = cljs.core.first(b), b = cljs.core.rest(b);
+    return a(d, b)
+  };
+  b.cljs$lang$arity$variadic = a;
+  return b
+}();
+dalap.test = {};
+dalap.test.walk = {};
+cljs.core.not_EQ_.call(null, "undefined", typeof exports) && (buster = require("buster"));
+dalap.test.walk.walker_equals = function(a, b) {
+  return buster_cljs.core.is.call(null, function() {
+    var c = cljs.core.instance_QMARK_.call(null, dalap.walk.Walker, b);
+    return c ? (c = cljs.core._EQ_.call(null, a.visitor, b.visitor)) ? cljs.core._EQ_.call(null, a.state_map, b.state_map) : c : c
+  }())
+};
+dalap.test.walk.identity_visitor = function(a) {
+  return a
+};
+buster.spec.describe("test-walker-constructors", function() {
+  buster.spec.it("various walker constructors work identically", function() {
+    for(var a = cljs.core.seq.call(null, cljs.core.PersistentVector.fromArray([new dalap.walk.Walker(dalap.test.walk.identity_visitor, cljs.core.ObjMap.EMPTY), dalap.walk._gen_walker.call(null, dalap.test.walk.identity_visitor), dalap.walk._gen_walker.call(null, dalap.test.walk.identity_visitor, cljs.core.ObjMap.EMPTY)], !0));;) {
+      if(a) {
+        var b = cljs.core.first.call(null, a);
+        buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, 1, b.call(null, 1)), "1");
+        buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, dalap.walk.get_state.call(null, b), cljs.core.ObjMap.EMPTY), "2");
+        buster_cljs.core.is.call(null, function() {
+          var a = b;
+          return a ? cljs.core.truth_(cljs.core.truth_(null) ? null : a.dalap$walk$IWalkerState$) ? !0 : a.cljs$lang$protocol_mask$partition$ ? !1 : cljs.core.type_satisfies_.call(null, dalap.walk.IWalkerState, a) : cljs.core.type_satisfies_.call(null, dalap.walk.IWalkerState, a)
+        }(), "3");
+        buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, b.visitor, dalap.test.walk.identity_visitor), "4");
+        a = cljs.core.next.call(null, a)
+      }else {
+        break
+      }
+    }
+    return null
+  });
+  return null
+});
+buster.spec.describe("test-walker-state-management", function() {
+  buster.spec.it("manages state correctly", function() {
+    for(var a = cljs.core.seq.call(null, cljs.core.PersistentVector.fromArray([cljs.core.ObjMap.EMPTY, cljs.core.ObjMap.fromObject(["\ufdd0'a"], {"\ufdd0'a":1234}), cljs.core.ObjMap.fromObject(["\ufdd0'a", "\ufdd0'b"], {"\ufdd0'a":1234, "\ufdd0'b":99})], !0));;) {
+      if(a) {
+        var b = cljs.core.first.call(null, a), c = dalap.walk._gen_walker.call(null, dalap.test.walk.identity_visitor, b);
+        buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, dalap.walk.get_state.call(null, c), b));
+        var d = dalap.walk.conj_state.call(null, c, cljs.core.ObjMap.fromObject(["\ufdd0'c"], {"\ufdd0'c":12}));
+        buster_cljs.core.is.call(null, (new cljs.core.Keyword("\ufdd0'c")).call(null, d), 12);
+        cljs.core.not_EQ_.call(null, c, d);
+        dalap.test.walk.walker_equals.call(null, dalap.walk.update_state.call(null, d, function() {
+          return function(a) {
+            return cljs.core.dissoc.call(null, a, "\ufdd0'c")
+          }
+        }(a, d, c, b)), c);
+        dalap.test.walk.walker_equals.call(null, dalap.walk.update_in_state.call(null, c, "\ufdd0'c", function() {
+          return function(a) {
+            a;
+            return 12
+          }
+        }(a, d, c, b)), d);
+        dalap.test.walk.walker_equals.call(null, dalap.walk.conj_state.call(null, d, cljs.core.ObjMap.fromObject(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2})), dalap.walk.update_state.call(null, d, function() {
+          return function(a) {
+            return cljs.core.conj.call(null, a, cljs.core.ObjMap.fromObject(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2}))
+          }
+        }(a, d, c, b)));
+        a = cljs.core.next.call(null, a)
+      }else {
+        break
+      }
+    }
+    return null
+  });
+  return null
+});
+dalap.test.walk.recursive_visitor = function(a, b) {
+  return cljs.core.vector_QMARK_.call(null, a) ? cljs.core.into.call(null, cljs.core.PersistentVector.EMPTY, cljs.core.map.call(null, b, a)) : a
+};
+buster.spec.describe("test-walker-with-recursive-visitor-fn", function() {
+  buster.spec.it("recur over the walk function", function() {
+    buster_cljs.core.is.call(null, cljs.core._EQ_.call(null, dalap.walk.walk.call(null, cljs.core.PersistentVector.fromArray([cljs.core.PersistentVector.fromArray([1, 2, 3], !0), cljs.core.PersistentVector.fromArray([4, 5], !0)], !0), dalap.test.walk.recursive_visitor), cljs.core.PersistentVector.fromArray([cljs.core.PersistentVector.fromArray([1, 2, 3], !0), cljs.core.PersistentVector.fromArray([4, 5], !0)], !0)));
+    return null
+  });
+  return null
+});
 dalap.test.selector = {};
 dalap.test.selector.CustomType = function(a, b, c, d) {
   this.a = a;

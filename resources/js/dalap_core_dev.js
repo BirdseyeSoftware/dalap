@@ -498,6 +498,15 @@ goog.base = function(me, opt_methodName, var_args) {
 goog.scope = function(fn) {
   fn.call(goog.global)
 };
+goog.provide("goog.debug.Error");
+goog.debug.Error = function(opt_msg) {
+  this.stack = (new Error).stack || "";
+  if(opt_msg) {
+    this.message = String(opt_msg)
+  }
+};
+goog.inherits(goog.debug.Error, Error);
+goog.debug.Error.prototype.name = "CustomError";
 goog.provide("goog.string");
 goog.provide("goog.string.Unicode");
 goog.string.Unicode = {NBSP:"\u00a0"};
@@ -925,15 +934,6 @@ goog.string.toSelectorCaseCache_ = {};
 goog.string.toSelectorCase = function(str) {
   return goog.string.toSelectorCaseCache_[str] || (goog.string.toSelectorCaseCache_[str] = String(str).replace(/([A-Z])/g, "-$1").toLowerCase())
 };
-goog.provide("goog.debug.Error");
-goog.debug.Error = function(opt_msg) {
-  this.stack = (new Error).stack || "";
-  if(opt_msg) {
-    this.message = String(opt_msg)
-  }
-};
-goog.inherits(goog.debug.Error, Error);
-goog.debug.Error.prototype.name = "CustomError";
 goog.provide("goog.asserts");
 goog.provide("goog.asserts.AssertionError");
 goog.require("goog.debug.Error");
@@ -21023,44 +21023,6 @@ dalap.selector._wrap_walker = function _wrap_walker(visitor, _wrap_walker_fn) {
     return visitor.call(null, input, _wrap_walker_fn.call(null, input, walker))
   }
 };
-dalap.selector.NodeMatcher = {};
-dalap.selector.to_node_matcher = function to_node_matcher(selectable) {
-  if(function() {
-    var and__3822__auto__ = selectable;
-    if(and__3822__auto__) {
-      return selectable.dalap$selector$NodeMatcher$to_node_matcher$arity$1
-    }else {
-      return and__3822__auto__
-    }
-  }()) {
-    return selectable.dalap$selector$NodeMatcher$to_node_matcher$arity$1(selectable)
-  }else {
-    var x__2373__auto__ = selectable == null ? null : selectable;
-    return function() {
-      var or__3824__auto__ = dalap.selector.to_node_matcher[goog.typeOf(x__2373__auto__)];
-      if(or__3824__auto__) {
-        return or__3824__auto__
-      }else {
-        var or__3824__auto____$1 = dalap.selector.to_node_matcher["_"];
-        if(or__3824__auto____$1) {
-          return or__3824__auto____$1
-        }else {
-          throw cljs.core.missing_protocol.call(null, "NodeMatcher.to-node-matcher", selectable);
-        }
-      }
-    }().call(null, selectable)
-  }
-};
-dalap.selector.NodeMatcher["_"] = true;
-dalap.selector.to_node_matcher["_"] = function(type_) {
-  return function type_matcher(node) {
-    return cljs.core._EQ_.call(null, cljs.core.type.call(null, node), type_)
-  }
-};
-dalap.selector.NodeMatcher["function"] = true;
-dalap.selector.to_node_matcher["function"] = function(sfn) {
-  return sfn
-};
 dalap.selector.TreeLocMatcher = {};
 dalap.selector.to_tree_loc_matcher = function to_tree_loc_matcher(selectable) {
   if(function() {
@@ -21093,11 +21055,13 @@ dalap.selector.span = function span(p, xs) {
   return cljs.core.juxt.call(null, cljs.core.partial.call(null, cljs.core.take_while, p), cljs.core.partial.call(null, cljs.core.drop_while, p)).call(null, xs)
 };
 dalap.selector.match_selector = function match_selector(selector_QMARK_, history) {
-  var vec__47937 = dalap.selector.span.call(null, cljs.core.complement.call(null, selector_QMARK_), history);
-  var new_history = cljs.core.nth.call(null, vec__47937, 0, null);
-  var vec__47938 = cljs.core.nth.call(null, vec__47937, 1, null);
-  var node = cljs.core.nth.call(null, vec__47938, 0, null);
-  var _ = cljs.core.nthnext.call(null, vec__47938, 1);
+  var vec__2826 = dalap.selector.span.call(null, function selector_span(n) {
+    return cljs.core.not.call(null, selector_QMARK_.call(null, n, null))
+  }, history);
+  var new_history = cljs.core.nth.call(null, vec__2826, 0, null);
+  var vec__2827 = cljs.core.nth.call(null, vec__2826, 1, null);
+  var node = cljs.core.nth.call(null, vec__2827, 0, null);
+  var _ = cljs.core.nthnext.call(null, vec__2827, 1);
   if(node == null) {
     return cljs.core.PersistentVector.fromArray([null, history], true)
   }else {
@@ -21109,9 +21073,9 @@ dalap.selector.match_selector_STAR_ = function match_selector_STAR_(selectors, h
   var current_selector = cljs.core.first.call(null, selectors);
   var rest_selectors = cljs.core.rest.call(null, selectors);
   while(true) {
-    var vec__47940 = dalap.selector.match_selector.call(null, current_selector, current_history);
-    var node = cljs.core.nth.call(null, vec__47940, 0, null);
-    var new_history = cljs.core.nth.call(null, vec__47940, 1, null);
+    var vec__2829 = dalap.selector.match_selector.call(null, current_selector, current_history);
+    var node = cljs.core.nth.call(null, vec__2829, 0, null);
+    var new_history = cljs.core.nth.call(null, vec__2829, 1, null);
     if(node == null) {
       return cljs.core.PersistentVector.fromArray([null, history], true)
     }else {
@@ -21129,12 +21093,12 @@ dalap.selector.match_selector_STAR_ = function match_selector_STAR_(selectors, h
           return cljs.core.PersistentVector.fromArray([node, history], true)
         }else {
           if("\ufdd0'else") {
-            var G__47941 = new_history;
-            var G__47942 = cljs.core.first.call(null, rest_selectors);
-            var G__47943 = cljs.core.rest.call(null, rest_selectors);
-            current_history = G__47941;
-            current_selector = G__47942;
-            rest_selectors = G__47943;
+            var G__2830 = new_history;
+            var G__2831 = cljs.core.first.call(null, rest_selectors);
+            var G__2832 = cljs.core.rest.call(null, rest_selectors);
+            current_history = G__2830;
+            current_selector = G__2831;
+            rest_selectors = G__2832;
             continue
           }else {
             return null
@@ -21153,9 +21117,9 @@ dalap.selector.to_tree_loc_matcher["function"] = function(sfn) {
   return sfn
 };
 dalap.selector.TreeLocMatcher["string"] = true;
-dalap.selector.to_tree_loc_matcher["string"] = function(s, _walker) {
+dalap.selector.to_tree_loc_matcher["string"] = function(s) {
   if(cljs.core.symbol_QMARK_.call(null, s)) {
-    return function(node, _walker__$1) {
+    return function symbol_matcher(node, _walker) {
       return cljs.core._EQ_.call(null, node, s)
     }
   }else {
@@ -21168,10 +21132,9 @@ dalap.selector.to_tree_loc_matcher["string"] = function(s, _walker) {
 };
 cljs.core.PersistentVector.prototype.dalap$selector$TreeLocMatcher$ = true;
 cljs.core.PersistentVector.prototype.dalap$selector$TreeLocMatcher$to_tree_loc_matcher$arity$1 = function(selector_vec) {
-  var selector = cljs.core.map.call(null, dalap.selector.to_node_matcher, selector_vec);
+  var selector = cljs.core.map.call(null, dalap.selector.to_tree_loc_matcher, selector_vec);
   return function location_matcher(_node, walker) {
     var history_stack = (new cljs.core.Keyword("\ufdd0'history")).call(null, walker);
-    console.log([cljs.core.str("node: "), cljs.core.str(_node), cljs.core.str(" hist: "), cljs.core.str(history_stack), cljs.core.str("\n selector "), cljs.core.str(selector_vec)].join(""));
     return dalap.selector.matching_node.call(null, selector, history_stack)
   }
 };
@@ -21256,10 +21219,10 @@ dalap.selector.gen_visitor_from_pred_visitor_pairs = function gen_visitor_from_p
   return function predicate_table_visitor(node, walker) {
     if(cljs.core.truth_(inspect_node_QMARK_.call(null, node))) {
       var vis = function() {
-        var or__3824__auto__ = cljs.core.some.call(null, function pred_checker(p__47953) {
-          var vec__47955 = p__47953;
-          var p_QMARK_ = cljs.core.nth.call(null, vec__47955, 0, null);
-          var v = cljs.core.nth.call(null, vec__47955, 1, null);
+        var or__3824__auto__ = cljs.core.some.call(null, function pred_checker(p__2842) {
+          var vec__2844 = p__2842;
+          var p_QMARK_ = cljs.core.nth.call(null, vec__2844, 0, null);
+          var v = cljs.core.nth.call(null, vec__2844, 1, null);
           if(cljs.core.truth_(p_QMARK_.call(null, node, walker))) {
             return v
           }else {
@@ -21279,15 +21242,15 @@ dalap.selector.gen_visitor_from_pred_visitor_pairs = function gen_visitor_from_p
   }
 };
 dalap.selector.normalize_selector_transformer_pairs = function normalize_selector_transformer_pairs(selectors_PLUS_transformers) {
-  var iter__2470__auto__ = function iter__47960(s__47961) {
+  var iter__2470__auto__ = function iter__2849(s__2850) {
     return new cljs.core.LazySeq(null, false, function() {
-      var s__47961__$1 = s__47961;
+      var s__2850__$1 = s__2850;
       while(true) {
-        if(cljs.core.seq.call(null, s__47961__$1)) {
-          var vec__47963 = cljs.core.first.call(null, s__47961__$1);
-          var sel = cljs.core.nth.call(null, vec__47963, 0, null);
-          var transformer = cljs.core.nth.call(null, vec__47963, 1, null);
-          return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([dalap.selector.to_tree_loc_matcher.call(null, sel), dalap.selector.to_visitor.call(null, transformer)], true), iter__47960.call(null, cljs.core.rest.call(null, s__47961__$1)))
+        if(cljs.core.seq.call(null, s__2850__$1)) {
+          var vec__2852 = cljs.core.first.call(null, s__2850__$1);
+          var sel = cljs.core.nth.call(null, vec__2852, 0, null);
+          var transformer = cljs.core.nth.call(null, vec__2852, 1, null);
+          return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([dalap.selector.to_tree_loc_matcher.call(null, sel), dalap.selector.to_visitor.call(null, transformer)], true), iter__2849.call(null, cljs.core.rest.call(null, s__2850__$1)))
         }else {
           return null
         }
@@ -21303,8 +21266,8 @@ dalap.selector._gen_decorator = function _gen_decorator(selectors_PLUS_transform
   var inner_visitor = dalap.selector.gen_visitor_from_pred_visitor_pairs.call(null, dalap.selector.normalize_selector_transformer_pairs.call(null, pairs), inspect_node_QMARK_);
   var add_history_to_walker = function add_hist(node, w) {
     if(cljs.core.truth_(inspect_node_QMARK_.call(null, node))) {
-      return dalap.walk.update_in_state.call(null, w, "\ufdd0'history", function(p1__5518_SHARP_) {
-        return cljs.core.conj.call(null, p1__5518_SHARP_, node)
+      return dalap.walk.update_in_state.call(null, w, "\ufdd0'history", function(p1__5451_SHARP_) {
+        return cljs.core.conj.call(null, p1__5451_SHARP_, node)
       })
     }else {
       return w
