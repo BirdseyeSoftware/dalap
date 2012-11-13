@@ -7,3 +7,7 @@
 /checkouts
 /.lein-deps-sum
 /target/stale/dependencies
+/.lein-classpath
+.lein-*
+\#*
+.\#*

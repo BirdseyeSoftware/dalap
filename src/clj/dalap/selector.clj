@@ -1,13 +1,9 @@
 (ns dalap.selector
-  (:require [clojure.core.match :refer (match)]
-            [dalap.html :as html]
-            [dalap.walk :refer (update-in-state)])
-  (:import [dalap.html DomNode]))
+  (:require [dalap.walk :refer (update-in-state)]))
 
 ;; NOTE: all the dynamically created functions (from `fn`) in this
 ;; module are given names to aid in debugging
-
-(defn ^{:api :internal} -compose-visitors
+(defn -compose-visitors
   "Creates a visitor function that passes it's parameter to the
   given inner-visitor function, then the result of this call is going
   to be passed to the outer-visitor function, using the same walker
@@ -16,7 +12,7 @@
   (fn comp-visitor [input walker]
     (outer-visitor (inner-visitor input walker) walker)))
 
-(defn ^{:api :internal} -wrap-walker
+(defn -wrap-walker
   "Modifies the walker instance when navigating through the input, you
   would like to use this function when you want to transform the walker
   somehow while you are visiting an element of the input. This is intended
@@ -28,51 +24,33 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol NodeMatcher
-  "This protocol provides a function that returns another
-  function that accepts a node from the dalap Tree and tests
-  it matches."
-  (to-node-matcher [spec]))
+;; (defprotocol NodeMatcher
+;;   "This protocol provides a function that returns another
+;;   function that accepts a node from the dalap Tree and tests
+;;   it matches."
+;;   (to-node-matcher [selectable]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- dom-matches-tag-selector?
-  "Tests if a DomNode instance matches a given tag-selector."
-  [dom-node tag-selector]
-  (let [[_ tag id class] (re-matches html/re-tag (name tag-selector))]
-    (and (html/has-tag-name? dom-node tag)
-         (if (nil? id)
-           true
-           (html/has-id? dom-node id))
-         (if (nil? class)
-           true
-           (html/has-class? dom-node class)))))
+;; (extend-protocol NodeMatcher
+;;   ;; Something that behaves like function will always match
+;;   ;; and return itself.
+;;   ^{:cljs 'function }
+;;   clojure.lang.IFn
+;;   (to-node-matcher [sfn] sfn)
 
-
-(extend-protocol NodeMatcher
-  ;; On Keywords it will try to match to DomNode instances.
-  clojure.lang.Keyword
-  (to-node-matcher [dom-node-kw]
-    (fn dom-node-matcher [node]
-      (if (html/dom-node? node)
-        (dom-matches-tag-selector? node dom-node-kw))))
-
-  ;; Something that behaves like function will always match
-  ;; and return itself.
-  clojure.lang.IFn
-  (to-node-matcher [sfn] sfn)
-
-  ;; Anything else, it will check the dalap node type is
-  ;; equal to the object.
-  Object
-  (to-node-matcher [type_]
-    (fn type-matcher [node]
-      (= (type node) type_))))
+;;   ;; Anything else, it will check the dalap node type is
+;;   ;; equal to the object.
+;;   ^{:cljs 'default}
+;;   Object
+;;   (to-node-matcher [type_]
+;;     (fn type-matcher [node]
+;;       (= (type node) type_))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defprotocol TreeLocMatcher
-  "Provides `to-tree-loc-matcher`, which converts a selector `spec`
+  "Provides `to-tree-loc-matcher`, which converts a selector `selectable`
   into a matcher predicate that matches locations in a dalap input
   tree. It can match on the type or attributes of the current node or,
   optionally, also match on the parents of the current
@@ -81,7 +59,7 @@
   The signature of the generated matcher function is [node, walker],
   which is the same signature as dalap visitors. Any non-nil /
   non-false return value is considered a match."
-  (to-tree-loc-matcher [spec]))
+  (to-tree-loc-matcher [selectable]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -90,10 +68,13 @@
          (partial drop-while p)) xs))
 
 (defn match-selector
-  "Grabs a node from history that matches the given
-  selector."
-  [select? history]
-  (let [[new-history [node & _]] (span (complement select?) history)]
+  "Grabs a single node from history that matches the given selector."
+  [selector? history]
+  (let [[new-history [node & _]]
+        (span (fn selector-span [n]
+                ;; second arg is walker that we don't have
+                (not (selector? n nil)))
+              history)]
     (if (nil? node)
       [nil history]
       [node new-history])))
@@ -101,25 +82,32 @@
 (defn match-selector*
   "Multiple selector version of match-selector.
 
-  Grabs an node from history that matches a group
-  of selectors, respecting a heriarchy of multiple nodes
-  in between."
+  Grabs a node from history that matches a group of selectors,
+  respecting a heriarchy of multiple nodes in between."
   [selectors history]
   (loop [current-history  history
          current-selector (first selectors)
          rest-selectors   (rest selectors)]
-    (let [[node new-history]
+
+   (let [[node new-history]
           (match-selector current-selector current-history)]
       (cond
+        ;; when current selector does not match halt
         (nil? node) [nil history]
 
+        ;; when selectors are done and history still
+        ;; going, just halt, didn't match
         (and (empty? rest-selectors)
              (not (empty? new-history)))
         [nil history]
 
+        ;; when selectors is empty, just return node
+        ;; and history *we have a match*
         (empty? rest-selectors)
         [node history]
 
+        ;; recurse with the rest of the history until
+        ;; rest of selectors to be empty
         :else
         (recur new-history
                (first rest-selectors)
@@ -134,20 +122,32 @@
   ;; impl of each given selector.
   clojure.lang.PersistentVector
   (to-tree-loc-matcher [selector-vec]
-    (let [selector (map to-node-matcher selector-vec)]
+    (let [selector (map to-tree-loc-matcher selector-vec)]
       (fn location-matcher [_node walker]
         (let [history-stack (:history walker)]
           (matching-node selector history-stack)))))
 
+  ^{:cljs string}
   clojure.lang.Symbol
+  ^{:cljs
+    (to-tree-loc-matcher
+     [s]
+     (cond
+       (symbol? s)
+       (fn symbol-matcher [node _walker] (= node s))
+       :else (throw (js/Error. (str "No tree-loc-matcher for "
+                                    (type s))))))}
   (to-tree-loc-matcher [sym]
     (fn [node _walker] (= node sym)))
 
+  ^:clj
   java.lang.Class
+  ^:clj
   (to-tree-loc-matcher [kls]
-    (fn [node _walker] (= (type node) kls)))
+    (fn class-matcher [node _walker] (= (type node) kls)))
 
   ;; Match if the given function returns true.
+  ^{:cljs 'function}
   clojure.lang.IFn
   (to-tree-loc-matcher [sfn] sfn))
 
@@ -165,10 +165,16 @@
 ;; but with 32-bit JVMs the protocol doesn't dispatch correctly and we
 ;; end up with arity exceptions.
 
+^{:cljs
+  (extend-protocol IAdaptToVisitor
+    cljs.core.PersistentHashMap
+    (to-visitor [m] (fn map-visitor [node _w] (m node))))}
 (extend clojure.lang.IPersistentMap IAdaptToVisitor
   {:to-visitor
-    (fn [m] (fn map-visitor [node _w] (m node)))})
+   (fn map-visitor-adapter [m]
+     (fn map-visitor [node _w] (m node)))})
 
+^:clj
 (defn- arg-count [f]
   ;; for cljs see js' function.length
   (let [m (first (.getDeclaredMethods (class f)))
@@ -176,7 +182,8 @@
     (alength p)))
 
 (defn- ifn-to-visitor [vfn]
-    (case (arg-count vfn)
+  ^{:cljs (fn single-arg-fn-visitor [node _w] (vfn node))}
+  (case (arg-count vfn)
     0 (fn zero-arg-fn-visitor [_node _w] (vfn))
     1 (fn single-arg-fn-visitor [node _w] (vfn node))
     ;; else
@@ -184,12 +191,18 @@
 
 ;; For function-like types it will just call them with
 ;; the current node
+^{:cljs
+  (extend-protocol IAdaptToVisitor
+    function
+    (to-visitor [vfn] (ifn-to-visitor vfn)))}
 (extend clojure.lang.IFn IAdaptToVisitor
         {:to-visitor ifn-to-visitor})
 
 (extend-protocol IAdaptToVisitor
+  ^:clj
   clojure.lang.Keyword
   ;; Keywords will be called as functions on the nodes of the dalap tree.
+  ^:clj
   (to-visitor [k]
     (fn keyword-replacement-value-visitor [node _walker] (k node)))
 
@@ -202,12 +215,26 @@
   (to-visitor [v]
     (fn vec-replacement-value-visitor [_node _walker] v))
 
+  ^{:cljs string}
   clojure.lang.Symbol
   ;; This would match the IFn implementation if this more specific one
   ;; were not provided here.
+  ^{:cljs
+    (to-visitor
+     [s]
+     (cond
+       (symbol? s)
+       (fn symbol-replacement-value-visitor [_node _walker] s)
+       ;;
+       (keyword? s)
+       (fn keyword-replacement-value-visitor [node _walker] (s node))
+       ;;
+       :else
+       (fn string-replacement-value-visitor [node _walker] s)))}
   (to-visitor [sym]
     (fn symbol-replacement-value-visitor [_node _walker] sym))
 
+  ^{:cljs 'default}
   Object
   ;; All other Objects replace the current node of the dalap tree
   ;; with themselves.
@@ -238,21 +265,8 @@
     [(to-tree-loc-matcher sel)
      (to-visitor transformer)]))
 
-(defn ^{:api :internal} -gen-decorator
-  "API: Internal
-
-  Creates a visitor function decorator that will apply the provided
-  visitor to any node that matches its corresponding selector.
-
-  Example:
-    (def add-class-to-p
-         (-gen-decorator [[:div.interesting :p]
-                           #(dalap.html/add-class % \"bold\")
-
-                          [:div.other :p]
-                           #(dalap.html/add-class % \"italics\")]))
-
-    (dalap.html/to-html html-content (add-class-to-p dalap.html/visit))"
+(defn -gen-decorator
+  "Revisit documentation"
   [selectors+transformers]
   (let [inspect-node? identity
         ;; ^ track/match-on everything except nil/false
@@ -270,9 +284,7 @@
                    add-history-to-walker))))
 
 
-(defn ^{:api :public} gen-visitor
+(defn gen-visitor
   "API: Public"
-  ([selectors+transformers]
-    (gen-visitor selectors+transformers dalap.defaults/visit))
   ([selectors+transformers fallback-visitor]
     ((-gen-decorator selectors+transformers) fallback-visitor)))
