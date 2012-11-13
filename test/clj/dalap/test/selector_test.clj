@@ -3,13 +3,15 @@
    (:require [buster-cljs.core :refer [is]]
             [dalap.selector :refer [-gen-decorator gen-visitor]]
             [dalap.walk :refer [walk]])
-   (:require-macros [buster-cljs.macros :refer [deftest it]]))}
+   (:require-macros [buster-cljs.macros :refer [deftest it initialize-buster]]))}
 (ns dalap.test.selector-test
   (:require [clojure.test :refer [deftest is]]
             [buster-cljs.clojure :refer [it]]
             [dalap.selector :refer [-gen-decorator gen-visitor]]
             [dalap.walk :refer [walk]]
             ))
+
+#_(:cljs (initialize-buster))
 
 (defrecord CustomType [a b])
 (defrecord CustomType2 [a b])
