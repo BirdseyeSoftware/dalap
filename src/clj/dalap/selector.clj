@@ -24,30 +24,28 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol NodeMatcher
-  "This protocol provides a function that returns another
-  function that accepts a node from the dalap Tree and tests
-  it matches."
-  (to-node-matcher [selectable]))
+;; (defprotocol NodeMatcher
+;;   "This protocol provides a function that returns another
+;;   function that accepts a node from the dalap Tree and tests
+;;   it matches."
+;;   (to-node-matcher [selectable]))
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(extend-protocol NodeMatcher
-  ;; Something that behaves like function will always match
-  ;; and return itself.
-  ^{:cljs 'function }
-  clojure.lang.IFn
-  (to-node-matcher [sfn]
-    ^:clj (println "fakjsdfjdskalfjasldkf")
-    sfn)
+;; (extend-protocol NodeMatcher
+;;   ;; Something that behaves like function will always match
+;;   ;; and return itself.
+;;   ^{:cljs 'function }
+;;   clojure.lang.IFn
+;;   (to-node-matcher [sfn] sfn)
 
-  ;; Anything else, it will check the dalap node type is
-  ;; equal to the object.
-  ^{:cljs 'default}
-  Object
-  (to-node-matcher [type_]
-    (fn type-matcher [node]
-      (= (type node) type_))))
+;;   ;; Anything else, it will check the dalap node type is
+;;   ;; equal to the object.
+;;   ^{:cljs 'default}
+;;   Object
+;;   (to-node-matcher [type_]
+;;     (fn type-matcher [node]
+;;       (= (type node) type_))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
