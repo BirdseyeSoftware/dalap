@@ -1,6 +1,6 @@
 ;; This file was generated with dalap-cljsbuild from
 ;;
-;; test/clj/dalap/test/walk_test.clj @ Tue Nov 13 07:51:19 UTC 2012
+;; test/clj/dalap/test/walk_test.clj @ Tue Nov 13 18:28:52 UTC 2012
 ;;
 (ns dalap.test.walk-test (:require [buster-cljs.core :refer [is]] [dalap.walk :refer (IWalkerState Walker get-state conj-state update-state update-in-state -gen-walker walk)]) (:require-macros [buster-cljs.macros :refer [initialize-buster deftest it]]))
 (do (initialize-buster))

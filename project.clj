@@ -20,7 +20,9 @@ programming."
      :source-path "test/cljs"
      :dalap
      {:paths
-      {"test/clj/dalap/test/selector_test.clj" "test/cljs/dalap/test/selector_test.cljs"
+      {"src/clj/dalap/walk.clj" "src/cljs/dalap/walk.cljs"
+       "src/clj/dalap/selector.clj" "src/cljs/dalap/selector.cljs"
+       "test/clj/dalap/test/selector_test.clj" "test/cljs/dalap/test/selector_test.cljs"
        "test/clj/dalap/test/walk_test.clj" "test/cljs/dalap/test/walk_test.cljs" }}
      :compiler
      {:externs ["externs/buster.js"]
@@ -40,10 +42,10 @@ programming."
     ;;;
     {:id :browser-test-optimized
      :source-path "test/cljs"
-     :dalap
-     {:paths
-      {"test/clj/dalap/test/selector_test.clj" "test/cljs/dalap/test/selector_test.cljs"
-       "test/clj/dalap/test/walk_test.clj" "test/cljs/dalap/test/walk_test.cljs" }}
+     ;; :dalap
+     ;; {:paths
+     ;;  {"test/clj/dalap/test/selector_test.clj" "test/cljs/dalap/test/selector_test.cljs"
+     ;;   "test/clj/dalap/test/walk_test.clj" "test/cljs/dalap/test/walk_test.cljs"}}
      :compiler
      {:externs ["externs/buster.js"]
       :libraries ["src/cljs"]

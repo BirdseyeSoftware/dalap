@@ -3,6 +3,10 @@
 
 ;; NOTE: all the dynamically created functions (from `fn`) in this
 ;; module are given names to aid in debugging
+(defn- span [p xs]
+  ((juxt (partial take-while p)
+         (partial drop-while p)) xs))
+
 (defn -compose-visitors
   "Creates a visitor function that passes it's parameter to the
   given inner-visitor function, then the result of this call is going
@@ -24,8 +28,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol TreeLocMatcher
-  "Provides `to-tree-loc-matcher`, which converts a selector `selectable`
+(defprotocol IRuleSelector
+  "Provides `to-rule-selector`, which converts a selector `selectable`
   into a matcher predicate that matches locations in a dalap input
   tree. It can match on the type or attributes of the current node or,
   optionally, also match on the parents of the current
@@ -34,15 +38,11 @@
   The signature of the generated matcher function is [node, walker],
   which is the same signature as dalap visitors. Any non-nil /
   non-false return value is considered a match."
-  (to-tree-loc-matcher [selectable]))
+  (to-rule-selector [selectable]))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- span [p xs]
-  ((juxt (partial take-while p)
-         (partial drop-while p)) xs))
-
-(defn match-selector
+(defn -match-selector
   "Grabs a single node from history that matches the given selector."
   [selector? history]
   (let [[new-history [node & _]]
@@ -54,8 +54,8 @@
       [nil history]
       [node new-history])))
 
-(defn match-selector*
-  "Multiple selector version of match-selector.
+(defn -match-selector*
+  "Multiple selector version of -match-selector.
 
   Grabs a node from history that matches a group of selectors,
   respecting a heriarchy of multiple nodes in between."
@@ -65,7 +65,7 @@
          rest-selectors   (rest selectors)]
 
    (let [[node new-history]
-          (match-selector current-selector current-history)]
+          (-match-selector current-selector current-history)]
       (cond
         ;; when current selector does not match halt
         (nil? node) [nil history]
@@ -88,64 +88,64 @@
                (first rest-selectors)
                (rest rest-selectors))))))
 
-(defn- matching-node [selector history]
-  (first (match-selector* selector history)))
+(defn- -matching-node [selector history]
+  (first (-match-selector* selector history)))
 
-(extend-protocol TreeLocMatcher
+(extend-protocol IRuleSelector
   ;; For vectors, check that each element
   ;; matches in the history-stack using the NodeMatcher
   ;; impl of each given selector.
   clojure.lang.PersistentVector
-  (to-tree-loc-matcher [selector-vec]
-    (let [selector (map to-tree-loc-matcher selector-vec)]
+  (to-rule-selector [selector-vec]
+    (let [selector (map to-rule-selector selector-vec)]
       (fn location-matcher [_node walker]
         (let [history-stack (:history walker)]
-          (matching-node selector history-stack)))))
+          (-matching-node selector history-stack)))))
 
   ^{:cljs string}
   clojure.lang.Symbol
   ^{:cljs
-    (to-tree-loc-matcher
+    (to-rule-selector
      [s]
      (cond
        (symbol? s)
        (fn symbol-matcher [node _walker] (= node s))
        :else (throw (js/Error. (str "No tree-loc-matcher for "
                                     (type s))))))}
-  (to-tree-loc-matcher [sym]
+  (to-rule-selector [sym]
     (fn [node _walker] (= node sym)))
 
   ^:clj
   java.lang.Class
   ^:clj
-  (to-tree-loc-matcher [kls]
+  (to-rule-selector [kls]
     (fn class-matcher [node _walker] (= (type node) kls)))
 
   ;; Match if the given function returns true.
   ^{:cljs 'function}
   clojure.lang.IFn
-  (to-tree-loc-matcher [sfn] sfn))
+  (to-rule-selector [sfn] sfn))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defprotocol IAdaptToVisitor
+(defprotocol IRuleTransformer
   "Adapts other types to dalap visitor function."
 
-  (to-visitor [adaptable] "Creates a dalap visitor."))
+  (to-rule-transformer [adaptable] "Creates a dalap visitor."))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; The IPersistentMap and IFn implementations of IAdaptToVisitor
+;; The IPersistentMap and IFn implementations of IRuleTransformer
 ;; need to be defined via extend rather than via extend-protocol.
 ;; For Clojure 1.4 it makes no difference for 64-bit JVMs,
 ;; but with 32-bit JVMs the protocol doesn't dispatch correctly and we
 ;; end up with arity exceptions.
 
 ^{:cljs
-  (extend-protocol IAdaptToVisitor
+  (extend-protocol IRuleTransformer
     cljs.core.PersistentHashMap
-    (to-visitor [m] (fn map-visitor [node _w] (m node))))}
-(extend clojure.lang.IPersistentMap IAdaptToVisitor
-  {:to-visitor
+    (to-rule-transformer [m] (fn map-visitor [node _w] (m node))))}
+(extend clojure.lang.IPersistentMap IRuleTransformer
+  {:to-rule-transformer
    (fn map-visitor-adapter [m]
      (fn map-visitor [node _w] (m node)))})
 
@@ -156,7 +156,7 @@
         p (.getParameterTypes m)]
     (alength p)))
 
-(defn- ifn-to-visitor [vfn]
+(defn- ifn-to-rule-transformer [vfn]
   ^{:cljs (fn single-arg-fn-visitor [node _w] (vfn node))}
   (case (arg-count vfn)
     0 (fn zero-arg-fn-visitor [_node _w] (vfn))
@@ -167,19 +167,19 @@
 ;; For function-like types it will just call them with
 ;; the current node
 ^{:cljs
-  (extend-protocol IAdaptToVisitor
+  (extend-protocol IRuleTransformer
     function
-    (to-visitor [vfn] (ifn-to-visitor vfn)))}
-(extend clojure.lang.IFn IAdaptToVisitor
-        {:to-visitor ifn-to-visitor})
+    (to-rule-transformer [vfn] (ifn-to-rule-transformer vfn)))}
+(extend clojure.lang.IFn IRuleTransformer
+        {:to-rule-transformer ifn-to-rule-transformer})
 
-(extend-protocol IAdaptToVisitor
+(extend-protocol IRuleTransformer
   ^:clj
   clojure.lang.Keyword
   ;; Keywords will be called as functions on the nodes of the dalap tree.
   ^:clj
-  (to-visitor [k]
-    (fn keyword-replacement-value-visitor [node _walker] (k node)))
+  (to-rule-transformer [k]
+    (fn keyword-transformer-visitor [node _walker] (k node)))
 
   clojure.lang.PersistentVector
   ;; PersistentVectors replace the current node of the dalap tree
@@ -187,79 +187,77 @@
   ;;
   ;; This would match the IFn implementation if this more specific one
   ;; were not provided here.
-  (to-visitor [v]
-    (fn vec-replacement-value-visitor [_node _walker] v))
+  (to-rule-transformer [v]
+    (fn vec-transformer-visitor [_node _walker] v))
 
   ^{:cljs string}
   clojure.lang.Symbol
   ;; This would match the IFn implementation if this more specific one
   ;; were not provided here.
   ^{:cljs
-    (to-visitor
+    (to-rule-transformer
      [s]
      (cond
        (symbol? s)
-       (fn symbol-replacement-value-visitor [_node _walker] s)
+       (fn symbol-transformer-visitor [_node _walker] s)
        ;;
        (keyword? s)
-       (fn keyword-replacement-value-visitor [node _walker] (s node))
+       (fn keyword-transformer-visitor [node _walker] (s node))
        ;;
        :else
-       (fn string-replacement-value-visitor [node _walker] s)))}
-  (to-visitor [sym]
-    (fn symbol-replacement-value-visitor [_node _walker] sym))
+       (fn string-transformer-visitor [node _walker] s)))}
+  (to-rule-transformer [sym]
+    (fn symbol-transformer-visitor [_node _walker] sym))
 
   ^{:cljs 'default}
   Object
   ;; All other Objects replace the current node of the dalap tree
   ;; with themselves.
-  (to-visitor [obj]
-    (fn replacement-value-visitor [_node _walker] obj)))
+  (to-rule-transformer [obj]
+    (fn object-transformer-visitor [_node _walker] obj)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(defn- gen-visitor-from-pred-visitor-pairs
-  [predicates+visitors inspect-node?]
-  (fn predicate-table-visitor [node walker]
-    ;; this is becoming more and more like a dynamically created
-    ;; multimethod and should probably be converted into one
-    ;; In the simple case where only the current node is used for
-    ;; dispatch and not the walk history, this can be optimized into a
-    ;; dynamically created Protocol.
-    (if (inspect-node? node)
-      (let [vis (or ; use the visitor for the first matching predicate
-                 (some (fn pred-checker [[p? v]] (if (p? node walker) v))
-                       predicates+visitors)
-                 ;; or fall through
-                 (constantly node))]
-        (vis node walker))
+(defn -get-transformer-of-first-matching-rule [node walker rules]
+  (letfn [(transformer-if-match [[selector? transformer]]
+            (if (selector? node walker) transformer))]
+    (some transformer-if-match rules)))
+
+(defn- -gen-visitor-from-rules
+  [rules inspect-node-fn?]
+  (fn rules-visitor [node walker]
+    (if (inspect-node-fn? node)
+      (let [visitor (or (-get-transformer-of-first-matching-rule
+                         node walker rules)
+                        ;; or fall through with an identity visitor
+                        (constantly node))]
+        (visitor node walker))
       node)))
 
-(defn normalize-selector-transformer-pairs [selectors+transformers]
-  (for [[sel transformer] selectors+transformers]
-    [(to-tree-loc-matcher sel)
-     (to-visitor transformer)]))
+(defn normalize-rules [rules]
+  (for [[selector transformer] rules]
+    [(to-rule-selector selector)
+     (to-rule-transformer transformer)]))
 
-(defn -gen-decorator
+(defn -gen-rules-decorator
   "Revisit documentation"
-  [selectors+transformers]
+  [rules]
   (let [inspect-node? identity
         ;; ^ track/match-on everything except nil/false
         ;; TODO: it might better to do (constantly true) rather than identity
-        pairs (partition 2 selectors+transformers)
-        inner-visitor (gen-visitor-from-pred-visitor-pairs
-                        (normalize-selector-transformer-pairs pairs)
-                        inspect-node?)
+        rule-pairs (partition 2 rules)
+        inner-visitor (-gen-visitor-from-rules (normalize-rules rule-pairs)
+                                               inspect-node?)
         add-history-to-walker (fn add-hist [node w]
                                 (if (inspect-node? node)
                                   (update-in-state w :history #(conj % node))
                                   w))]
-    (fn decorator [visit-fn]
+    (fn rules-decorator [visit-fn]
       (-wrap-walker (-compose-visitors inner-visitor visit-fn)
-                   add-history-to-walker))))
+                    add-history-to-walker))))
 
 
-(defn gen-visitor
+(defn gen-rules-visitor
   "API: Public"
-  ([selectors+transformers fallback-visitor]
-    ((-gen-decorator selectors+transformers) fallback-visitor)))
+  ([rules fallback-visitor]
+    ((-gen-rules-decorator rules) fallback-visitor)))

@@ -1,13 +1,13 @@
 ^{:cljs
   (ns dalap.test.selector-test
    (:require [buster-cljs.core :refer [is]]
-            [dalap.selector :refer [-gen-decorator gen-visitor]]
+            [dalap.selector :refer [-gen-rules-decorator gen-rules-visitor]]
             [dalap.walk :refer [walk]])
    (:require-macros [buster-cljs.macros :refer [deftest it initialize-buster]]))}
 (ns dalap.test.selector-test
   (:require [clojure.test :refer [deftest is]]
             [buster-cljs.clojure :refer [it]]
-            [dalap.selector :refer [-gen-decorator gen-visitor]]
+            [dalap.selector :refer [-gen-rules-decorator gen-rules-visitor]]
             [dalap.walk :refer [walk]]
             ))
 
@@ -40,7 +40,7 @@
 (deftest test-walk-with-no-rules
   (it "without any rules on visit"
     (let [sample-form '(let [hello "hola"] (str hello))
-          visitor (gen-visitor [] visit-clj-form)]
+          visitor (gen-rules-visitor [] visit-clj-form)]
 
       (assert-walk visitor
                    sample-form sample-form
@@ -52,7 +52,7 @@
   (it "with symbol as a selector on rules"
     (let [transform-rules ['hello 'hallo]
           ;; ^ replace 'hello to 'hallo
-          visitor (gen-visitor transform-rules visit-clj-form)]
+          visitor (gen-rules-visitor transform-rules visit-clj-form)]
       (assert-walk visitor
                    '(let [hello "hola"] (str hello))
                    '(let [hallo "hola"] (str hallo))))))
@@ -64,7 +64,7 @@
           replacement-value "Something Else"
           transform-rules [CustomType replacement-value]
           ;; ^ replace CustomType instances with replacement value
-          visitor (gen-visitor transform-rules visit-clj-form)]
+          visitor (gen-rules-visitor transform-rules visit-clj-form)]
       (assert-walk visitor
                    [instance]
                    [replacement-value])
@@ -80,7 +80,7 @@
           transform-rules [selector-fn replacement-value]
           ;; ^ replace whenever selector-fn returns true
           ;; with replacement-value
-          visitor (gen-visitor transform-rules visit-clj-form)]
+          visitor (gen-rules-visitor transform-rules visit-clj-form)]
 
       (assert-walk visitor
                    `(["uno" 2] (foobar))
@@ -91,7 +91,7 @@
     (let [selector 'foo
           replacement-value 999
           transform-rules [selector replacement-value]
-          visitor (gen-visitor transform-rules visit-clj-form)]
+          visitor (gen-rules-visitor transform-rules visit-clj-form)]
       (assert-walk visitor
                    #{'foo 'hello}
                    #{999 'hello}
@@ -105,7 +105,7 @@
           ;; ^ match any `CustomType` instances that are inside a set.
           ;; When using vectors as selectors, it will behave the
           ;; same way as a CSS `parent > child` selector.
-          visitor (gen-visitor transform-rules visit-clj-form)]
+          visitor (gen-rules-visitor transform-rules visit-clj-form)]
       (assert-walk visitor
                    [1 2 ['foobar] "other value"]
                    [1 2 ['replacement] "other value"]))))
