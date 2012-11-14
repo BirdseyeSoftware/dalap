@@ -1,6 +1,6 @@
 ^{:cljs
   (ns dalap.test.walk-test
-    (:require [buster-cljs.core :refer [is]]
+    (:require [buster-cljs.core :refer [is is-equal]]
               [dalap.walk :refer
                (IWalkerState
                 Walker
@@ -66,3 +66,8 @@
   (it "recur over the walk function"
     (is (= (walk [[1 2 3] [4 5]] recursive-visitor)
            [[1 2 3] [4 5]]))))
+
+;; (deftest test-using-apply-with-a-walker
+;;   (it "walk works when used in an apply"
+;;     (is-equal (apply walk [1])
+;;               1)))

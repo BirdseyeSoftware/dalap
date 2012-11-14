@@ -121,9 +121,9 @@ function la(a) {
     if("%" == r) {
       return"%"
     }
-    var B = c.shift();
-    "undefined" == typeof B && e(Error("[goog.string.format] Not enough arguments"));
-    arguments[0] = B;
+    var C = c.shift();
+    "undefined" == typeof C && e(Error("[goog.string.format] Not enough arguments"));
+    arguments[0] = C;
     return ma.va[r].apply(l, arguments)
   })
 }
@@ -304,14 +304,14 @@ function Da(a) {
   c ? b = c : (c = Da._) ? b = c : e(v("INext.-next", a));
   return b.call(l, a)
 }
-var C = function() {
+var B = function() {
   function a(a, b, c) {
     if(a ? a.r : a) {
       return a.r(a, b, c)
     }
     var i;
-    var j = C[q(a == l ? l : a)];
-    j ? i = j : (j = C._) ? i = j : e(v("ILookup.-lookup", a));
+    var j = B[q(a == l ? l : a)];
+    j ? i = j : (j = B._) ? i = j : e(v("ILookup.-lookup", a));
     return i.call(l, a, b, c)
   }
   function b(a, b) {
@@ -319,8 +319,8 @@ var C = function() {
       return a.B(a, b)
     }
     var c;
-    var i = C[q(a == l ? l : a)];
-    i ? c = i : (i = C._) ? c = i : e(v("ILookup.-lookup", a));
+    var i = B[q(a == l ? l : a)];
+    i ? c = i : (i = B._) ? c = i : e(v("ILookup.-lookup", a));
     return c.call(l, a, b)
   }
   var c = l, c = function(c, f, h) {
@@ -719,7 +719,7 @@ function J(a, b) {
   return b instanceof a
 }
 Xa["null"] = o(0);
-C["null"] = function() {
+B["null"] = function() {
   var a = l;
   return a = function(a, c, d) {
     switch(arguments.length) {
@@ -1054,7 +1054,7 @@ Va.array = function() {
     e(Error("Invalid arity: " + arguments.length))
   }
 }();
-C.array = function() {
+B.array = function() {
   var a = l;
   return a = function(a, c, d) {
     switch(arguments.length) {
@@ -1482,7 +1482,7 @@ function ec(a) {
   return b ? "\ufdd1" === a.charAt(0) : b
 }
 function fc(a, b) {
-  return C.c(a, b, ac) === ac ? m : g
+  return B.c(a, b, ac) === ac ? m : g
 }
 function gc(a, b) {
   if(a === b) {
@@ -1907,7 +1907,7 @@ var K = function() {
   d.e = f.e;
   return d
 }();
-function yc(a, b, c, d) {
+function xc(a, b, c, d) {
   this.h = a;
   this.Qa = b;
   this.xa = c;
@@ -1915,7 +1915,7 @@ function yc(a, b, c, d) {
   this.p = 0;
   this.l = 65405164
 }
-p = yc.prototype;
+p = xc.prototype;
 p.C = function(a) {
   var b = this.k;
   return b != l ? b : this.k = a = Eb(a)
@@ -1924,7 +1924,7 @@ p.Aa = function() {
   return this.xa == l ? l : Ya(this.xa)
 };
 p.I = function(a, b) {
-  return new yc(l, b, a, this.k)
+  return new xc(l, b, a, this.k)
 };
 p.toString = function() {
   return M.b ? M.b(this) : M.call(l, this)
@@ -1938,19 +1938,19 @@ p.A = function(a, b) {
   return Gb(a, b)
 };
 p.M = function(a, b) {
-  return new yc(b, this.Qa, this.xa, this.k)
+  return new xc(b, this.Qa, this.xa, this.k)
 };
 p.K = n("h");
 p.J = function() {
   return Ta(G, this.h)
 };
-yc;
+xc;
 function L(a, b) {
   var c = b == l;
   c || (c = b ? ((c = b.l & 64) ? c : b.kb) ? g : b.l ? m : u(Ba, b) : u(Ba, b));
-  return c ? new yc(l, a, b, l) : new yc(l, a, D(b), l)
+  return c ? new xc(l, a, b, l) : new xc(l, a, D(b), l)
 }
-function zc(a) {
+function yc(a) {
   if(a) {
     var b = a.l & 33554432, a = (b ? b : a.mc) ? g : a.l ? m : u($a, a)
   }else {
@@ -1971,7 +1971,7 @@ Va.string = function() {
     e(Error("Invalid arity: " + arguments.length))
   }
 }();
-C.string = function() {
+B.string = function() {
   var a = l;
   return a = function(a, c, d) {
     switch(arguments.length) {
@@ -2006,37 +2006,37 @@ Ya.string = function(a) {
 Xa.string = function(a) {
   return ia(a)
 };
-function Ac(a) {
+function zc(a) {
   this.Bb = a;
   this.p = 0;
   this.l = 1
 }
-Ac.prototype.call = function() {
+zc.prototype.call = function() {
   var a = l;
   return a = function(a, c, d) {
     switch(arguments.length) {
       case 2:
         var f;
-        c == l ? f = l : (f = c.Ea, f = f == l ? C.c(c, this.Bb, l) : f[this.Bb]);
+        c == l ? f = l : (f = c.Ea, f = f == l ? B.c(c, this.Bb, l) : f[this.Bb]);
         return f;
       case 3:
-        return c == l ? d : C.c(c, this.Bb, d)
+        return c == l ? d : B.c(c, this.Bb, d)
     }
     e(Error("Invalid arity: " + arguments.length))
   }
 }();
-Ac.prototype.apply = function(a, b) {
+zc.prototype.apply = function(a, b) {
   return a.call.apply(a, [a].concat(b.slice()))
 };
-Ac;
+zc;
 String.prototype.call = function() {
   var a = l;
   return a = function(a, c, d) {
     switch(arguments.length) {
       case 2:
-        return C.c(c, this.toString(), l);
+        return B.c(c, this.toString(), l);
       case 3:
-        return C.c(c, this.toString(), d)
+        return B.c(c, this.toString(), d)
     }
     e(Error("Invalid arity: " + arguments.length))
   }
@@ -2045,7 +2045,7 @@ String.prototype.apply = function(a, b) {
   return a.call.apply(a, [a].concat(b.slice()))
 };
 String.prototype.apply = function(a, b) {
-  return 2 > O(b) ? C.c(b[0], a, l) : C.c(b[0], a, b[1])
+  return 2 > O(b) ? B.c(b[0], a, l) : B.c(b[0], a, b[1])
 };
 function Bc(a) {
   var b = a.x;
@@ -2396,51 +2396,51 @@ function Qc(a, b, c) {
   if(9 === b) {
     return a.xb ? a.xb(c, d, f, h, i, a, j, k, r) : a.xb ? a.xb(c, d, f, h, i, a, j, k, r) : a.call(l, c, d, f, h, i, a, j, k, r)
   }
-  var w = z(x), B = A(x);
+  var w = z(x), C = A(x);
   if(10 === b) {
     return a.lb ? a.lb(c, d, f, h, i, a, j, k, r, w) : a.lb ? a.lb(c, d, f, h, i, a, j, k, r, w) : a.call(l, c, d, f, h, i, a, j, k, r, w)
   }
-  var x = z(B), N = A(B);
+  var x = z(C), N = A(C);
   if(11 === b) {
     return a.mb ? a.mb(c, d, f, h, i, a, j, k, r, w, x) : a.mb ? a.mb(c, d, f, h, i, a, j, k, r, w, x) : a.call(l, c, d, f, h, i, a, j, k, r, w, x)
   }
-  var B = z(N), Q = A(N);
+  var C = z(N), Q = A(N);
   if(12 === b) {
-    return a.nb ? a.nb(c, d, f, h, i, a, j, k, r, w, x, B) : a.nb ? a.nb(c, d, f, h, i, a, j, k, r, w, x, B) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B)
+    return a.nb ? a.nb(c, d, f, h, i, a, j, k, r, w, x, C) : a.nb ? a.nb(c, d, f, h, i, a, j, k, r, w, x, C) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C)
   }
   var N = z(Q), ka = A(Q);
   if(13 === b) {
-    return a.ob ? a.ob(c, d, f, h, i, a, j, k, r, w, x, B, N) : a.ob ? a.ob(c, d, f, h, i, a, j, k, r, w, x, B, N) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B, N)
+    return a.ob ? a.ob(c, d, f, h, i, a, j, k, r, w, x, C, N) : a.ob ? a.ob(c, d, f, h, i, a, j, k, r, w, x, C, N) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C, N)
   }
   var Q = z(ka), pa = A(ka);
   if(14 === b) {
-    return a.pb ? a.pb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q) : a.pb ? a.pb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B, N, Q)
+    return a.pb ? a.pb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q) : a.pb ? a.pb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C, N, Q)
   }
   var ka = z(pa), ya = A(pa);
   if(15 === b) {
-    return a.qb ? a.qb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka) : a.qb ? a.qb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka)
+    return a.qb ? a.qb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka) : a.qb ? a.qb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka)
   }
   var pa = z(ya), Ja = A(ya);
   if(16 === b) {
-    return a.rb ? a.rb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa) : a.rb ? a.rb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa)
+    return a.rb ? a.rb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa) : a.rb ? a.rb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa)
   }
   var ya = z(Ja), ob = A(Ja);
   if(17 === b) {
-    return a.sb ? a.sb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya) : a.sb ? a.sb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya)
+    return a.sb ? a.sb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya) : a.sb ? a.sb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya)
   }
-  var Ja = z(ob), xc = A(ob);
+  var Ja = z(ob), Ac = A(ob);
   if(18 === b) {
-    return a.tb ? a.tb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja) : a.tb ? a.tb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja)
+    return a.tb ? a.tb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja) : a.tb ? a.tb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja)
   }
-  ob = z(xc);
-  xc = A(xc);
+  ob = z(Ac);
+  Ac = A(Ac);
   if(19 === b) {
-    return a.ub ? a.ub(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja, ob) : a.ub ? a.ub(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja, ob) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja, ob)
+    return a.ub ? a.ub(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja, ob) : a.ub ? a.ub(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja, ob) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja, ob)
   }
-  var Id = z(xc);
-  A(xc);
+  var Id = z(Ac);
+  A(Ac);
   if(20 === b) {
-    return a.vb ? a.vb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja, ob, Id) : a.vb ? a.vb(c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja, ob, Id) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, B, N, Q, ka, pa, ya, Ja, ob, Id)
+    return a.vb ? a.vb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja, ob, Id) : a.vb ? a.vb(c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja, ob, Id) : a.call(l, c, d, f, h, i, a, j, k, r, w, x, C, N, Q, ka, pa, ya, Ja, ob, Id)
   }
   e(Error("Only up to 20 arguments supported on functions"))
 }
@@ -2698,9 +2698,9 @@ var Yc = function() {
   }
   var d = l, f = function() {
     function a(c, d, f, h, x) {
-      var B = l;
-      s(x) && (B = I(Array.prototype.slice.call(arguments, 4), 0));
-      return b.call(this, c, d, f, h, B)
+      var C = l;
+      s(x) && (C = I(Array.prototype.slice.call(arguments, 4), 0));
+      return b.call(this, c, d, f, h, C)
     }
     function b(a, c, d, f, h) {
       return function() {
@@ -2768,8 +2768,8 @@ var Yc = function() {
         if(Yb(c)) {
           for(var f = tb(c), r = O(f), w = new Cc(sa.b(r), 0), x = 0;;) {
             if(x < r) {
-              var B = a.b ? a.b(y.a(f, x)) : a.call(l, y.a(f, x));
-              w.add(B);
+              var C = a.b ? a.b(y.a(f, x)) : a.call(l, y.a(f, x));
+              w.add(C);
               x += 1
             }else {
               break
@@ -2784,9 +2784,9 @@ var Yc = function() {
   }
   var d = l, f = function() {
     function a(c, d, f, h, x) {
-      var B = l;
-      s(x) && (B = I(Array.prototype.slice.call(arguments, 4), 0));
-      return b.call(this, c, d, f, h, B)
+      var C = l;
+      s(x) && (C = I(Array.prototype.slice.call(arguments, 4), 0));
+      return b.call(this, c, d, f, h, C)
     }
     function b(a, c, f, h, i) {
       return d.a(function(b) {
@@ -3056,7 +3056,7 @@ var md = function() {
   }
   function b(b, d, f, h) {
     var i = Lb.c(d, 0, l), d = mc(d);
-    return t(d) ? Mb.c(b, i, S.U(a, C.c(b, i, l), d, f, h)) : Mb.c(b, i, S.c(f, C.c(b, i, l), h))
+    return t(d) ? Mb.c(b, i, S.U(a, B.c(b, i, l), d, f, h)) : Mb.c(b, i, S.c(f, B.c(b, i, l), h))
   }
   a.o = 3;
   a.m = function(a) {
@@ -3737,7 +3737,7 @@ Pd;
 var Qd = new Pd;
 function Rd(a, b) {
   return cc(Wb(b) ? O(a) === O(b) ? Tc(Vc, Zc.a(function(a) {
-    return vb.a(C.c(b, E(a), Qd), E(H(a)))
+    return vb.a(B.c(b, E(a), Qd), E(H(a)))
   }, a)) : l : l)
 }
 function Sd(a, b, c) {
@@ -5378,9 +5378,9 @@ p.call = function() {
   return a = function(a, c, d) {
     switch(arguments.length) {
       case 2:
-        return C.c(this.Fa, c, ac) === ac ? l : c;
+        return B.c(this.Fa, c, ac) === ac ? l : c;
       case 3:
-        return C.c(this.Fa, c, ac) === ac ? d : c
+        return B.c(this.Fa, c, ac) === ac ? d : c
     }
     e(Error("Invalid arity: " + arguments.length))
   }
@@ -5392,7 +5392,7 @@ p.B = function(a, b) {
   return a.r(a, b, l)
 };
 p.r = function(a, b, c) {
-  return C.c(this.Fa, b, ac) === ac ? c : b
+  return B.c(this.Fa, b, ac) === ac ? c : b
 };
 p.F = function() {
   return O(this.Fa)
@@ -5576,7 +5576,7 @@ var cf = function() {
         };
         d.e = f;
         return d
-      }(), d = function(d, k, B, N) {
+      }(), d = function(d, k, C, N) {
         switch(arguments.length) {
           case 0:
             return U.e(I([a.w ? a.w() : a.call(l), b.w ? b.w() : b.call(l), c.w ? c.w() : c.call(l)], 0));
@@ -5585,9 +5585,9 @@ var cf = function() {
           case 2:
             return U.e(I([a.a ? a.a(d, k) : a.call(l, d, k), b.a ? b.a(d, k) : b.call(l, d, k), c.a ? c.a(d, k) : c.call(l, d, k)], 0));
           case 3:
-            return U.e(I([a.c ? a.c(d, k, B) : a.call(l, d, k, B), b.c ? b.c(d, k, B) : b.call(l, d, k, B), c.c ? c.c(d, k, B) : c.call(l, d, k, B)], 0));
+            return U.e(I([a.c ? a.c(d, k, C) : a.call(l, d, k, C), b.c ? b.c(d, k, C) : b.call(l, d, k, C), c.c ? c.c(d, k, C) : c.call(l, d, k, C)], 0));
           default:
-            return f.e(d, k, B, I(arguments, 3))
+            return f.e(d, k, C, I(arguments, 3))
         }
         e(Error("Invalid arity: " + arguments.length))
       };
@@ -5614,7 +5614,7 @@ var cf = function() {
         };
         c.e = d;
         return c
-      }(), c = function(c, f, j, B) {
+      }(), c = function(c, f, j, C) {
         switch(arguments.length) {
           case 0:
             return U.e(I([a.w ? a.w() : a.call(l), b.w ? b.w() : b.call(l)], 0));
@@ -5874,7 +5874,7 @@ gf.prototype.Yb = o(l);
 gf;
 var Z = function hf(b, c) {
   return b == l ? K.b("nil") : aa === b ? K.b("#<undefined>") : Lc.a(t(function() {
-    var d = C.c(c, "\ufdd0'meta", l);
+    var d = B.c(c, "\ufdd0'meta", l);
     return t(d) ? (d = b ? ((d = b.l & 131072) ? d : b.Nb) ? g : b.l ? m : u(Ra, b) : u(Ra, b), t(d) ? Ob(b) : d) : d
   }()) ? Lc.e(T(["^"]), hf(Ob(b), c), I([T([" "])], 0)) : l, function() {
     var c = b != l;
@@ -5892,7 +5892,7 @@ var Z = function hf(b, c) {
     return eb(c, "#<undefined>")
   }
   t(function() {
-    var c = C.c(d, "\ufdd0'meta", l);
+    var c = B.c(d, "\ufdd0'meta", l);
     return t(c) ? (c = b ? ((c = b.l & 131072) ? c : b.Nb) ? g : b.l ? m : u(Ra, b) : u(Ra, b), t(c) ? Ob(b) : c) : c
   }()) && (eb(c, "^"), jf(Ob(b), c, d), eb(c, " "));
   return function() {
@@ -6016,7 +6016,7 @@ db.string = function(a, b) {
   }()), P(Ye(a))].join("")) : ec(a) ? K.b([P(function() {
     var b = Ze(a);
     return t(b) ? [P(b), P("/")].join("") : l
-  }()), P(Ye(a))].join("")) : K.b(t((new Ac("\ufdd0'readably")).call(l, b)) ? ha(a) : a)
+  }()), P(Ye(a))].join("")) : K.b(t((new zc("\ufdd0'readably")).call(l, b)) ? ha(a) : a)
 };
 ve.prototype.N = g;
 ve.prototype.L = function(a, b) {
@@ -6081,8 +6081,8 @@ Date.prototype.L = function(a) {
   }
   return K.b([P('#inst "'), P(a.getUTCFullYear()), P("-"), P(b(a.getUTCMonth() + 1, 2)), P("-"), P(b(a.getUTCDate(), 2)), P("T"), P(b(a.getUTCHours(), 2)), P(":"), P(b(a.getUTCMinutes(), 2)), P(":"), P(b(a.getUTCSeconds(), 2)), P("."), P(b(a.getUTCMilliseconds(), 3)), P("-"), P('00:00"')].join(""))
 };
-yc.prototype.N = g;
-yc.prototype.L = function(a, b) {
+xc.prototype.N = g;
+xc.prototype.L = function(a, b) {
   return X(Z, "(", " ", ")", b, a)
 };
 bf.prototype.N = g;
@@ -6160,7 +6160,7 @@ hb["boolean"] = function(a, b) {
 };
 gb.string = g;
 hb.string = function(a, b, c) {
-  return dc(a) ? (eb(b, ":"), c = Ze(a), t(c) && ff.e(b, I(["" + P(c), "/"], 0)), eb(b, Ye(a))) : ec(a) ? (c = Ze(a), t(c) && ff.e(b, I(["" + P(c), "/"], 0)), eb(b, Ye(a))) : t((new Ac("\ufdd0'readably")).call(l, c)) ? eb(b, ha(a)) : eb(b, a)
+  return dc(a) ? (eb(b, ":"), c = Ze(a), t(c) && ff.e(b, I(["" + P(c), "/"], 0)), eb(b, Ye(a))) : ec(a) ? (c = Ze(a), t(c) && ff.e(b, I(["" + P(c), "/"], 0)), eb(b, Ye(a))) : t((new zc("\ufdd0'readably")).call(l, c)) ? eb(b, ha(a)) : eb(b, a)
 };
 ve.prototype.Q = g;
 ve.prototype.G = function(a, b, c) {
@@ -6225,8 +6225,8 @@ Date.prototype.G = function(a, b) {
   }
   return ff.e(b, I(['#inst "', "" + P(a.getUTCFullYear()), "-", c(a.getUTCMonth() + 1, 2), "-", c(a.getUTCDate(), 2), "T", c(a.getUTCHours(), 2), ":", c(a.getUTCMinutes(), 2), ":", c(a.getUTCSeconds(), 2), ".", c(a.getUTCMilliseconds(), 3), "-", '00:00"'], 0))
 };
-yc.prototype.Q = g;
-yc.prototype.G = function(a, b, c) {
+xc.prototype.Q = g;
+xc.prototype.G = function(a, b, c) {
   return Y(b, $, "(", " ", ")", c, a)
 };
 bf.prototype.Q = g;
@@ -6299,7 +6299,7 @@ var lf = function() {
       return b.call(this, c, j)
     }
     function b(a, c) {
-      var d = bc(c) ? S.a(wb, c) : c, f = C.c(d, "\ufdd0'validator", l), d = C.c(d, "\ufdd0'meta", l);
+      var d = bc(c) ? S.a(wb, c) : c, f = B.c(d, "\ufdd0'validator", l), d = B.c(d, "\ufdd0'meta", l);
       return new kf(a, d, f, l)
     }
     a.o = 1;
@@ -6396,8 +6396,8 @@ function of(a, b) {
 }
 of.prototype.ab = function() {
   var a = this;
-  return(new Ac("\ufdd0'value")).call(l, nf.a(a.state, function(b) {
-    var b = bc(b) ? S.a(wb, b) : b, c = C.c(b, "\ufdd0'done", l);
+  return(new zc("\ufdd0'value")).call(l, nf.a(a.state, function(b) {
+    var b = bc(b) ? S.a(wb, b) : b, c = B.c(b, "\ufdd0'done", l);
     return t(c) ? b : $d(["\ufdd0'done", "\ufdd0'value"], {"\ufdd0'done":g, "\ufdd0'value":a.ma.w ? a.ma.w() : a.ma.call(l)})
   }))
 };
@@ -6405,7 +6405,7 @@ of;
 var pf = lf.b($d(["\ufdd0'parents", "\ufdd0'descendants", "\ufdd0'ancestors"], {"\ufdd0'parents":Zd, "\ufdd0'descendants":Zd, "\ufdd0'ancestors":Zd})), qf = function() {
   function a(a, b, h) {
     var i = vb.a(b, h);
-    if(!i && !(i = fc((new Ac("\ufdd0'ancestors")).call(l, a).call(l, b), h)) && (i = Xb(h))) {
+    if(!i && !(i = fc((new zc("\ufdd0'ancestors")).call(l, a).call(l, b), h)) && (i = Xb(h))) {
       if(i = Xb(b)) {
         if(i = O(h) === O(b)) {
           for(var i = g, j = 0;;) {
@@ -6443,7 +6443,7 @@ var pf = lf.b($d(["\ufdd0'parents", "\ufdd0'descendants", "\ufdd0'ancestors"], {
   return c
 }(), rf = function() {
   function a(a, b) {
-    return Sc(C.c((new Ac("\ufdd0'parents")).call(l, a), b, l))
+    return Sc(B.c((new zc("\ufdd0'parents")).call(l, a), b, l))
   }
   function b(a) {
     return c.a(Qa(pf), a)
@@ -6755,7 +6755,7 @@ function Of(a, b) {
 yd.prototype.yb = function(a) {
   var b = Zc.a(Nf, a);
   return function(a, d) {
-    var f = (new Ac("\ufdd0'history")).call(l, d), h;
+    var f = (new zc("\ufdd0'history")).call(l, d), h;
     a: {
       for(var i = f, j = E(b), k = F(b);;) {
         var j = Of(j, i), i = Lb.c(j, 0, l), j = Lb.c(j, 1, l), r;
@@ -6819,8 +6819,8 @@ function Qf(a) {
 }
 Qf.prototype.zb = function() {
   var a = this;
-  return function(b) {
-    return a.ma.b ? a.ma.b(b) : a.ma.call(l, b)
+  return function(b, c) {
+    return a.ma.a ? a.ma.a(b, c) : a.ma.call(l, b, c)
   }
 };
 Qf.prototype.yb = function() {
@@ -6830,24 +6830,27 @@ Qf.prototype.yb = function() {
   }
 };
 Qf;
-function Rf(a, b, c) {
+function Rf(a) {
+  return new Qf(a)
+}
+function Sf(a, b, c) {
   return Uc(function(c) {
     var f = Lb.c(c, 0, l), c = Lb.c(c, 1, l);
     return t(f.a ? f.a(a, b) : f.call(l, a, b)) ? c : l
   }, c)
 }
-function Sf(a) {
+function Tf(a) {
   return function(b, c) {
     if(t(Vc.b ? Vc.b(b) : Vc.call(l, b))) {
       var d;
-      d = Rf(b, c, a);
+      d = Sf(b, c, a);
       d = t(d) ? d : Xc(b);
       return d.a ? d.a(b, c) : d.call(l, b, c)
     }
     return b
   }
 }
-function Tf(a) {
+function Uf(a) {
   return function c(a) {
     return new R(l, m, function() {
       for(;;) {
@@ -6860,25 +6863,30 @@ function Tf(a) {
     }, l)
   }(a)
 }
-function Uf(a) {
+function Vf(a) {
   function b(a, b) {
     return t(Vc.b ? Vc.b(a) : Vc.call(l, a)) ? Ff(b, "\ufdd0'history", function(b) {
       return Jb.a(b, a)
     }) : b
   }
-  var a = md.a(2, a), c = Sf(Tf(a));
+  var a = md.a(2, a), c = Tf(Uf(a));
   return function(a) {
     return Mf(Lf(c, a), b)
   }
 }
-;var Vf = function() {
+function Wf(a) {
+  var b = Xf;
+  return Vf(a).call(l, b)
+}
+;var Yf = function() {
   function a(a, d) {
     var f = l;
     s(d) && (f = I(Array.prototype.slice.call(arguments, 1), 0));
     return b.call(this, a, f)
   }
   function b(a, b) {
-    return buster.assert(a, b)
+    var f = Lb.c(b, 0, l);
+    return buster.assert(a, f)
   }
   a.o = 1;
   a.m = function(a) {
@@ -6889,7 +6897,7 @@ function Uf(a) {
   return a
 }();
 Rc.a("undefined", typeof exports) && (buster = require("buster"));
-function Wf(a, b, c, d) {
+function Zf(a, b, c, d) {
   this.v = a;
   this.S = b;
   this.O = c;
@@ -6898,7 +6906,7 @@ function Wf(a, b, c, d) {
   this.l = 2229667594;
   2 < arguments.length ? (this.O = c, this.z = d) : this.z = this.O = l
 }
-p = Wf.prototype;
+p = Zf.prototype;
 p.C = function(a) {
   var b = this.k;
   return b != l ? b : this.k = a = qc(a)
@@ -6907,10 +6915,10 @@ p.B = function(a, b) {
   return a.r(a, b, l)
 };
 p.r = function(a, b, c) {
-  return"\ufdd0'a" === b ? this.v : "\ufdd0'b" === b ? this.S : C.c(this.z, b, c)
+  return"\ufdd0'a" === b ? this.v : "\ufdd0'b" === b ? this.S : B.c(this.z, b, c)
 };
 p.R = function(a, b, c) {
-  return(qa.a ? qa.a("\ufdd0'a", b) : qa.call(l, "\ufdd0'a", b)) ? new Wf(c, this.S, this.O, this.z, l) : (qa.a ? qa.a("\ufdd0'b", b) : qa.call(l, "\ufdd0'b", b)) ? new Wf(this.v, c, this.O, this.z, l) : new Wf(this.v, this.S, this.O, Mb.c(this.z, b, c), l)
+  return(qa.a ? qa.a("\ufdd0'a", b) : qa.call(l, "\ufdd0'a", b)) ? new Zf(c, this.S, this.O, this.z, l) : (qa.a ? qa.a("\ufdd0'b", b) : qa.call(l, "\ufdd0'b", b)) ? new Zf(this.v, c, this.O, this.z, l) : new Zf(this.v, this.S, this.O, Mb.c(this.z, b, c), l)
 };
 p.G = function(a, b, c) {
   return Y(b, function(a) {
@@ -6932,14 +6940,14 @@ p.A = function(a, b) {
   return t(c) ? g : m
 };
 p.M = function(a, b) {
-  return new Wf(this.v, this.S, b, this.z, this.k)
+  return new Zf(this.v, this.S, b, this.z, this.k)
 };
 p.K = n("O");
 p.pa = function(a, b) {
-  return fc(Ve(["\ufdd0'a", "\ufdd0'b"]), b) ? Nb.a(Ib(ld(Zd, a), this.O), b) : new Wf(this.v, this.S, this.O, Sc(Nb.a(this.z, b)), l)
+  return fc(Ve(["\ufdd0'a", "\ufdd0'b"]), b) ? Nb.a(Ib(ld(Zd, a), this.O), b) : new Zf(this.v, this.S, this.O, Sc(Nb.a(this.z, b)), l)
 };
-Wf;
-function Xf(a, b, c, d) {
+Zf;
+function $f(a, b, c, d) {
   this.v = a;
   this.S = b;
   this.O = c;
@@ -6948,7 +6956,7 @@ function Xf(a, b, c, d) {
   this.l = 2229667594;
   2 < arguments.length ? (this.O = c, this.z = d) : this.z = this.O = l
 }
-p = Xf.prototype;
+p = $f.prototype;
 p.C = function(a) {
   var b = this.k;
   return b != l ? b : this.k = a = qc(a)
@@ -6957,10 +6965,10 @@ p.B = function(a, b) {
   return a.r(a, b, l)
 };
 p.r = function(a, b, c) {
-  return"\ufdd0'a" === b ? this.v : "\ufdd0'b" === b ? this.S : C.c(this.z, b, c)
+  return"\ufdd0'a" === b ? this.v : "\ufdd0'b" === b ? this.S : B.c(this.z, b, c)
 };
 p.R = function(a, b, c) {
-  return(qa.a ? qa.a("\ufdd0'a", b) : qa.call(l, "\ufdd0'a", b)) ? new Xf(c, this.S, this.O, this.z, l) : (qa.a ? qa.a("\ufdd0'b", b) : qa.call(l, "\ufdd0'b", b)) ? new Xf(this.v, c, this.O, this.z, l) : new Xf(this.v, this.S, this.O, Mb.c(this.z, b, c), l)
+  return(qa.a ? qa.a("\ufdd0'a", b) : qa.call(l, "\ufdd0'a", b)) ? new $f(c, this.S, this.O, this.z, l) : (qa.a ? qa.a("\ufdd0'b", b) : qa.call(l, "\ufdd0'b", b)) ? new $f(this.v, c, this.O, this.z, l) : new $f(this.v, this.S, this.O, Mb.c(this.z, b, c), l)
 };
 p.G = function(a, b, c) {
   return Y(b, function(a) {
@@ -6982,14 +6990,14 @@ p.A = function(a, b) {
   return t(c) ? g : m
 };
 p.M = function(a, b) {
-  return new Xf(this.v, this.S, b, this.z, this.k)
+  return new $f(this.v, this.S, b, this.z, this.k)
 };
 p.K = n("O");
 p.pa = function(a, b) {
-  return fc(Ve(["\ufdd0'a", "\ufdd0'b"]), b) ? Nb.a(Ib(ld(Zd, a), this.O), b) : new Xf(this.v, this.S, this.O, Sc(Nb.a(this.z, b)), l)
+  return fc(Ve(["\ufdd0'a", "\ufdd0'b"]), b) ? Nb.a(Ib(ld(Zd, a), this.O), b) : new $f(this.v, this.S, this.O, Sc(Nb.a(this.z, b)), l)
 };
-Xf;
-function Yf(a, b, c, d) {
+$f;
+function ag(a, b, c, d) {
   this.v = a;
   this.S = b;
   this.O = c;
@@ -6998,7 +7006,7 @@ function Yf(a, b, c, d) {
   this.l = 2229667594;
   2 < arguments.length ? (this.O = c, this.z = d) : this.z = this.O = l
 }
-p = Yf.prototype;
+p = ag.prototype;
 p.C = function(a) {
   var b = this.k;
   return b != l ? b : this.k = a = qc(a)
@@ -7007,10 +7015,10 @@ p.B = function(a, b) {
   return a.r(a, b, l)
 };
 p.r = function(a, b, c) {
-  return"\ufdd0'a" === b ? this.v : "\ufdd0'b" === b ? this.S : C.c(this.z, b, c)
+  return"\ufdd0'a" === b ? this.v : "\ufdd0'b" === b ? this.S : B.c(this.z, b, c)
 };
 p.R = function(a, b, c) {
-  return(qa.a ? qa.a("\ufdd0'a", b) : qa.call(l, "\ufdd0'a", b)) ? new Yf(c, this.S, this.O, this.z, l) : (qa.a ? qa.a("\ufdd0'b", b) : qa.call(l, "\ufdd0'b", b)) ? new Yf(this.v, c, this.O, this.z, l) : new Yf(this.v, this.S, this.O, Mb.c(this.z, b, c), l)
+  return(qa.a ? qa.a("\ufdd0'a", b) : qa.call(l, "\ufdd0'a", b)) ? new ag(c, this.S, this.O, this.z, l) : (qa.a ? qa.a("\ufdd0'b", b) : qa.call(l, "\ufdd0'b", b)) ? new ag(this.v, c, this.O, this.z, l) : new ag(this.v, this.S, this.O, Mb.c(this.z, b, c), l)
 };
 p.G = function(a, b, c) {
   return Y(b, function(a) {
@@ -7032,26 +7040,26 @@ p.A = function(a, b) {
   return t(c) ? g : m
 };
 p.M = function(a, b) {
-  return new Yf(this.v, this.S, b, this.z, this.k)
+  return new ag(this.v, this.S, b, this.z, this.k)
 };
 p.K = n("O");
 p.pa = function(a, b) {
-  return fc(Ve(["\ufdd0'a", "\ufdd0'b"]), b) ? Nb.a(Ib(ld(Zd, a), this.O), b) : new Yf(this.v, this.S, this.O, Sc(Nb.a(this.z, b)), l)
+  return fc(Ve(["\ufdd0'a", "\ufdd0'b"]), b) ? Nb.a(Ib(ld(Zd, a), this.O), b) : new ag(this.v, this.S, this.O, Sc(Nb.a(this.z, b)), l)
 };
-Yf;
+ag;
 (function(a, b) {
   this.v = a;
   this.S = b
 });
-function Zf(a, b) {
+function Xf(a, b) {
   function c(a, b) {
     return kd(function(a) {
       return vb.a(a, pc.b("dalap/form"))
     }, Zc.a(a, b))
   }
-  return zc(a) ? S.a(K, c.a ? c.a(b, a) : c.call(l, b, a)) : bc(a) ? ef.b(c.a ? c.a(b, a) : c.call(l, b, a)) : Tb(a) ? ld(va(a), c.a ? c.a(b, a) : c.call(l, b, a)) : a
+  return yc(a) ? S.a(K, c.a ? c.a(b, a) : c.call(l, b, a)) : bc(a) ? ef.b(c.a ? c.a(b, a) : c.call(l, b, a)) : Tb(a) ? ld(va(a), c.a ? c.a(b, a) : c.call(l, b, a)) : a
 }
-var $f = function() {
+var bg = function() {
   function a(a, d, f, h) {
     var i = l;
     s(h) && (i = I(Array.prototype.slice.call(arguments, 3), 0));
@@ -7060,7 +7068,7 @@ var $f = function() {
   function b(a, b, f, h) {
     h = Lb.c(h, 0, l);
     a = Jf.a(b, a);
-    return Vf.e(vb.a(a, f), I([[P(t(h) ? [P(h), P(" -- ")].join("") : h), P("expected: "), P(M.e(I([f], 0))), P(" -- "), P("got: "), P(M.e(I([a], 0)))].join("")], 0))
+    return Yf.e(vb.a(a, f), I([[P(t(h) ? [P(h), P(" -- ")].join("") : h), P("expected: "), P(M.e(I([f], 0))), P(" -- "), P("got: "), P(M.e(I([a], 0)))].join("")], 0))
   }
   a.o = 3;
   a.m = function(a) {
@@ -7072,67 +7080,75 @@ var $f = function() {
 }();
 buster.spec.describe("test-walk-with-no-rules", function() {
   buster.spec.it("without any rules on visit", function() {
-    var a = Ib(K("\ufdd1'let", Fd(["\ufdd1'hello", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hello"), wb("\ufdd0'line", 13))), wb("\ufdd0'line", 13)), b = Uf(Dd).call(l, Zf);
-    $f.e(b, a, a, I(["should be same value"], 0));
+    var a = Ib(K("\ufdd1'let", Fd(["\ufdd1'hello", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hello"), wb("\ufdd0'line", 13))), wb("\ufdd0'line", 13)), b = Wf(Dd);
+    bg.e(b, a, a, I(["should be same value"], 0));
     return l
   });
   return l
 });
 buster.spec.describe("test-symbol-as-a-selector", function() {
   buster.spec.it("with symbol as a selector on rules", function() {
-    var a = T(["\ufdd1'hello", "\ufdd1'hallo"]), a = Uf(a).call(l, Zf);
-    $f(a, Ib(K("\ufdd1'let", Fd(["\ufdd1'hello", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hello"), wb("\ufdd0'line", 14))), wb("\ufdd0'line", 14)), Ib(K("\ufdd1'let", Fd(["\ufdd1'hallo", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hallo"), wb("\ufdd0'line", 14))), wb("\ufdd0'line", 14)));
+    var a = T(["\ufdd1'hello", "\ufdd1'hallo"]), a = Wf(a);
+    bg(a, Ib(K("\ufdd1'let", Fd(["\ufdd1'hello", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hello"), wb("\ufdd0'line", 14))), wb("\ufdd0'line", 14)), Ib(K("\ufdd1'let", Fd(["\ufdd1'hallo", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hallo"), wb("\ufdd0'line", 14))), wb("\ufdd0'line", 14)));
     return l
   });
   return l
 });
 buster.spec.describe("test-function-as-a-selector", function() {
   buster.spec.it("with functions as a selector on rules", function() {
-    var a = T([new Qf(Xb), "Something Else"]), a = Uf(a).call(l, Zf);
-    $f(a, D(Lc.a(K.b(S.a(U, D(Lc.a(K.b("uno"), K.b(2))))), K.b(D(Lc.b(K.b("\ufdd1'user/foobar")))))), D(Lc.a(K.b("Something Else"), K.b(D(Lc.b(K.b("\ufdd1'user/foobar")))))));
+    var a = T([Rf(Xb), "Something Else"]), a = Wf(a);
+    bg(a, D(Lc.a(K.b(S.a(U, D(Lc.a(K.b("uno"), K.b(2))))), K.b(D(Lc.b(K.b("\ufdd1'user/foobar")))))), D(Lc.a(K.b("Something Else"), K.b(D(Lc.b(K.b("\ufdd1'user/foobar")))))));
     return l
   });
   return l
 });
 buster.spec.describe("test-walking-over-a-set", function() {
   buster.spec.it("with set as the collection we are visiting", function() {
-    var a = T(["\ufdd1'foo", 999]), a = Uf(a).call(l, Zf);
-    $f.e(a, Ve(["\ufdd1'foo", "\ufdd1'hello"]), Ve([999, "\ufdd1'hello"]), I(["visitor should be able to walk on sets"], 0));
+    var a = T(["\ufdd1'foo", 999]), a = Wf(a);
+    bg.e(a, Ve(["\ufdd1'foo", "\ufdd1'hello"]), Ve([999, "\ufdd1'hello"]), I(["visitor should be able to walk on sets"], 0));
+    return l
+  });
+  return l
+});
+buster.spec.describe("test-function-as-a-transformer", function() {
+  buster.spec.it("should call the node being selected", function() {
+    var a = T([Rf(Xb), "\ufdd1'foobar"]), b = Rf.b ? Rf.b(o("\ufdd1'whatever")) : Rf.call(l, o("\ufdd1'whatever")), a = T([a, b]), a = Wf(a);
+    bg(a, T([1, 2, T(["\ufdd1'foobar"]), "other value"]), T([1, 2, T(["\ufdd1'whatever"]), "other value"]));
     return l
   });
   return l
 });
 buster.spec.describe("test-vector-as-a-selector", function() {
   buster.spec.it("with vectors as selector on rules", function() {
-    var a = T([new Qf(Xb), "\ufdd1'foobar"]), a = T([a, "\ufdd1'replacement"]), a = Uf(a).call(l, Zf);
-    $f(a, T([1, 2, T(["\ufdd1'foobar"]), "other value"]), T([1, 2, T(["\ufdd1'replacement"]), "other value"]));
+    var a = T([Rf(Xb), "\ufdd1'foobar"]), a = T([a, "\ufdd1'replacement"]), a = Wf(a);
+    bg(a, T([1, 2, T(["\ufdd1'foobar"]), "other value"]), T([1, 2, T(["\ufdd1'replacement"]), "other value"]));
     return l
   });
   return l
 });
 Rc.a("undefined", typeof exports) && (buster = require("buster"));
-function ag(a, b) {
+function cg(a, b) {
   var c;
   if(c = J(Hf, b)) {
     c = (c = vb.a(a.ya, b.ya)) ? vb.a(a.ba, b.ba) : c
   }
-  Vf(c)
+  Yf(c)
 }
-function bg(a) {
+function dg(a) {
   return a
 }
 buster.spec.describe("test-walker-constructors", function() {
   buster.spec.it("various walker constructors work identically", function() {
-    for(var a = D(T([new Hf(bg, Zd), If.b(bg), If.a(bg, Zd)]));;) {
+    for(var a = D(T([new Hf(dg, Zd), If.b(dg), If.a(dg, Zd)]));;) {
       if(a) {
         var b = E(a);
-        Vf.e(vb.a(1, b.b ? b.b(1) : b.call(l, 1)), I(["1"], 0));
-        Vf.e(vb.a(Df(b), Zd), I(["2"], 0));
-        Vf.e(function() {
+        Yf.e(vb.a(1, b.b ? b.b(1) : b.call(l, 1)), I(["1"], 0));
+        Yf.e(vb.a(Df(b), Zd), I(["2"], 0));
+        Yf.e(function() {
           var a = b;
           return a ? t(t(l) ? l : a.$b) ? g : a.vc ? m : u(Cf, a) : u(Cf, a)
         }(), I(["3"], 0));
-        Vf.e(vb.a(b.ya, bg), I(["4"], 0));
+        Yf.e(vb.a(b.ya, dg), I(["4"], 0));
         a = H(a)
       }else {
         break
@@ -7146,23 +7162,23 @@ buster.spec.describe("test-walker-state-management", function() {
   buster.spec.it("manages state correctly", function() {
     for(var a = D(T([Zd, $d(["\ufdd0'a"], {"\ufdd0'a":1234}), $d(["\ufdd0'a", "\ufdd0'b"], {"\ufdd0'a":1234, "\ufdd0'b":99})]));;) {
       if(a) {
-        var b = E(a), c = If.a(bg, b);
-        Vf(vb.a(Df(c), b));
+        var b = E(a), c = If.a(dg, b);
+        Yf(vb.a(Df(c), b));
         var d = Gf(c, $d(["\ufdd0'c"], {"\ufdd0'c":12}));
-        Vf.e((new Ac("\ufdd0'c")).call(l, d), I([12], 0));
+        Yf.e((new zc("\ufdd0'c")).call(l, d), I([12], 0));
         Rc.a(c, d);
-        ag(Ef(d, function() {
+        cg(Ef(d, function() {
           return function(a) {
             return Nb.a(a, "\ufdd0'c")
           }
         }(a, d, c, b)), c);
-        ag(Ff(c, "\ufdd0'c", function() {
+        cg(Ff(c, "\ufdd0'c", function() {
           return function(a) {
             a;
             return 12
           }
         }(a, d, c, b)), d);
-        ag(Gf(d, $d(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2})), Ef(d, function() {
+        cg(Gf(d, $d(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2})), Ef(d, function() {
           return function(a) {
             return Jb.a(a, $d(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2}))
           }
@@ -7176,12 +7192,12 @@ buster.spec.describe("test-walker-state-management", function() {
   });
   return l
 });
-function cg(a, b) {
+function eg(a, b) {
   return Xb(a) ? ld(Dd, Zc.a(b, a)) : a
 }
 buster.spec.describe("test-walker-with-recursive-visitor-fn", function() {
   buster.spec.it("recur over the walk function", function() {
-    Vf(vb.a(Jf.a(T([T([1, 2, 3]), T([4, 5])]), cg), T([T([1, 2, 3]), T([4, 5])])));
+    Yf(vb.a(Jf.a(T([T([1, 2, 3]), T([4, 5])]), eg), T([T([1, 2, 3]), T([4, 5])])));
     return l
   });
   return l

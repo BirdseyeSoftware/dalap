@@ -4,7 +4,6 @@ The name is the acronym for Decide As Late As Possible, from lean
 programming."
 
   :dependencies [[org.clojure/clojure "1.4.0"]
-                 [org.clojure/core.match "0.2.0-alpha9"]
                  [buster-cljs "0.1.0-SNAPSHOT"]]
 
   :plugins [[lein-cljsbuild "0.2.9"]

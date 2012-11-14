@@ -195,17 +195,21 @@
   ^{:cljs default}
   Object
   (to-rule-transformer [obj]
-    (fn object-transformer-visitor [_node _walker] obj)))
+    (fn object-transformer-visitor [_node _walker]
+      obj)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (deftype FnRule [f]
   ;;;
   IRuleSelector
-  (to-rule-selector [_] (fn [node walker_] (f node)))
+  (to-rule-selector [_]
+    (fn rule-selector [node walker_] (f node)))
   ;;;
   IRuleTransformer
-  (to-rule-transformer [_] (fn [node] (f node))))
+  (to-rule-transformer [_]
+    (fn rule-transformer-visitor [node walker]
+      (f node walker))))
 
 (defn when
   ""
@@ -225,11 +229,11 @@
   [rules inspect-node-fn?]
   (fn rules-visitor [node walker]
     (if (inspect-node-fn? node)
-      (let [visitor (or (-get-transformer-of-first-matching-rule
+      (let [transformer (or (-get-transformer-of-first-matching-rule
                          node walker rules)
                         ;; or fall through with an identity visitor
                         (constantly node))]
-        (visitor node walker))
+        (transformer node walker))
       node)))
 
 (defn -normalize-rules [rules]

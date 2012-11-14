@@ -4,12 +4,10 @@
   ;; recursive invocation of the visitor over a seq of objects (possibly
   ;; nested) and makes it possible to decorate or replace the visitor for
   ;; sub-regions of the seq."}
-  )
+  ^:clj (:import [clojure.lang IFn ILookup]))
 
 (defprotocol IWalkerState
-  "API: Public
-
-  The IWalkerState is used to add a state interface to a
+  "The IWalkerState is used to add a state interface to a
   Walker type. Initially this protocol is being used only on
   dalap.walk/Walker; if you need to implement your own walker
   and you want to hold a state on this walker, you should use this
@@ -27,8 +25,6 @@
 
 
 (deftype Walker [visitor state-map]
-  ;; API: Internal
-  ;;
   ;; A walker is basicaly a function that holds an internal
   ;; state that can be transformed, and a visitor function.
   ;;
@@ -42,8 +38,9 @@
   ;; iterating over a structure. Walkers purpose is to call itself
   ;; recursively in data structures, to map one object into another.
 
-  clojure.lang.IFn
-  (invoke [this x] (visitor x this))
+  IFn
+  (^{:cljs -invoke} invoke
+   [this x] (visitor x this))
   ; ^ Calling a Walker as a function will call the internal
   ; `visitor` function.
 
@@ -64,16 +61,14 @@
     (let [keys (if (sequential? ks) ks [ks])]
       (Walker. visitor (update-in state-map keys fn))))
 
-  clojure.lang.ILookup
+  ILookup
   ; We want to keep the behavior given on defrecord, that record
   ; attributes can be accessed using symbol functions.
-  (^{:cljs '-lookup} valAt [this key] (state-map key))
-  (^{:cljs '-lookup} valAt [this key not-found] (state-map key not-found)))
+  (^{:cljs -lookup} valAt [this key] (state-map key))
+  (^{:cljs -lookup} valAt [this key not-found] (state-map key not-found)))
 
 (defn -gen-walker
-  "Signature: (([^Object ^dalap.walk/Walker] -> Output) -> dalap.walk/Walker)
-
-  Builds a `dalap.walk/Walker` instance using the provided visitor
+  "Builds a `dalap.walk/Walker` instance using the provided visitor
   function.  If a state-map is provided it would use it as the walker
   state-map, otherwise an empty map is used."
   ([visitor] (-gen-walker visitor {}))
@@ -86,17 +81,3 @@
   empty PersistentMap is used."
   ([input visitor] (walk input visitor {}))
   ([input visitor state-map] ((-gen-walker visitor state-map) input)))
-
-
-;;;
-
-;; (defn indent
-;;   "Signature: [^dalap.walk/IWalkerState] -> dalap.walk/IWalkerState
-
-;;   API: Public
-
-;;   This is an example of functions that use the Walker's state-map.
-;;   Call `(:dalap.walk/indent walker-instance)` inside a visitor to
-;;   get the current indent level and do some pretty printing with it."
-;;   [walker]
-;;   (update-in-state walker ::indent #(inc (or % 0))))

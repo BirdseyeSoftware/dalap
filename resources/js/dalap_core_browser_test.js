@@ -12938,8 +12938,8 @@ dalap.rules.FnRule.cljs$lang$ctorPrWriter = function(a, b) {
 dalap.rules.FnRule.prototype.dalap$rules$IRuleTransformer$ = !0;
 dalap.rules.FnRule.prototype.dalap$rules$IRuleTransformer$to_rule_transformer$arity$1 = function() {
   var a = this;
-  return function(b) {
-    return a.f.call(null, b)
+  return function(b, c) {
+    return a.f.call(null, b, c)
   }
 };
 dalap.rules.FnRule.prototype.dalap$rules$IRuleSelector$ = !0;
@@ -13021,7 +13021,8 @@ buster_cljs.core.cljs__GT_js = function cljs__GT_js(b) {
 };
 buster_cljs.core.is = function() {
   var a = function(a, b) {
-    return buster.assert(a, b)
+    var e = cljs.core.nth.call(null, b, 0, null);
+    return buster.assert(a, e)
   }, b = function(b, d) {
     var e = null;
     goog.isDef(d) && (e = cljs.core.array_seq(Array.prototype.slice.call(arguments, 1), 0));
@@ -13031,6 +13032,23 @@ buster_cljs.core.is = function() {
   b.cljs$lang$applyTo = function(b) {
     var d = cljs.core.first(b), b = cljs.core.rest(b);
     return a(d, b)
+  };
+  b.cljs$lang$arity$variadic = a;
+  return b
+}();
+buster_cljs.core.is_equal = function() {
+  var a = function(a, b, e) {
+    e = cljs.core.nth.call(null, e, 0, null);
+    return buster.assert.equals(a, b, e)
+  }, b = function(b, d, e) {
+    var f = null;
+    goog.isDef(e) && (f = cljs.core.array_seq(Array.prototype.slice.call(arguments, 2), 0));
+    return a.call(this, b, d, f)
+  };
+  b.cljs$lang$maxFixedArity = 2;
+  b.cljs$lang$applyTo = function(b) {
+    var d = cljs.core.first(b), e = cljs.core.first(cljs.core.next(b)), b = cljs.core.rest(cljs.core.next(b));
+    return a(d, e, b)
   };
   b.cljs$lang$arity$variadic = a;
   return b
@@ -13313,6 +13331,16 @@ buster.spec.describe("test-walking-over-a-set", function() {
   buster.spec.it("with set as the collection we are visiting", function() {
     var a = cljs.core.PersistentVector.fromArray(["\ufdd1'foo", 999], !0), a = dalap.rules.gen_rules_visitor.call(null, a, dalap.test.rules_test.visit_clj_form);
     dalap.test.rules_test.assert_walk.call(null, a, cljs.core.PersistentHashSet.fromArray(["\ufdd1'foo", "\ufdd1'hello"]), cljs.core.PersistentHashSet.fromArray([999, "\ufdd1'hello"]), "visitor should be able to walk on sets");
+    return null
+  });
+  return null
+});
+buster.spec.describe("test-function-as-a-transformer", function() {
+  buster.spec.it("should call the node being selected", function() {
+    var a = cljs.core.PersistentVector.fromArray([dalap.rules.when.call(null, cljs.core.vector_QMARK_), "\ufdd1'foobar"], !0), b = dalap.rules.transform.call(null, function() {
+      return"\ufdd1'whatever"
+    }), a = cljs.core.PersistentVector.fromArray([a, b], !0), a = dalap.rules.gen_rules_visitor.call(null, a, dalap.test.rules_test.visit_clj_form);
+    dalap.test.rules_test.assert_walk.call(null, a, cljs.core.PersistentVector.fromArray([1, 2, cljs.core.PersistentVector.fromArray(["\ufdd1'foobar"], !0), "other value"], !0), cljs.core.PersistentVector.fromArray([1, 2, cljs.core.PersistentVector.fromArray(["\ufdd1'whatever"], !0), "other value"], !0));
     return null
   });
   return null

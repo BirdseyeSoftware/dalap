@@ -98,6 +98,19 @@
                    #{999 'hello}
                    "visitor should be able to walk on sets"))))
 
+(deftest test-function-as-a-transformer
+  (it "should call the node being selected"
+      (let [selector [(rules/when vector?) 'foobar]
+            replacement-value (rules/transform (fn [_ _] 'whatever))
+            transform-rules [selector replacement-value]
+            ;; ^ match any `CustomType` instances that are inside a set.
+            ;; When using vectors as selectors, it will behave the
+            ;; same way as a CSS `parent > child` selector.
+            visitor (gen-rules-visitor transform-rules visit-clj-form)]
+        (assert-walk visitor
+                     [1 2 ['foobar] "other value"]
+                     [1 2 ['whatever] "other value"]))))
+
 (deftest test-vector-as-a-selector
   (it "with vectors as selector on rules"
     (let [selector [(rules/when vector?) 'foobar]

@@ -1,6 +1,6 @@
 ;; This file was generated with dalap-cljsbuild from
 ;;
-;; src/clj/dalap/rules.clj @ Tue Nov 13 19:51:03 UTC 2012
+;; src/clj/dalap/rules.clj @ Wed Nov 14 22:36:36 UTC 2012
 ;;
 (ns dalap.rules (:refer-clojure :exclude [when]) (:require [dalap.walk :refer (update-in-state)]))
 (defn- span [p xs] ((juxt (partial take-while p) (partial drop-while p)) xs))
@@ -10,17 +10,17 @@
 (defn -match-selector "Grabs a single node from history that matches the given selector." [selector? history] (let [[new-history [node & _]] (span (fn selector-span [n] (not (selector? n nil))) history)] (if (nil? node) [nil history] [node new-history])))
 (defn -match-selector* "Multiple selector version of -match-selector.\n\n  Grabs a node from history that matches a group of selectors,\n  respecting a heriarchy of multiple nodes in between." [selectors history] (loop [current-history history current-selector (first selectors) rest-selectors (rest selectors)] (let [[node new-history] (-match-selector current-selector current-history)] (cond (nil? node) [nil history] (and (empty? rest-selectors) (not (empty? new-history))) [nil history] (empty? rest-selectors) [node history] :else (recur new-history (first rest-selectors) (rest rest-selectors))))))
 (defn- -matching-node [selector history] (first (-match-selector* selector history)))
-(extend-protocol IRuleSelector PersistentVector (to-rule-selector [selector-vec] (let [selector (map to-rule-selector selector-vec)] (fn location-matcher [_node walker] (let [history-stack (:history walker)] (-matching-node selector history-stack))))))
+(extend-protocol IRuleSelector cljs.core.PersistentVector (to-rule-selector [selector-vec] (let [selector (map to-rule-selector selector-vec)] (fn location-matcher [_node walker] (let [history-stack (:history walker)] (-matching-node selector history-stack))))))
 (do (extend-protocol IRuleSelector string (to-rule-selector [s] (cond (symbol? s) (fn symbol-matcher [node _walker] (= node s)) :else (throw (js/Error. (str "No IRuleSelector instance for type `" (type s) "`, value: `" s "`")))))))
 (defprotocol IRuleTransformer "Adapts other types to dalap visitor function." (to-rule-transformer [adaptable] "Creates a dalap visitor."))
 (extend-protocol IRuleTransformer cljs.core.PersistentHashMap (to-rule-transformer [m] (fn map-visitor [node _w] (m node))))
 (do (extend-protocol IRuleTransformer string (to-rule-transformer [s] (cond (symbol? s) (fn symbol-transformer-visitor [_node _walker] s) (keyword? s) (fn keyword-transformer-visitor [node _walker] (s node)) :else (fn string-transformer-visitor [node _walker] s)))))
 (extend-protocol IRuleTransformer default (to-rule-transformer [obj] (fn object-transformer-visitor [_node _walker] obj)))
-(deftype FnRule [f] IRuleSelector (to-rule-selector [_] (fn [node walker_] (f node))) IRuleTransformer (to-rule-transformer [_] (fn [node] (f node))))
+(deftype FnRule [f] IRuleSelector (to-rule-selector [_] (fn rule-selector [node walker_] (f node))) IRuleTransformer (to-rule-transformer [_] (fn rule-transformer-visitor [node walker] (f node walker))))
 (defn when "" [f] (FnRule. f))
 (def transform when)
 (defn -get-transformer-of-first-matching-rule [node walker rules] (letfn [(transformer-if-match [[selector? transformer]] (if (selector? node walker) transformer))] (some transformer-if-match rules)))
-(defn- -gen-visitor-from-rules [rules inspect-node-fn?] (fn rules-visitor [node walker] (if (inspect-node-fn? node) (let [visitor (or (-get-transformer-of-first-matching-rule node walker rules) (constantly node))] (visitor node walker)) node)))
+(defn- -gen-visitor-from-rules [rules inspect-node-fn?] (fn rules-visitor [node walker] (if (inspect-node-fn? node) (let [transformer (or (-get-transformer-of-first-matching-rule node walker rules) (constantly node))] (transformer node walker)) node)))
 (defn -normalize-rules [rules] (for [[selector transformer] rules] [(to-rule-selector selector) (to-rule-transformer transformer)]))
-(defn -gen-rules-decorator "" [rules] (let [inspect-node? identity rule-pairs (partition 2 rules) inner-visitor (-gen-visitor-from-rules (-normalize-rules rule-pairs) inspect-node?) add-history-to-walker (fn add-hist [node w] (if (inspect-node? node) (update-in-state w :history (fn* [p1__5452#] (conj p1__5452# node))) w))] (fn rules-decorator [visit-fn] (-wrap-walker (-compose-visitors inner-visitor visit-fn) add-history-to-walker))))
+(defn -gen-rules-decorator "" [rules] (let [inspect-node? identity rule-pairs (partition 2 rules) inner-visitor (-gen-visitor-from-rules (-normalize-rules rule-pairs) inspect-node?) add-history-to-walker (fn add-hist [node w] (if (inspect-node? node) (update-in-state w :history (fn* [p1__3709#] (conj p1__3709# node))) w))] (fn rules-decorator [visit-fn] (-wrap-walker (-compose-visitors inner-visitor visit-fn) add-history-to-walker))))
 (defn gen-rules-visitor "" ([rules fallback-visitor] ((-gen-rules-decorator rules) fallback-visitor)))
