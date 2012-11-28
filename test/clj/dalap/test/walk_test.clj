@@ -1,7 +1,6 @@
 ^{:cljs
   '(ns dalap.test.walk-test
-    (:require [buster-cljs.core :refer [is is-equal]]
-              [dalap.walk :refer
+    (:require [dalap.walk :refer
                (IWalkerState
                 Walker
                 get-state
@@ -10,7 +9,7 @@
                 update-in-state
                 -gen-walker
                 walk)])
-    (:require-macros [buster-cljs.macros :refer [initialize-buster deftest it]]))}
+    (:require-macros [buster-cljs.macros :refer [initialize-buster deftest it is]]))}
 (ns dalap.test.walk-test
   (:require [clojure.test :refer :all]
             [buster-cljs.clojure :refer [it]]
@@ -55,7 +54,6 @@
         (walker-equals (update-in-state w :c #(do % 12)) w2)
         (walker-equals (conj-state w2 {:d 1 :e 2})
                        (update-state w2 #(conj % {:d 1 :e 2}))))))))
-
 
 (defn recursive-visitor [n w]
   (if (vector? n)

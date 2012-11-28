@@ -1,10 +1,9 @@
 ^{:cljs
   (ns dalap.test.rules-test
-    (:require [buster-cljs.core :refer [is]]
-              [dalap.rules :as rules]
+    (:require [dalap.rules :as rules]
               [dalap.rules :refer [-gen-rules-decorator gen-rules-visitor]]
               [dalap.walk :refer [walk]])
-    (:require-macros [buster-cljs.macros :refer [deftest it initialize-buster]]))}
+    (:require-macros [buster-cljs.macros :refer [initialize-buster deftest it is]]))}
 (ns dalap.test.rules-test
   (:require [clojure.test :refer [deftest is]]
             [buster-cljs.clojure :refer [it]]
