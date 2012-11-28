@@ -1,8 +1,8 @@
 ;; This file was generated with dalap-cljsbuild from
 ;;
-;; test/clj/dalap/test/rules_test.clj @ Wed Nov 28 00:26:47 UTC 2012
+;; test/clj/dalap/test/rules_test.clj @ Wed Nov 28 22:15:21 UTC 2012
 ;;
-(ns dalap.test.rules-test (:require [buster-cljs.core :refer [is]] [dalap.rules :as rules] [dalap.rules :refer [-gen-rules-decorator gen-rules-visitor]] [dalap.walk :refer [walk]]) (:require-macros [buster-cljs.macros :refer [deftest it initialize-buster]]))
+(ns dalap.test.rules-test (:require [dalap.rules :as rules] [dalap.rules :refer [-gen-rules-decorator gen-rules-visitor]] [dalap.walk :refer [walk]]) (:require-macros [buster-cljs.macros :refer [initialize-buster deftest it is]]))
 (do (initialize-buster))
 (defrecord CustomType [a b])
 (defrecord CustomType2 [a b])

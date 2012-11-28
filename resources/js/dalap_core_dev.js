@@ -21055,13 +21055,13 @@ dalap.rules.to_rule_selector = function to_rule_selector(selectable) {
   }
 };
 dalap.rules._match_selector = function _match_selector(selector_QMARK_, history) {
-  var vec__6792 = dalap.rules.span.call(null, function selector_span(n) {
+  var vec__2826 = dalap.rules.span.call(null, function selector_span(n) {
     return cljs.core.not.call(null, selector_QMARK_.call(null, n, null))
   }, history);
-  var new_history = cljs.core.nth.call(null, vec__6792, 0, null);
-  var vec__6793 = cljs.core.nth.call(null, vec__6792, 1, null);
-  var node = cljs.core.nth.call(null, vec__6793, 0, null);
-  var _ = cljs.core.nthnext.call(null, vec__6793, 1);
+  var new_history = cljs.core.nth.call(null, vec__2826, 0, null);
+  var vec__2827 = cljs.core.nth.call(null, vec__2826, 1, null);
+  var node = cljs.core.nth.call(null, vec__2827, 0, null);
+  var _ = cljs.core.nthnext.call(null, vec__2827, 1);
   if(node == null) {
     return cljs.core.PersistentVector.fromArray([null, history], true)
   }else {
@@ -21073,9 +21073,9 @@ dalap.rules._match_selector_STAR_ = function _match_selector_STAR_(selectors, hi
   var current_selector = cljs.core.first.call(null, selectors);
   var rest_selectors = cljs.core.rest.call(null, selectors);
   while(true) {
-    var vec__6795 = dalap.rules._match_selector.call(null, current_selector, current_history);
-    var node = cljs.core.nth.call(null, vec__6795, 0, null);
-    var new_history = cljs.core.nth.call(null, vec__6795, 1, null);
+    var vec__2829 = dalap.rules._match_selector.call(null, current_selector, current_history);
+    var node = cljs.core.nth.call(null, vec__2829, 0, null);
+    var new_history = cljs.core.nth.call(null, vec__2829, 1, null);
     if(node == null) {
       return cljs.core.PersistentVector.fromArray([null, history], true)
     }else {
@@ -21093,12 +21093,12 @@ dalap.rules._match_selector_STAR_ = function _match_selector_STAR_(selectors, hi
           return cljs.core.PersistentVector.fromArray([node, history], true)
         }else {
           if("\ufdd0'else") {
-            var G__6796 = new_history;
-            var G__6797 = cljs.core.first.call(null, rest_selectors);
-            var G__6798 = cljs.core.rest.call(null, rest_selectors);
-            current_history = G__6796;
-            current_selector = G__6797;
-            rest_selectors = G__6798;
+            var G__2830 = new_history;
+            var G__2831 = cljs.core.first.call(null, rest_selectors);
+            var G__2832 = cljs.core.rest.call(null, rest_selectors);
+            current_history = G__2830;
+            current_selector = G__2831;
+            rest_selectors = G__2832;
             continue
           }else {
             return null
@@ -21227,10 +21227,10 @@ dalap.rules.when = function when(f) {
 };
 dalap.rules.transform = dalap.rules.when;
 dalap.rules._get_transformer_of_first_matching_rule = function _get_transformer_of_first_matching_rule(node, walker, rules) {
-  var transformer_if_match = function transformer_if_match(p__6802) {
-    var vec__6804 = p__6802;
-    var selector_QMARK_ = cljs.core.nth.call(null, vec__6804, 0, null);
-    var transformer = cljs.core.nth.call(null, vec__6804, 1, null);
+  var transformer_if_match = function transformer_if_match(p__2836) {
+    var vec__2838 = p__2836;
+    var selector_QMARK_ = cljs.core.nth.call(null, vec__2838, 0, null);
+    var transformer = cljs.core.nth.call(null, vec__2838, 1, null);
     if(cljs.core.truth_(selector_QMARK_.call(null, node, walker))) {
       return transformer
     }else {
@@ -21257,15 +21257,15 @@ dalap.rules._gen_visitor_from_rules = function _gen_visitor_from_rules(rules, in
   }
 };
 dalap.rules._normalize_rules = function _normalize_rules(rules) {
-  var iter__2470__auto__ = function iter__6809(s__6810) {
+  var iter__2470__auto__ = function iter__2843(s__2844) {
     return new cljs.core.LazySeq(null, false, function() {
-      var s__6810__$1 = s__6810;
+      var s__2844__$1 = s__2844;
       while(true) {
-        if(cljs.core.seq.call(null, s__6810__$1)) {
-          var vec__6812 = cljs.core.first.call(null, s__6810__$1);
-          var selector = cljs.core.nth.call(null, vec__6812, 0, null);
-          var transformer = cljs.core.nth.call(null, vec__6812, 1, null);
-          return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([dalap.rules.to_rule_selector.call(null, selector), dalap.rules.to_rule_transformer.call(null, transformer)], true), iter__6809.call(null, cljs.core.rest.call(null, s__6810__$1)))
+        if(cljs.core.seq.call(null, s__2844__$1)) {
+          var vec__2846 = cljs.core.first.call(null, s__2844__$1);
+          var selector = cljs.core.nth.call(null, vec__2846, 0, null);
+          var transformer = cljs.core.nth.call(null, vec__2846, 1, null);
+          return cljs.core.cons.call(null, cljs.core.PersistentVector.fromArray([dalap.rules.to_rule_selector.call(null, selector), dalap.rules.to_rule_transformer.call(null, transformer)], true), iter__2843.call(null, cljs.core.rest.call(null, s__2844__$1)))
         }else {
           return null
         }
@@ -21281,8 +21281,8 @@ dalap.rules._gen_rules_decorator = function _gen_rules_decorator(rules) {
   var inner_visitor = dalap.rules._gen_visitor_from_rules.call(null, dalap.rules._normalize_rules.call(null, rule_pairs), inspect_node_QMARK_);
   var add_history_to_walker = function add_hist(node, w) {
     if(cljs.core.truth_(inspect_node_QMARK_.call(null, node))) {
-      return dalap.walk.update_in_state.call(null, w, "\ufdd0'history", function(p1__3769_SHARP_) {
-        return cljs.core.conj.call(null, p1__3769_SHARP_, node)
+      return dalap.walk.update_in_state.call(null, w, "\ufdd0'history", function(p1__3764_SHARP_) {
+        return cljs.core.conj.call(null, p1__3764_SHARP_, node)
       })
     }else {
       return w
