@@ -27,6 +27,7 @@ programming."
     ;;;
     {:id "browser-test"
      :source-path "test/cljs"
+     :notify-command ["buster_runner.sh"]
      :compiler
      {:externs ["externs/buster.js"]
       :libraries ["resources/js/dalap_core_dev.js"]
@@ -36,6 +37,7 @@ programming."
     ;;;
     {:id "node-test"
      :source-path "test/cljs"
+     :notify-command ["buster_runner.sh"]
      :compiler
      {:externs ["externs/buster.js"]
       :libraries ["resources/js/dalap_core_dev.js"]
@@ -45,9 +47,10 @@ programming."
     ;;;
     {:id "browser-test-optimized"
      :source-path "test/cljs"
+     :notify-command ["buster_runner.sh"]
      :compiler
      {:externs ["externs/buster.js"]
-      :libraries ["resources/js/dalap_core_dev.js"] ;; ["src/cljs"]
+      :libraries ["resources/js/dalap_core_dev.js"]
       :output-to "resources/js/dalap_core_browser_test_optimized.js"
       :optimizations :advanced}}
     ]}
