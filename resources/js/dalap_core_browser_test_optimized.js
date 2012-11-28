@@ -6615,50 +6615,68 @@ p.toString = function() {
   return M.e(I([this], 0))
 };
 Bf;
-var Cf = {};
-function Df(a) {
+var Cf = function() {
+  function a(a, d) {
+    var f = l;
+    s(d) && (f = I(Array.prototype.slice.call(arguments, 1), 0));
+    return b.call(this, a, f)
+  }
+  function b(a, b) {
+    var f = Lb.c(b, 0, l);
+    return buster.assert(a, f)
+  }
+  a.o = 1;
+  a.m = function(a) {
+    var d = E(a), a = F(a);
+    return b(d, a)
+  };
+  a.e = b;
+  return a
+}();
+var Df = {};
+function Ef(a) {
   if(a ? a.ac : a) {
     return a.ba
   }
   var b;
-  var c = Df[q(a == l ? l : a)];
-  c ? b = c : (c = Df._) ? b = c : e(v("IWalkerState.get-state", a));
+  var c = Ef[q(a == l ? l : a)];
+  c ? b = c : (c = Ef._) ? b = c : e(v("IWalkerState.get-state", a));
   return b.call(l, a)
 }
-function Ef(a, b) {
+function Ff(a, b) {
   if(a ? a.Ub : a) {
     return a.Ub(0, b)
   }
   var c;
-  var d = Ef[q(a == l ? l : a)];
-  d ? c = d : (d = Ef._) ? c = d : e(v("IWalkerState.update-state", a));
+  var d = Ff[q(a == l ? l : a)];
+  d ? c = d : (d = Ff._) ? c = d : e(v("IWalkerState.update-state", a));
   return c.call(l, a, b)
 }
-function Ff(a, b, c) {
+function Gf(a, b, c) {
   if(a ? a.Tb : a) {
     return a.Tb(0, b, c)
   }
   var d;
-  var f = Ff[q(a == l ? l : a)];
-  f ? d = f : (f = Ff._) ? d = f : e(v("IWalkerState.update-in-state", a));
+  var f = Gf[q(a == l ? l : a)];
+  f ? d = f : (f = Gf._) ? d = f : e(v("IWalkerState.update-in-state", a));
   return d.call(l, a, b, c)
 }
-function Gf(a, b) {
+function Hf(a, b) {
   if(a ? a.Sb : a) {
     return a.Sb(0, b)
   }
   var c;
-  var d = Gf[q(a == l ? l : a)];
-  d ? c = d : (d = Gf._) ? c = d : e(v("IWalkerState.conj-state", a));
+  var d = Hf[q(a == l ? l : a)];
+  d ? c = d : (d = Hf._) ? c = d : e(v("IWalkerState.conj-state", a));
   return c.call(l, a, b)
 }
-function Hf(a, b) {
+function If(a, b) {
   this.ya = a;
   this.ba = b;
   this.p = 0;
   this.l = 257
 }
-p = Hf.prototype;
+p = If.prototype;
 p.B = function(a, b) {
   return this.ba.b ? this.ba.b(b) : this.ba.call(l, b)
 };
@@ -6668,14 +6686,14 @@ p.r = function(a, b, c) {
 p.$b = g;
 p.ac = n("ba");
 p.Sb = function(a, b) {
-  return new Hf(this.ya, Jb.a(this.ba, b))
+  return new If(this.ya, Jb.a(this.ba, b))
 };
 p.Ub = function(a, b) {
-  return new Hf(this.ya, b.b ? b.b(this.ba) : b.call(l, this.ba))
+  return new If(this.ya, b.b ? b.b(this.ba) : b.call(l, this.ba))
 };
 p.Tb = function(a, b, c) {
   a = Vb(b) ? b : T([b]);
-  return new Hf(this.ya, nd(this.ba, a, c))
+  return new If(this.ya, nd(this.ba, a, c))
 };
 p.call = function(a, b) {
   return this.ya.a ? this.ya.a(b, this) : this.ya.call(l, b, this)
@@ -6683,10 +6701,10 @@ p.call = function(a, b) {
 p.apply = function(a, b) {
   return a.call.apply(a, [a].concat(b.slice()))
 };
-Hf;
-var If = function() {
+If;
+var Jf = function() {
   function a(a, b) {
-    return new Hf(a, b)
+    return new If(a, b)
   }
   function b(a) {
     return c.a(a, Zd)
@@ -6703,9 +6721,9 @@ var If = function() {
   c.b = b;
   c.a = a;
   return c
-}(), Jf = function() {
+}(), Kf = function() {
   function a(a, b, c) {
-    return If.a(b, c).call(l, a)
+    return Jf.a(b, c).call(l, a)
   }
   function b(a, b) {
     return c.c(a, b, Zd)
@@ -6723,42 +6741,42 @@ var If = function() {
   c.c = a;
   return c
 }();
-function Kf(a, b) {
+function Lf(a, b) {
   return cf.a(Yc.a(af, a), Yc.a(cd, a)).call(l, b)
 }
-function Lf(a, b) {
+function Mf(a, b) {
   return function(c, d) {
     return b.a ? b.a(a.a ? a.a(c, d) : a.call(l, c, d), d) : b.call(l, a.a ? a.a(c, d) : a.call(l, c, d), d)
   }
 }
-function Mf(a, b) {
+function Nf(a, b) {
   return function(c, d) {
     return a.a ? a.a(c, b.a ? b.a(c, d) : b.call(l, c, d)) : a.call(l, c, b.a ? b.a(c, d) : b.call(l, c, d))
   }
 }
-function Nf(a) {
+function Of(a) {
   if(a ? a.yb : a) {
     return a.yb(a)
   }
   var b;
-  var c = Nf[q(a == l ? l : a)];
-  c ? b = c : (c = Nf._) ? b = c : e(v("IRuleSelector.to-rule-selector", a));
+  var c = Of[q(a == l ? l : a)];
+  c ? b = c : (c = Of._) ? b = c : e(v("IRuleSelector.to-rule-selector", a));
   return b.call(l, a)
 }
-function Of(a, b) {
-  var c = Kf(function(b) {
+function Pf(a, b) {
+  var c = Lf(function(b) {
     return ra(a.a ? a.a(b, l) : a.call(l, b, l))
   }, b), d = Lb.c(c, 0, l), c = Lb.c(c, 1, l), f = Lb.c(c, 0, l);
   mc(c);
   return f == l ? T([l, b]) : T([f, d])
 }
 yd.prototype.yb = function(a) {
-  var b = Zc.a(Nf, a);
+  var b = Zc.a(Of, a);
   return function(a, d) {
     var f = (new zc("\ufdd0'history")).call(l, d), h;
     a: {
       for(var i = f, j = E(b), k = F(b);;) {
-        var j = Of(j, i), i = Lb.c(j, 0, l), j = Lb.c(j, 1, l), r;
+        var j = Pf(j, i), i = Lb.c(j, 0, l), j = Lb.c(j, 1, l), r;
         if(!(r = i == l)) {
           r = (r = Sb(k)) ? !Sb(j) : r
         }
@@ -6778,7 +6796,7 @@ yd.prototype.yb = function(a) {
     return E(h)
   }
 };
-Nf.string = function(a) {
+Of.string = function(a) {
   if(ec(a)) {
     return function(b) {
       return vb.a(b, a)
@@ -6786,13 +6804,13 @@ Nf.string = function(a) {
   }
   e(Error([P("No IRuleSelector instance for type `"), P(a == l ? l : a.constructor), P("`, value: `"), P(a), P("`")].join("")))
 };
-function Pf(a) {
+function Qf(a) {
   if(a ? a.zb : a) {
     return a.zb(a)
   }
   var b;
-  var c = Pf[q(a == l ? l : a)];
-  c ? b = c : (c = Pf._) ? b = c : e(v("IRuleTransformer.to-rule-transformer", a));
+  var c = Qf[q(a == l ? l : a)];
+  c ? b = c : (c = Qf._) ? b = c : e(v("IRuleTransformer.to-rule-transformer", a));
   return b.call(l, a)
 }
 xe.prototype.zb = function(a) {
@@ -6800,7 +6818,7 @@ xe.prototype.zb = function(a) {
     return a.b ? a.b(b) : a.call(l, b)
   }
 };
-Pf.string = function(a) {
+Qf.string = function(a) {
   return ec(a) ? function() {
     return a
   } : dc(a) ? function(b) {
@@ -6809,94 +6827,76 @@ Pf.string = function(a) {
     return a
   }
 };
-Pf._ = function(a) {
+Qf._ = function(a) {
   return function() {
     return a
   }
 };
-function Qf(a) {
+function Rf(a) {
   this.ma = a
 }
-Qf.prototype.zb = function() {
+Rf.prototype.zb = function() {
   var a = this;
   return function(b, c) {
     return a.ma.a ? a.ma.a(b, c) : a.ma.call(l, b, c)
   }
 };
-Qf.prototype.yb = function() {
+Rf.prototype.yb = function() {
   var a = this;
   return function(b) {
     return a.ma.b ? a.ma.b(b) : a.ma.call(l, b)
   }
 };
-Qf;
-function Rf(a) {
-  return new Qf(a)
+Rf;
+function Sf(a) {
+  return new Rf(a)
 }
-function Sf(a, b, c) {
+function Tf(a, b, c) {
   return Uc(function(c) {
     var f = Lb.c(c, 0, l), c = Lb.c(c, 1, l);
     return t(f.a ? f.a(a, b) : f.call(l, a, b)) ? c : l
   }, c)
 }
-function Tf(a) {
+function Uf(a) {
   return function(b, c) {
     if(t(Vc.b ? Vc.b(b) : Vc.call(l, b))) {
       var d;
-      d = Sf(b, c, a);
+      d = Tf(b, c, a);
       d = t(d) ? d : Xc(b);
       return d.a ? d.a(b, c) : d.call(l, b, c)
     }
     return b
   }
 }
-function Uf(a) {
+function Vf(a) {
   return function c(a) {
     return new R(l, m, function() {
       for(;;) {
         if(D(a)) {
           var f = E(a), h = Lb.c(f, 0, l), f = Lb.c(f, 1, l);
-          return L(T([Nf(h), Pf(f)]), c(F(a)))
+          return L(T([Of(h), Qf(f)]), c(F(a)))
         }
         return l
       }
     }, l)
   }(a)
 }
-function Vf(a) {
+function Wf(a) {
   function b(a, b) {
-    return t(Vc.b ? Vc.b(a) : Vc.call(l, a)) ? Ff(b, "\ufdd0'history", function(b) {
+    return t(Vc.b ? Vc.b(a) : Vc.call(l, a)) ? Gf(b, "\ufdd0'history", function(b) {
       return Jb.a(b, a)
     }) : b
   }
-  var a = md.a(2, a), c = Tf(Uf(a));
+  var a = md.a(2, a), c = Uf(Vf(a));
   return function(a) {
-    return Mf(Lf(c, a), b)
+    return Nf(Mf(c, a), b)
   }
 }
-function Wf(a) {
-  var b = Xf;
-  return Vf(a).call(l, b)
+function Xf(a) {
+  var b = Yf;
+  return Wf(a).call(l, b)
 }
-;var Yf = function() {
-  function a(a, d) {
-    var f = l;
-    s(d) && (f = I(Array.prototype.slice.call(arguments, 1), 0));
-    return b.call(this, a, f)
-  }
-  function b(a, b) {
-    var f = Lb.c(b, 0, l);
-    return buster.assert(a, f)
-  }
-  a.o = 1;
-  a.m = function(a) {
-    var d = E(a), a = F(a);
-    return b(d, a)
-  };
-  a.e = b;
-  return a
-}();
-Rc.a("undefined", typeof exports) && (buster = require("buster"));
+;Rc.a("undefined", typeof exports) && (buster = require("buster"));
 function Zf(a, b, c, d) {
   this.v = a;
   this.S = b;
@@ -7051,7 +7051,7 @@ ag;
   this.v = a;
   this.S = b
 });
-function Xf(a, b) {
+function Yf(a, b) {
   function c(a, b) {
     return kd(function(a) {
       return vb.a(a, pc.b("dalap/form"))
@@ -7067,8 +7067,8 @@ var bg = function() {
   }
   function b(a, b, f, h) {
     h = Lb.c(h, 0, l);
-    a = Jf.a(b, a);
-    return Yf.e(vb.a(a, f), I([[P(t(h) ? [P(h), P(" -- ")].join("") : h), P("expected: "), P(M.e(I([f], 0))), P(" -- "), P("got: "), P(M.e(I([a], 0)))].join("")], 0))
+    a = Kf.a(b, a);
+    return Cf.e(vb.a(a, f), I([[P(t(h) ? [P(h), P(" -- ")].join("") : h), P("expected: "), P(M.e(I([f], 0))), P(" -- "), P("got: "), P(M.e(I([a], 0)))].join("")], 0))
   }
   a.o = 3;
   a.m = function(a) {
@@ -7080,7 +7080,7 @@ var bg = function() {
 }();
 buster.spec.describe("test-walk-with-no-rules", function() {
   buster.spec.it("without any rules on visit", function() {
-    var a = Ib(K("\ufdd1'let", Fd(["\ufdd1'hello", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hello"), wb("\ufdd0'line", 13))), wb("\ufdd0'line", 13)), b = Wf(Dd);
+    var a = Ib(K("\ufdd1'let", Fd(["\ufdd1'hello", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hello"), wb("\ufdd0'line", 13))), wb("\ufdd0'line", 13)), b = Xf(Dd);
     bg.e(b, a, a, I(["should be same value"], 0));
     return l
   });
@@ -7088,7 +7088,7 @@ buster.spec.describe("test-walk-with-no-rules", function() {
 });
 buster.spec.describe("test-symbol-as-a-selector", function() {
   buster.spec.it("with symbol as a selector on rules", function() {
-    var a = T(["\ufdd1'hello", "\ufdd1'hallo"]), a = Wf(a);
+    var a = T(["\ufdd1'hello", "\ufdd1'hallo"]), a = Xf(a);
     bg(a, Ib(K("\ufdd1'let", Fd(["\ufdd1'hello", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hello"), wb("\ufdd0'line", 14))), wb("\ufdd0'line", 14)), Ib(K("\ufdd1'let", Fd(["\ufdd1'hallo", "hola"]), Ib(K("\ufdd1'str", "\ufdd1'hallo"), wb("\ufdd0'line", 14))), wb("\ufdd0'line", 14)));
     return l
   });
@@ -7096,7 +7096,7 @@ buster.spec.describe("test-symbol-as-a-selector", function() {
 });
 buster.spec.describe("test-function-as-a-selector", function() {
   buster.spec.it("with functions as a selector on rules", function() {
-    var a = T([Rf(Xb), "Something Else"]), a = Wf(a);
+    var a = T([Sf(Xb), "Something Else"]), a = Xf(a);
     bg(a, D(Lc.a(K.b(S.a(U, D(Lc.a(K.b("uno"), K.b(2))))), K.b(D(Lc.b(K.b("\ufdd1'user/foobar")))))), D(Lc.a(K.b("Something Else"), K.b(D(Lc.b(K.b("\ufdd1'user/foobar")))))));
     return l
   });
@@ -7104,7 +7104,7 @@ buster.spec.describe("test-function-as-a-selector", function() {
 });
 buster.spec.describe("test-walking-over-a-set", function() {
   buster.spec.it("with set as the collection we are visiting", function() {
-    var a = T(["\ufdd1'foo", 999]), a = Wf(a);
+    var a = T(["\ufdd1'foo", 999]), a = Xf(a);
     bg.e(a, Ve(["\ufdd1'foo", "\ufdd1'hello"]), Ve([999, "\ufdd1'hello"]), I(["visitor should be able to walk on sets"], 0));
     return l
   });
@@ -7112,7 +7112,7 @@ buster.spec.describe("test-walking-over-a-set", function() {
 });
 buster.spec.describe("test-function-as-a-transformer", function() {
   buster.spec.it("should call the node being selected", function() {
-    var a = T([Rf(Xb), "\ufdd1'foobar"]), b = Rf.b ? Rf.b(o("\ufdd1'whatever")) : Rf.call(l, o("\ufdd1'whatever")), a = T([a, b]), a = Wf(a);
+    var a = T([Sf(Xb), "\ufdd1'foobar"]), b = Sf.b ? Sf.b(o("\ufdd1'whatever")) : Sf.call(l, o("\ufdd1'whatever")), a = T([a, b]), a = Xf(a);
     bg(a, T([1, 2, T(["\ufdd1'foobar"]), "other value"]), T([1, 2, T(["\ufdd1'whatever"]), "other value"]));
     return l
   });
@@ -7120,7 +7120,7 @@ buster.spec.describe("test-function-as-a-transformer", function() {
 });
 buster.spec.describe("test-vector-as-a-selector", function() {
   buster.spec.it("with vectors as selector on rules", function() {
-    var a = T([Rf(Xb), "\ufdd1'foobar"]), a = T([a, "\ufdd1'replacement"]), a = Wf(a);
+    var a = T([Sf(Xb), "\ufdd1'foobar"]), a = T([a, "\ufdd1'replacement"]), a = Xf(a);
     bg(a, T([1, 2, T(["\ufdd1'foobar"]), "other value"]), T([1, 2, T(["\ufdd1'replacement"]), "other value"]));
     return l
   });
@@ -7129,26 +7129,26 @@ buster.spec.describe("test-vector-as-a-selector", function() {
 Rc.a("undefined", typeof exports) && (buster = require("buster"));
 function cg(a, b) {
   var c;
-  if(c = J(Hf, b)) {
+  if(c = J(If, b)) {
     c = (c = vb.a(a.ya, b.ya)) ? vb.a(a.ba, b.ba) : c
   }
-  Yf(c)
+  Cf(c)
 }
 function dg(a) {
   return a
 }
 buster.spec.describe("test-walker-constructors", function() {
   buster.spec.it("various walker constructors work identically", function() {
-    for(var a = D(T([new Hf(dg, Zd), If.b(dg), If.a(dg, Zd)]));;) {
+    for(var a = D(T([new If(dg, Zd), Jf.b(dg), Jf.a(dg, Zd)]));;) {
       if(a) {
         var b = E(a);
-        Yf.e(vb.a(1, b.b ? b.b(1) : b.call(l, 1)), I(["1"], 0));
-        Yf.e(vb.a(Df(b), Zd), I(["2"], 0));
-        Yf.e(function() {
+        Cf.e(vb.a(1, b.b ? b.b(1) : b.call(l, 1)), I(["1"], 0));
+        Cf.e(vb.a(Ef(b), Zd), I(["2"], 0));
+        Cf.e(function() {
           var a = b;
-          return a ? t(t(l) ? l : a.$b) ? g : a.vc ? m : u(Cf, a) : u(Cf, a)
+          return a ? t(t(l) ? l : a.$b) ? g : a.vc ? m : u(Df, a) : u(Df, a)
         }(), I(["3"], 0));
-        Yf.e(vb.a(b.ya, dg), I(["4"], 0));
+        Cf.e(vb.a(b.ya, dg), I(["4"], 0));
         a = H(a)
       }else {
         break
@@ -7162,23 +7162,23 @@ buster.spec.describe("test-walker-state-management", function() {
   buster.spec.it("manages state correctly", function() {
     for(var a = D(T([Zd, $d(["\ufdd0'a"], {"\ufdd0'a":1234}), $d(["\ufdd0'a", "\ufdd0'b"], {"\ufdd0'a":1234, "\ufdd0'b":99})]));;) {
       if(a) {
-        var b = E(a), c = If.a(dg, b);
-        Yf(vb.a(Df(c), b));
-        var d = Gf(c, $d(["\ufdd0'c"], {"\ufdd0'c":12}));
-        Yf.e((new zc("\ufdd0'c")).call(l, d), I([12], 0));
+        var b = E(a), c = Jf.a(dg, b);
+        Cf(vb.a(Ef(c), b));
+        var d = Hf(c, $d(["\ufdd0'c"], {"\ufdd0'c":12}));
+        Cf.e((new zc("\ufdd0'c")).call(l, d), I([12], 0));
         Rc.a(c, d);
-        cg(Ef(d, function() {
+        cg(Ff(d, function() {
           return function(a) {
             return Nb.a(a, "\ufdd0'c")
           }
         }(a, d, c, b)), c);
-        cg(Ff(c, "\ufdd0'c", function() {
+        cg(Gf(c, "\ufdd0'c", function() {
           return function(a) {
             a;
             return 12
           }
         }(a, d, c, b)), d);
-        cg(Gf(d, $d(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2})), Ef(d, function() {
+        cg(Hf(d, $d(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2})), Ff(d, function() {
           return function(a) {
             return Jb.a(a, $d(["\ufdd0'd", "\ufdd0'e"], {"\ufdd0'd":1, "\ufdd0'e":2}))
           }
@@ -7197,7 +7197,7 @@ function eg(a, b) {
 }
 buster.spec.describe("test-walker-with-recursive-visitor-fn", function() {
   buster.spec.it("recur over the walk function", function() {
-    Yf(vb.a(Jf.a(T([T([1, 2, 3]), T([4, 5])]), eg), T([T([1, 2, 3]), T([4, 5])])));
+    Cf(vb.a(Kf.a(T([T([1, 2, 3]), T([4, 5])]), eg), T([T([1, 2, 3]), T([4, 5])])));
     return l
   });
   return l

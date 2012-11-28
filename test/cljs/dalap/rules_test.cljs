@@ -1,6 +1,6 @@
 ;; This file was generated with dalap-cljsbuild from
 ;;
-;; test/clj/dalap/test/rules_test.clj @ Wed Nov 21 01:50:01 UTC 2012
+;; test/clj/dalap/test/rules_test.clj @ Wed Nov 28 00:26:47 UTC 2012
 ;;
 (ns dalap.test.rules-test (:require [buster-cljs.core :refer [is]] [dalap.rules :as rules] [dalap.rules :refer [-gen-rules-decorator gen-rules-visitor]] [dalap.walk :refer [walk]]) (:require-macros [buster-cljs.macros :refer [deftest it initialize-buster]]))
 (do (initialize-buster))
@@ -8,7 +8,7 @@
 (defrecord CustomType2 [a b])
 (defrecord CustomType3 [a b])
 (deftype CustomType4 [a b])
-(defn visit-clj-form [form w] (letfn [(filter-map [f form] (remove (fn* [p1__3714#] (= p1__3714# (keyword "dalap/form"))) (map f form)))] (cond (list? form) (apply list (filter-map w form)) (seq? form) (doall (filter-map w form)) (coll? form) (into (empty form) (filter-map w form)) :else form)))
+(defn visit-clj-form [form w] (letfn [(filter-map [f form] (remove (fn* [p1__3765#] (= p1__3765# (keyword "dalap/form"))) (map f form)))] (cond (list? form) (apply list (filter-map w form)) (seq? form) (doall (filter-map w form)) (coll? form) (into (empty form) (filter-map w form)) :else form)))
 (defn assert-walk [visitor input expected & [msg]] (let [result (walk input visitor)] (is (= result expected) (str (and msg (str msg " -- ")) "expected: " (pr-str expected) " -- " "got: " (pr-str result)))))
 (deftest test-walk-with-no-rules (it "without any rules on visit" (let [sample-form (quote (let [hello "hola"] (str hello))) visitor (gen-rules-visitor [] visit-clj-form)] (assert-walk visitor sample-form sample-form "should be same value"))))
 (deftest test-symbol-as-a-selector (it "with symbol as a selector on rules" (let [transform-rules [(quote hello) (quote hallo)] visitor (gen-rules-visitor transform-rules visit-clj-form)] (assert-walk visitor (quote (let [hello "hola"] (str hello))) (quote (let [hallo "hola"] (str hallo)))))))
