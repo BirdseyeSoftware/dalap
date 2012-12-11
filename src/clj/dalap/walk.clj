@@ -7,11 +7,10 @@
   ^:clj (:import [clojure.lang IFn ILookup]))
 
 (defprotocol IWalkerState
-  "The IWalkerState is used to add a state interface to a
-  Walker type. Initially this protocol is being used only on
-  dalap.walk/Walker; if you need to implement your own walker
-  and you want to hold a state on this walker, you should use this
-  protocol to do so."
+  "IWalkerState adds a state interface to Walker. Initially this
+  protocol is being used only on dalap.walk/Walker; if you need to
+  implement your own walker and you want to hold a state on this
+  walker, you should use this protocol to do so."
 
   (get-state [this]
      "Returns the state of a walker")
@@ -21,22 +20,20 @@
      "Updates a value in the state map pointed by `keys`, it
       uses the `fn` function to transform the value.")
   (conj-state [this new-state]
-     "Conjs a value into the state map."))
+     "Conj's a value into the state map."))
 
 
 (deftype Walker [visitor state-map]
-  ;; A walker is basicaly a function that holds an internal
-  ;; state that can be transformed, and a visitor function.
-  ;;
-  ;; To create a walker you need to provide a "visitor" function,
-  ;; this visitor function will be called each time you call the
-  ;; walker with a parameter; this is what happens under the sheets:
+  ;; A walker is a wrapper around a `visitor` function and an optional
+  ;; state-map.  When a walker is called as a function it dispatches
+  ;; to the `visitor` function:
   ;;
   ;; (walker-instance node) === (visitor node walker-instance)
   ;;
-  ;; The walker state serves to keep a hold on data while you are
-  ;; iterating over a structure. Walkers purpose is to call itself
-  ;; recursively in data structures, to map one object into another.
+  ;; The optional `state-map` can be used by visitors to implement
+  ;; stateful traversal behaviours, such as an indenting
+  ;; pretty-printer or css-like parent/child selectors. Use it like
+  ;; you would use the State Monad.
 
   IFn
   (^{:cljs -invoke} invoke
@@ -47,7 +44,6 @@
   ^:clj
   (applyTo [this args] (clojure.lang.AFn/applyToHelper this args))
   ; ^ Make it easy to use the apply function with the walker instance
-
 
   IWalkerState
   ; This code should be self explinatory; for all the update functions
@@ -62,22 +58,17 @@
       (Walker. visitor (update-in state-map keys fn))))
 
   ILookup
-  ; We want to keep the behavior given on defrecord, that record
-  ; attributes can be accessed using symbol functions.
+  ; Allow the walker to be queried for state keys as if it were a map.
   (^{:cljs -lookup} valAt [this key] (state-map key))
   (^{:cljs -lookup} valAt [this key not-found] (state-map key not-found)))
 
 (defn -gen-walker
-  "Builds a `dalap.walk/Walker` instance using the provided visitor
-  function.  If a state-map is provided it would use it as the walker
-  state-map, otherwise an empty map is used."
+  "Builds a `dalap.walk/Walker` that wraps the provide visitor function."
   ([visitor] (-gen-walker visitor {}))
   ([visitor state-map] (Walker. visitor state-map)))
 
 (defn walk
-  "Builds a `dalap.walk/Walker` instance using the provided visitor
-  function, and then runs the walker on the given input object. If a
-  starte-map is given, it would use it as the internal state, otherwise an
-  empty PersistentMap is used."
+  "Builds a `dalap.walk/Walker` that wraps the provided visitor
+  function, and then calls the walker on the given input object."
   ([input visitor] (walk input visitor {}))
   ([input visitor state-map] ((-gen-walker visitor state-map) input)))

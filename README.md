@@ -1,35 +1,39 @@
-# Dalap (Decide As Late As Possible) [![Build Status](https://secure.travis-ci.org/tavisrudd/dalap.png)](http://travis-ci.org/tavisrudd/dalap)
+# Dalap (Decide As Late As Possible) [![Build Status](https://secure.travis-ci.org/BirdseyeSoftware/dalap.png)](http://travis-ci.org/BirdseyeSoftware/dalap)
 
-Dalap is an extremely flexible serialization / template library for
-Clojure.
+Dalap is an extremely flexible tree-walking / tree-transformation
+library for Clojure and Clojurescript. It is the foundation of
+dalap.html, an html templating/serialization library (similar to
+`hiccup` and `enlive`), and lein-dalap, a
+Clojure->Clojurescript code transformation tool.
 
 The name is the acronym for Decide As Late As Possible, from lean
 programming.
 
-On the surface, it is similar to the hiccup library and hiccup
-templates are valid input for Dalap. However, there are several key
-differences:
+## Components
 
-* Dalap html-escapes all strings, unlike hiccup.
+The namespace `dalap.walk` provides `Walker`, which is a wrapper
+around a visitor function (a multimethod or a single function from a
+Protocol). It simplifies the recursive invocation of the visitor over
+a seq of objects (possibly nested) and makes it possible to:
 
-* Dalap provides a selector/transformer system similar to the css
-  selectors/transformers in Enlive.
+ a) decorate or replace the visitor for sub-regions of the tree and 
 
-* Dalap is designed on the philosophy that templates should be
-  declarative and focus on the intent of a UI screen while deferring
-  the concrete html/css/js representation. This allows for greater
-  reuse and specialization of templates in different contexts. See
-  https://github.com/tavisrudd/throw_out_your_templates/blob/master/throw_out_your_templates.py#L197
-  for further discussion of this.
+ b) maintain traversal state if needed.
 
-We intend to support client-side usage from clojurescript.
+The namespace `dalap.rules` implements a css-like selector+transformer
+rules system, which allows you to selectively transform portions of a
+tree.  See [lein-dalap][lein-dalap] for an example of this in action.
 
 ## Usage
 
-FIXME: see the test suite for the time-being
+See the test suite or the packages [dalap.html][dalap-html] and
+[lein-dalap][lein-dalap] for usage examples.
 
 ## License
 
-Copyright (C) 2012 Tavis Rudd and Roman Gonzalez
+Copyright (C) 2012 Birdseye Software Inc.
 
 Distributed under the MIT License.
+
+[dalap-html]:https://github.com/BirdseyeSoftware/dalap-html
+[lein-dalap]:https://github.com/BirdseyeSoftware/lein-dalap
