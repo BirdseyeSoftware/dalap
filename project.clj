@@ -2,7 +2,9 @@
   :description "Extremely flexible serialization / template library for Clojure.
 The name is the acronym for Decide As Late As Possible, from lean
 programming."
-
+  :url "http://birdseye-sw.com/oss/dalap/"
+  :license {:name "MIT"
+            :url "http://opensource.org/licenses/MIT"}
   :dependencies [[org.clojure/clojure "1.4.0"]]
   :profiles {:dev {:dependencies [[com.birdseye-sw/buster-cljs "0.1.0"]]}}
   ;;:plugins [[lein-cljsbuild "0.2.9"]
