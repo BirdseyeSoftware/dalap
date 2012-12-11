@@ -2,8 +2,8 @@
 
 Dalap is an extremely flexible tree-walking / tree-transformation
 library for Clojure and Clojurescript. It is the foundation of
-dalap.html, an html templating/serialization library (similar to
-`hiccup` and `enlive`), and lein-dalap, a
+[dalap-html][dalap-html], an html templating/serialization library
+(similar to `hiccup` and `enlive`), and [lein-dalap][lein-dalap], a
 Clojure->Clojurescript code transformation tool.
 
 The name is the acronym for Decide As Late As Possible, from lean
@@ -26,7 +26,7 @@ tree.  See [lein-dalap][lein-dalap] for an example of this in action.
 
 ## Usage
 
-See the test suite or the packages [dalap.html][dalap-html] and
+See the test suite or the packages [dalap-html][dalap-html] and
 [lein-dalap][lein-dalap] for usage examples.
 
 ## License
