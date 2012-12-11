@@ -1,17 +1,13 @@
-(defproject dalap "0.0.1-SNAPSHOT"
+(defproject com.birdseye-sw/dalap "0.1.0"
   :description "Extremely flexible serialization / template library for Clojure.
 The name is the acronym for Decide As Late As Possible, from lean
 programming."
 
-  :dependencies [[org.clojure/clojure "1.4.0"]
-                 [buster-cljs "0.1.0-SNAPSHOT"]]
-
-  :plugins [[lein-cljsbuild "0.2.9"]
-            [lein-dalap "0.1.0-SNAPSHOT"]]
-
-  :hooks [leiningen.dalap]
-
-  :profiles {:dev {:dependencies [[org.clojure/tools.namespace "0.2.1"]]}}
+  :dependencies [[org.clojure/clojure "1.4.0"]]
+  :profiles {:dev {:dependencies [[com.birdseye-sw/buster-cljs "0.1.0"]]}}
+  ;;:plugins [[lein-cljsbuild "0.2.9"]
+  ;;          [com.birdseye-sw/lein-dalap "0.1.0"]]
+  ;;:hooks [leiningen.dalap]
 
   :source-paths ["src/clj" "src/cljs"]
   :test-paths ["test/clj" "test/cljs"]
@@ -54,4 +50,4 @@ programming."
       :output-to "resources/js/dalap_core_browser_test_optimized.js"
       :optimizations :advanced}}
     ]}
-  :repositories {"snapshots" {:url "s3p://lein-snapshots/snapshots"}})
+  )
