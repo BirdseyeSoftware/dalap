@@ -1,7 +1,7 @@
 (defproject com.birdseye-sw/dalap "0.1.0"
-  :description "Extremely flexible serialization / template library for Clojure.
-The name is the acronym for Decide As Late As Possible, from lean
-programming."
+  :description "Dalap is an extremely flexible tree-walking /
+  tree-transformation library for Clojure and Clojurescript. The name
+  is the acronym for Decide As Late As Possible, from lean programming."
   :url "http://birdseye-sw.com/oss/dalap/"
   :license {:name "MIT"
             :url "http://opensource.org/licenses/MIT"}
